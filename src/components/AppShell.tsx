@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Bike, Gauge, LogOut, Settings, Wrench } from "lucide-react";
+import { Bike, Gauge, LogOut, Moon, Settings, Sun, Wrench } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,19 @@ const NAV = [
   { to: "/bikes", label: "Garage", icon: Bike },
   { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
+
+function ThemeToggle() {
+  const toggle = () => {
+    document.documentElement.classList.toggle("dark");
+  };
+
+  return (
+    <Button variant="ghost" size="icon" onClick={toggle} aria-label="Toggle theme">
+      <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+    </Button>
+  );
+}
 
 export function AppShell({
   title,
@@ -54,6 +67,7 @@ export function AppShell({
                 </Link>
               ))}
             </div>
+            <ThemeToggle />
             <Button variant="ghost" size="sm" onClick={signOut} aria-label="Sign out" className="md:ml-2">
               <LogOut className="size-4 md:mr-2" aria-hidden />
               <span className="hidden md:inline">Sign out</span>
