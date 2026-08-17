@@ -129,9 +129,11 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          <span>Edit</span>
-        </Button>
+        {trigger || (
+          <Button variant="outline" size="sm">
+            <span>Edit</span>
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
