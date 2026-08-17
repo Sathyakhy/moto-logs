@@ -23,23 +23,14 @@ import { LogFuelDialog } from "@/components/LogFuelDialog";
 import { EditBikeDialog } from "@/components/EditBikeDialog";
 import { useFuelLogs } from "@/hooks/useMaintenance";
 
-type BikeSearch = {
-  tab?: string
-}
-
 export const Route = createFileRoute("/_authenticated/bikes/$bikeId")({
-  validateSearch: (search: Record<string, unknown>): BikeSearch => {
+  validateSearch: (search: Record<string, unknown>) => {
     return {
-      tab: typeof search.tab === 'string' ? search.tab : undefined,
+      tab: search.tab as string | undefined,
     }
   },
   component: BikeDetail,
 });
-
-
-
-
-
 
 function BikeDetail() {
   const { bikeId } = useParams({ from: "/_authenticated/bikes/$bikeId" });
@@ -47,7 +38,8 @@ function BikeDetail() {
   const { data: bike, isLoading } = useBike(bikeId);
   const { data: history } = useMaintenanceRecords(bikeId);
   const { data: fuelLogs } = useFuelLogs(bikeId);
-  const defaultTab = search.hash === 'history' ? 'history' : 'schedule';
+  const defaultTab = search.tab === 'history' ? 'history' : 'schedule';
+
 
 
   if (isLoading) return <div className="p-8 text-center">Loading bike details...</div>;
