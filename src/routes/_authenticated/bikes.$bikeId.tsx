@@ -87,7 +87,11 @@ function BikeDetail() {
       </div>
 
       <div className="mt-8">
-        <Tabs defaultValue={defaultTab}>
+        <Tabs value={search['tab'] || 'schedule'} onValueChange={(val) => {
+          const params = new URLSearchParams(window.location.search);
+          params.set('tab', val);
+          window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`);
+        }}>
           <TabsList className="bg-secondary/50 p-1">
             <TabsTrigger value="schedule" className="gap-2">
               <Clock className="size-4" />
