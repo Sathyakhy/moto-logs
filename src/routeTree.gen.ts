@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedBikesRouteImport } from './routes/_authenticated/bikes'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedBikesBikeIdRouteImport } from './routes/_authenticated/bikes.$bikeId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -45,35 +46,45 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedBikesBikeIdRoute =
+  AuthenticatedBikesBikeIdRouteImport.update({
+    id: '/$bikeId',
+    path: '/$bikeId',
+    getParentRoute: () => AuthenticatedBikesRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/bikes': typeof AuthenticatedBikesRoute
+  '/bikes': typeof AuthenticatedBikesRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/bikes/$bikeId': typeof AuthenticatedBikesBikeIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/bikes': typeof AuthenticatedBikesRoute
+  '/bikes': typeof AuthenticatedBikesRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/bikes/$bikeId': typeof AuthenticatedBikesBikeIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/_authenticated/bikes': typeof AuthenticatedBikesRoute
+  '/_authenticated/bikes': typeof AuthenticatedBikesRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/bikes/$bikeId': typeof AuthenticatedBikesBikeIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/bikes' | '/dashboard' | '/settings'
+  fullPaths:
+    '/' | '/auth' | '/bikes' | '/dashboard' | '/settings' | '/bikes/$bikeId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/bikes' | '/dashboard' | '/settings'
+  to: '/' | '/auth' | '/bikes' | '/dashboard' | '/settings' | '/bikes/$bikeId'
   id:
     | '__root__'
     | '/'
@@ -82,6 +93,7 @@ export interface FileRouteTypes {
     | '/_authenticated/bikes'
     | '/_authenticated/dashboard'
     | '/_authenticated/settings'
+    | '/_authenticated/bikes/$bikeId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -134,17 +146,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/bikes/$bikeId': {
+      id: '/_authenticated/bikes/$bikeId'
+      path: '/$bikeId'
+      fullPath: '/bikes/$bikeId'
+      preLoaderRoute: typeof AuthenticatedBikesBikeIdRouteImport
+      parentRoute: typeof AuthenticatedBikesRoute
+    }
   }
 }
 
+interface AuthenticatedBikesRouteChildren {
+  AuthenticatedBikesBikeIdRoute: typeof AuthenticatedBikesBikeIdRoute
+}
+
+const AuthenticatedBikesRouteChildren: AuthenticatedBikesRouteChildren = {
+  AuthenticatedBikesBikeIdRoute: AuthenticatedBikesBikeIdRoute,
+}
+
+const AuthenticatedBikesRouteWithChildren =
+  AuthenticatedBikesRoute._addFileChildren(AuthenticatedBikesRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedBikesRoute: typeof AuthenticatedBikesRoute
+  AuthenticatedBikesRoute: typeof AuthenticatedBikesRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedBikesRoute: AuthenticatedBikesRoute,
+  AuthenticatedBikesRoute: AuthenticatedBikesRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
 }

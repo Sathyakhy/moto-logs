@@ -1,0 +1,149 @@
+import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { 
+  ArrowLeft, 
+  Calendar, 
+  Clock, 
+  Droplets, 
+  Fuel, 
+  Gauge, 
+  History, 
+  Plus, 
+  Settings, 
+  Wrench 
+} from "lucide-react";
+
+import { AppShell, StatusPill, Stat } from "@/components/AppShell";
+import { useBike } from "@/hooks/useBikes";
+import { km } from "@/lib/moto";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+export const Route = createFileRoute("/_authenticated/bikes/$bikeId")({
+  component: BikeDetail,
+});
+
+function BikeDetail() {
+  const { bikeId } = useParams({ from: "/_authenticated/bikes/$bikeId" });
+  const { data: bike, isLoading } = useBike(bikeId);
+
+  if (isLoading) return <div className="p-8 text-center">Loading bike details...</div>;
+  if (!bike) return <div className="p-8 text-center text-destructive">Bike not found</div>;
+
+  return (
+    <AppShell 
+      title={bike.name} 
+      subtitle={`${bike.year} ${bike.model || ""}`}
+      actions={
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/bikes">
+              <ArrowLeft className="size-4 mr-2" />
+              Back
+            </Link>
+          </Button>
+          <Button size="sm">
+            <Settings className="size-4 mr-2" />
+            Edit
+          </Button>
+        </div>
+      }
+    >
+      <div className="grid gap-6 md:grid-cols-4">
+        <Stat 
+          label="Odometer" 
+          value={km(bike.current_odometer)} 
+          hint="Last updated today" 
+        />
+        <Stat 
+          label="Service Status" 
+          value={<StatusPill status="good" />} 
+          hint="All systems go" 
+        />
+        <Stat 
+          label="Fuel Economy" 
+          value="-- L/100km" 
+          hint="No logs yet" 
+        />
+        <Stat 
+          label="Total Spent" 
+          value="$0.00" 
+          hint="Since purchase" 
+        />
+      </div>
+
+      <div className="mt-8">
+        <Tabs defaultValue="schedule">
+          <TabsList className="bg-secondary/50 p-1">
+            <TabsTrigger value="schedule" className="gap-2">
+              <Clock className="size-4" />
+              Schedule
+            </TabsTrigger>
+            <TabsTrigger value="history" className="gap-2">
+              <History className="size-4" />
+              History
+            </TabsTrigger>
+            <TabsTrigger value="fuel" className="gap-2">
+              <Fuel className="size-4" />
+              Fuel Logs
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="schedule" className="mt-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold uppercase tracking-tight">Maintenance Schedule</h2>
+              <Button size="sm" variant="outline" className="gap-2">
+                <Plus className="size-3.5" />
+                Customize
+              </Button>
+            </div>
+            
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="panel p-5">
+                 <div className="flex items-start justify-between">
+                    <div>
+                       <h3 className="font-bold">Engine Oil Change</h3>
+                       <p className="text-sm text-muted-foreground">Every 2,000 km or 6 months</p>
+                    </div>
+                    <StatusPill status="good" />
+                 </div>
+                 <div className="mt-6">
+                    <div className="flex justify-between text-xs mb-2">
+                       <span className="text-muted-foreground">Progress</span>
+                       <span className="num font-bold">500 / 2,000 km</span>
+                    </div>
+                    <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+                       <div className="h-full bg-primary" style={{ width: '25%' }} />
+                    </div>
+                 </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="history" className="mt-6">
+            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border p-12 text-center">
+              <Wrench className="size-12 text-muted-foreground/50 mb-4" />
+              <h3 className="text-lg font-semibold">No history logs</h3>
+              <p className="text-muted-foreground mb-6">Start logging maintenance records to see them here.</p>
+              <Button className="gap-2">
+                <Plus className="size-4" />
+                Log Maintenance
+              </Button>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="fuel" className="mt-6">
+            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border p-12 text-center">
+              <Fuel className="size-12 text-muted-foreground/50 mb-4" />
+              <h3 className="text-lg font-semibold">No fuel logs</h3>
+              <p className="text-muted-foreground mb-6">Track your fuel consumption and economy.</p>
+              <Button className="gap-2">
+                <Plus className="size-4" />
+                Add Fuel Log
+              </Button>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </AppShell>
+  );
+}
