@@ -41,7 +41,7 @@ function BikeDetail() {
   const { data: history } = useMaintenanceRecords(bikeId);
   const { data: fuelLogs } = useFuelLogs(bikeId);
   
-  const currentTab = search.tab || "schedule";
+  const currentTab = (search as any).tab || "schedule";
 
   if (isLoading) return <div className="p-8 text-center">Loading bike details...</div>;
   if (!bike) return <div className="p-8 text-center text-destructive">Bike not found</div>;
