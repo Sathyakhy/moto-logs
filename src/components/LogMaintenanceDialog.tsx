@@ -38,6 +38,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { SERVICE_CATEGORIES } from "@/lib/moto";
 import { useCreateMaintenanceRecord } from "@/hooks/useMaintenance";
+import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -49,7 +50,7 @@ const formSchema = z.object({
   odometer: z.coerce.number().min(0, "Odometer must be positive"),
   total_cost: z.coerce.number().min(0, "Cost must be positive"),
   notes: z.string().optional(),
-  service_provider: z.string().optional(),
+  workshop: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -57,6 +58,7 @@ type FormValues = z.infer<typeof formSchema>;
 export function LogMaintenanceDialog({ bikeId, currentOdometer }: { bikeId: string, currentOdometer?: number }) {
   const [open, setOpen] = useState(false);
   const mutation = useCreateMaintenanceRecord();
+  const { profile } = useProfile();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -68,15 +70,27 @@ export function LogMaintenanceDialog({ bikeId, currentOdometer }: { bikeId: stri
       odometer: currentOdometer || 0,
       total_cost: 0,
       notes: "",
-      service_provider: "",
+      workshop: "",
     },
   });
 
   async function onSubmit(values: FormValues) {
+    if (!profile?.id) {
+      toast.error("You must be logged in to log maintenance");
+      return;
+    }
+
     try {
       await mutation.mutateAsync({
-        ...values,
+        bike_id: values.bike_id,
+        user_id: profile.id,
         service_date: values.service_date.toISOString(),
+        odometer: values.odometer,
+        total_cost: values.total_cost,
+        notes: values.notes || null,
+        workshop: values.workshop || null,
+        // Categories in the DB is an array of strings
+        categories: [values.category],
       });
       toast.success("Maintenance log added");
       setOpen(false);
@@ -214,7 +228,7 @@ export function LogMaintenanceDialog({ bikeId, currentOdometer }: { bikeId: stri
 
               <FormField
                 control={form.control}
-                name="service_provider"
+                name="workshop"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Workshop (Optional)</FormLabel>
