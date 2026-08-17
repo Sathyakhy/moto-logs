@@ -205,44 +205,6 @@ function Dashboard() {
             </div>
           </div>
 
-          {/* Garage Summary */}
-          <div className="panel overflow-hidden">
-            <div className="border-b border-border p-5">
-              <h2 className="flex items-center gap-2 font-bold uppercase tracking-tight">
-                <BikeIcon className="size-4 text-primary" />
-                Garage
-              </h2>
-            </div>
-            <div className="divide-y divide-border">
-              {bikes && bikes.length > 0 ? (
-                bikes.slice(0, 3).map((bike) => (
-                  <Link 
-                    key={bike.id} 
-                    to="/bikes/$bikeId" 
-                    params={{ bikeId: bike.id }}
-                    className="flex items-center gap-4 p-4 hover:bg-secondary/30 transition-colors"
-                  >
-                    <div className="size-8 rounded-lg bg-secondary flex items-center justify-center">
-                      <BikeIcon className="size-4 text-muted-foreground" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-sm leading-none">{bike.name}</p>
-                      <p className="text-[10px] text-muted-foreground mt-1">{bike.model}</p>
-                    </div>
-                    <div className="ml-auto text-right">
-                      <p className="num text-xs font-bold">{km(bike.current_odometer)}</p>
-                    </div>
-                  </Link>
-                ))
-              ) : (
-                <div className="p-6 text-center">
-                  <Button size="sm" asChild>
-                    <Link to="/bikes">Add Bike</Link>
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
       </div>
     </AppShell>
