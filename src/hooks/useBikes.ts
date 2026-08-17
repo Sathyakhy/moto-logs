@@ -9,7 +9,7 @@ export type Bike = Tables<"bikes">;
 export interface BikeWithStatus extends Bike {
   status: ScheduleStatus;
   dueItemsCount: number;
-  lastServiceDate?: string | null;
+  lastServiceDate?: string | null | undefined;
 }
 
 export function useBikes() {
