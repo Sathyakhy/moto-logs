@@ -13,7 +13,7 @@ import { useState } from "react";
 import { AppShell, Stat, StatusPill } from "@/components/AppShell";
 import { useBikes } from "@/hooks/useBikes";
 import { useProfile } from "@/hooks/useProfile";
-import { useStats, useUpcomingReminders, useDashboardHistory, TimeFilter } from "@/hooks/useDashboard";
+import { useStats, useUpcomingReminders, useDashboardHistory, TimeFilter, useUpcomingMaintenance } from "@/hooks/useDashboard";
 import { money } from "@/lib/money";
 import { km } from "@/lib/moto";
 import { Button } from "@/components/ui/button";
@@ -38,6 +38,7 @@ function Dashboard() {
   const { data: stats } = useStats(profile?.id, filter);
   const { data: reminders } = useUpcomingReminders(profile?.id);
   const { data: history } = useDashboardHistory(profile?.id, filter);
+  const { data: upcomingMaint } = useUpcomingMaintenance(profile?.id);
 
   const totalSpent = (stats?.maintenance.reduce((sum, r) => sum + (Number(r.total_cost) || 0), 0) || 0) +
                      (stats?.fuel.reduce((sum, r) => sum + (Number(r.amount) || 0), 0) || 0) +
@@ -173,38 +174,99 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-1">
-          {/* Service Alerts */}
-          <div className="panel overflow-hidden">
-            <div className="flex items-center justify-between border-b border-border p-5">
-              <h2 className="flex items-center gap-2 font-bold uppercase tracking-tight">
-                <AlertCircle className="size-4 text-primary" />
-                Alerts
-              </h2>
-            </div>
-            <div className="divide-y divide-border">
-              {/* Combine computed schedule alerts and manual reminders */}
-              {bikes?.some(b => b.status !== 'good') ? (
-                bikes.filter(b => b.status !== 'good').map(bike => (
-                  <div key={bike.id} className="p-4 hover:bg-secondary/30 transition-colors">
-                    <div className="flex items-center justify-between">
-                      <p className="font-bold text-sm">{bike.name}</p>
-                      <StatusPill status={bike.status} />
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {bike.dueItemsCount} maintenance tasks are {bike.status === 'overdue' ? 'overdue' : 'due soon'}.
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <div className="p-6 text-center">
-                  <p className="text-xs text-muted-foreground">No pending alerts.</p>
-                </div>
-              )}
-            </div>
+      <div className="mt-8 grid gap-6 lg:grid-cols-2">
+        {/* Service Alerts */}
+        <div className="panel overflow-hidden">
+          <div className="flex items-center justify-between border-b border-border p-5">
+            <h2 className="flex items-center gap-2 font-bold uppercase tracking-tight">
+              <AlertCircle className="size-4 text-primary" />
+              Active Alerts
+            </h2>
           </div>
+          <div className="divide-y divide-border">
+            {bikes?.some(b => b.status !== 'good') ? (
+              bikes.filter(b => b.status !== 'good').map(bike => (
+                <div key={bike.id} className="p-4 hover:bg-secondary/30 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <p className="font-bold text-sm">{bike.name}</p>
+                    <StatusPill status={bike.status} />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {bike.dueItemsCount} maintenance tasks are {bike.status === 'overdue' ? 'overdue' : 'due soon'}.
+                  </p>
+                </div>
+              ))
+            ) : (
+              <div className="p-6 text-center">
+                <p className="text-xs text-muted-foreground">No pending alerts.</p>
+              </div>
+            )}
+          </div>
+        </div>
 
+        {/* Upcoming Maintenance (Predictive) */}
+        <div className="panel overflow-hidden">
+          <div className="flex items-center justify-between border-b border-border p-5">
+            <h2 className="flex items-center gap-2 font-bold uppercase tracking-tight">
+              <TrendingUp className="size-4 text-primary" />
+              Upcoming Maintenance
+            </h2>
+            <span className="text-[10px] text-muted-foreground uppercase bg-secondary px-2 py-0.5 rounded">Predictive</span>
+          </div>
+          <div className="divide-y divide-border">
+            {upcomingMaint && upcomingMaint.length > 0 ? (
+              upcomingMaint.map((item, idx) => (
+                <div key={`${item.bikeId}-${item.item}-${idx}`} className="p-4 hover:bg-secondary/30 transition-colors">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <p className="font-bold text-sm leading-tight">{item.item}</p>
+                      <p className="text-[10px] text-muted-foreground">{item.bikeName}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className={cn(
+                        "text-xs font-bold",
+                        item.status === 'overdue' ? "text-destructive" : "text-primary"
+                      )}>
+                        {item.status === 'overdue' ? 'Overdue' : 
+                          item.estimatedDate ? `Est. ${new Date(item.estimatedDate).toLocaleDateString()}` : 
+                          'Date N/A'
+                        }
+                      </p>
+                      {item.dailyUsage && (
+                        <p className="text-[9px] text-muted-foreground">~{item.dailyUsage.toFixed(1)} km/day</p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-[9px] text-muted-foreground">
+                      <span>{km(item.dueAtKm - item.remainingKm)}</span>
+                      <span>{km(item.dueAtKm)}</span>
+                    </div>
+                    <div className="w-full bg-secondary h-1.5 rounded-full overflow-hidden">
+                      <div 
+                        className={cn(
+                          "h-full transition-all duration-500",
+                          item.status === 'overdue' ? "bg-destructive" : 
+                          item.status === 'due-soon' ? "bg-amber-500" : "bg-primary"
+                        )}
+                        style={{ width: `${item.progress}%` }}
+                      />
+                    </div>
+                    {item.remainingKm > 0 && (
+                      <p className="text-[9px] text-center text-muted-foreground pt-1">
+                        {km(item.remainingKm)} remaining
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-6 text-center">
+                <p className="text-xs text-muted-foreground">No upcoming maintenance items.</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </AppShell>

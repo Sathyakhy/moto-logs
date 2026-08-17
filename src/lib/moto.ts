@@ -67,6 +67,8 @@ export type ScheduleComputed = {
   remainingKm: number;
   dueOnDate: string | null;
   remainingDays: number | null;
+  estimatedDate: string | null;
+  dailyUsage: number | null;
   status: ScheduleStatus;
   progress: number;
 };
@@ -81,9 +83,13 @@ export function addDays(date: Date, days: number) {
   return d;
 }
 
-export function computeSchedule(row: ScheduleRow, currentOdometer: number): ScheduleComputed {
+export function computeSchedule(
+  row: ScheduleRow,
+  currentOdometer: number,
+  dailyUsage?: number | null
+): ScheduleComputed {
   const dueAtKm = Number(row.last_service_odometer) + Number(row.interval_km);
-  const remainingKm = dueAtKm - currentOdometer;
+  const remainingKm = Math.max(0, dueAtKm - currentOdometer);
 
   let dueOnDate: string | null = null;
   let remainingDays: number | null = null;
@@ -91,6 +97,23 @@ export function computeSchedule(row: ScheduleRow, currentOdometer: number): Sche
     const due = addDays(new Date(row.last_service_date), row.interval_days);
     dueOnDate = due.toISOString().slice(0, 10);
     remainingDays = daysBetween(new Date(), due);
+  }
+
+  // Predictive estimation
+  let estimatedDate: string | null = dueOnDate;
+  if (dailyUsage && dailyUsage > 0) {
+    const daysToKm = Math.ceil(remainingKm / dailyUsage);
+    const estimated = addDays(new Date(), daysToKm);
+    
+    // If we have a time-based due date, use the sooner of the two
+    if (dueOnDate) {
+      const timeDue = new Date(dueOnDate);
+      if (estimated < timeDue) {
+        estimatedDate = estimated.toISOString().slice(0, 10);
+      }
+    } else {
+      estimatedDate = estimated.toISOString().slice(0, 10);
+    }
   }
 
   const kmWarn = Math.max(200, Number(row.interval_km) * 0.1);
@@ -102,7 +125,39 @@ export function computeSchedule(row: ScheduleRow, currentOdometer: number): Sche
   const used = Number(row.interval_km) - remainingKm;
   const progress = Math.max(0, Math.min(100, (used / Number(row.interval_km)) * 100));
 
-  return { dueAtKm, remainingKm, dueOnDate, remainingDays, status, progress };
+  return { 
+    dueAtKm, 
+    remainingKm, 
+    dueOnDate, 
+    remainingDays, 
+    estimatedDate,
+    dailyUsage: dailyUsage ?? null,
+    status, 
+    progress 
+  };
+}
+
+export function calculateDailyUsage(fuelLogs: { fill_date: string; odometer: number | null }[]) {
+  if (fuelLogs.length < 2) return null;
+
+  // Sort logs by date ascending
+  const sortedLogs = [...fuelLogs]
+    .filter(l => l.odometer !== null)
+    .sort((a, b) => new Date(a.fill_date).getTime() - new Date(b.fill_date).getTime());
+
+  if (sortedLogs.length < 2) return null;
+
+  const oldest = sortedLogs[0];
+  const newest = sortedLogs[sortedLogs.length - 1];
+
+  if (!oldest || !newest) return null;
+
+  const kmDiff = Number(newest.odometer) - Number(oldest.odometer);
+  const daysDiff = daysBetween(new Date(oldest.fill_date), new Date(newest.fill_date));
+
+  if (daysDiff <= 0 || kmDiff <= 0) return null;
+
+  return kmDiff / daysDiff;
 }
 
 export const STATUS_LABEL: Record<ScheduleStatus, string> = {
