@@ -2,21 +2,29 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { 
   AlertCircle, 
   Bike as BikeIcon, 
-  Calendar, 
-  CreditCard, 
-  Gauge, 
+  Fuel, 
   History, 
   TrendingUp,
-  Wrench
+  Wrench,
+  Filter
 } from "lucide-react";
+import { useState } from "react";
 
 import { AppShell, Stat } from "@/components/AppShell";
 import { useBikes } from "@/hooks/useBikes";
 import { useProfile } from "@/hooks/useProfile";
-import { useStats, useUpcomingReminders } from "@/hooks/useDashboard";
+import { useStats, useUpcomingReminders, useDashboardHistory, TimeFilter } from "@/hooks/useDashboard";
 import { money } from "@/lib/money";
 import { km } from "@/lib/moto";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
@@ -24,32 +32,56 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 function Dashboard() {
   const { profile, display, rate } = useProfile();
+  const [filter, setFilter] = useState<TimeFilter>("all");
+  
   const { data: bikes } = useBikes();
-  const { data: stats } = useStats(profile?.id);
+  const { data: stats } = useStats(profile?.id, filter);
   const { data: reminders } = useUpcomingReminders(profile?.id);
+  const { data: history } = useDashboardHistory(profile?.id, filter);
 
-  // Simple aggregation for the dashboard
   const totalSpent = (stats?.maintenance.reduce((sum, r) => sum + (Number(r.total_cost) || 0), 0) || 0) +
                      (stats?.fuel.reduce((sum, r) => sum + (Number(r.amount) || 0), 0) || 0) +
                      (stats?.expenses.reduce((sum, r) => sum + (Number(r.amount) || 0), 0) || 0);
 
+  const maintenanceTotal = stats?.maintenance.reduce((sum, r) => sum + (Number(r.total_cost) || 0), 0) || 0;
+  const fuelTotal = stats?.fuel.reduce((sum, r) => sum + (Number(r.amount) || 0), 0) || 0;
+
   return (
-    <AppShell title="Dashboard" subtitle="Your garage at a glance">
+    <AppShell 
+      title="Dashboard" 
+      subtitle="Your garage at a glance"
+      actions={
+        <div className="flex items-center gap-2">
+          <Filter className="size-4 text-muted-foreground" />
+          <Select value={filter} onValueChange={(v) => setFilter(v as TimeFilter)}>
+            <SelectTrigger className="w-[120px] h-9">
+              <SelectValue placeholder="Period" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Time</SelectItem>
+              <SelectItem value="year">This Year</SelectItem>
+              <SelectItem value="month">This Month</SelectItem>
+              <SelectItem value="week">This Week</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      }
+    >
       <div className="grid gap-4 md:gap-6 grid-cols-2 lg:grid-cols-4">
         <Stat 
           label="Total Spent" 
           value={money(totalSpent, "USD", display, rate)} 
-          hint="All bikes & expenses"
+          hint={`${filter === 'all' ? 'All time' : 'Selected period'}`}
         />
         <Stat 
-          label="Active Bikes" 
-          value={bikes?.length || 0} 
-          hint="In your garage"
+          label="Maintenance" 
+          value={money(maintenanceTotal, "USD", display, rate)} 
+          hint="Service costs"
         />
         <Stat 
-          label="Due Soon" 
-          value={reminders?.length || 0} 
-          hint="Maintenance tasks"
+          label="Fuel" 
+          value={money(fuelTotal, "USD", display, rate)} 
+          hint="Refuel costs"
         />
         <Stat 
           label="Total Distance" 
@@ -59,74 +91,119 @@ function Dashboard() {
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-3">
-        {/* Upcoming Service */}
+        {/* Recent Activity */}
         <div className="panel lg:col-span-2 overflow-hidden">
           <div className="flex items-center justify-between border-b border-border p-5">
             <h2 className="flex items-center gap-2 font-bold uppercase tracking-tight">
-              <AlertCircle className="size-4 text-primary" />
-              Service Alerts
+              <History className="size-4 text-primary" />
+              Recent Logs
             </h2>
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/bikes" className="text-xs uppercase font-bold text-muted-foreground">View All</Link>
-            </Button>
           </div>
           <div className="divide-y divide-border">
-            {reminders && reminders.length > 0 ? (
-              reminders.map((reminder) => (
-                <div key={reminder.id} className="flex items-center justify-between p-5 hover:bg-secondary/30 transition-colors">
-                  <div>
-                    <p className="font-bold">{reminder.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {(reminder.bikes as any)?.name} • {reminder.due_date ? new Date(reminder.due_date).toLocaleDateString() : `${km(reminder.due_odometer)}`}
-                    </p>
+            {history && history.length > 0 ? (
+              history.map((item: any) => (
+                <div key={item.id} className="flex items-center justify-between p-5 hover:bg-secondary/30 transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className={cn(
+                      "size-9 rounded-lg flex items-center justify-center",
+                      item.type === 'maintenance' ? "bg-primary/10 text-primary" : "bg-amber-500/10 text-amber-500"
+                    )}>
+                      {item.type === 'maintenance' ? <Wrench className="size-4" /> : <Fuel className="size-4" />}
+                    </div>
+                    <div>
+                      <p className="font-bold leading-tight">
+                        {item.type === 'maintenance' 
+                          ? (item.notes || item.categories?.[0] || "Maintenance") 
+                          : (item.gas_station || "Refuel")}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.bikes?.name} • {new Date(item.date).toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
-                  <Button size="sm" variant="outline">Service</Button>
+                  <div className="text-right">
+                    <p className={cn(
+                      "num font-bold",
+                      item.type === 'maintenance' ? "text-primary" : "text-amber-500"
+                    )}>
+                      {money(Number(item.total_cost || item.amount), "USD", display, rate)}
+                    </p>
+                    {item.liters && <p className="text-[10px] text-muted-foreground">{item.liters} L</p>}
+                  </div>
                 </div>
               ))
             ) : (
               <div className="p-10 text-center">
-                <p className="text-sm text-muted-foreground">No pending maintenance alerts.</p>
+                <p className="text-sm text-muted-foreground">No records found for this period.</p>
               </div>
             )}
           </div>
         </div>
 
-        {/* Quick Links / Recent Bikes */}
-        <div className="panel overflow-hidden">
-          <div className="border-b border-border p-5">
-            <h2 className="flex items-center gap-2 font-bold uppercase tracking-tight">
-              <BikeIcon className="size-4 text-primary" />
-              Garage
-            </h2>
+        <div className="space-y-6">
+          {/* Service Alerts */}
+          <div className="panel overflow-hidden">
+            <div className="flex items-center justify-between border-b border-border p-5">
+              <h2 className="flex items-center gap-2 font-bold uppercase tracking-tight">
+                <AlertCircle className="size-4 text-primary" />
+                Alerts
+              </h2>
+            </div>
+            <div className="divide-y divide-border">
+              {reminders && reminders.length > 0 ? (
+                reminders.map((reminder) => (
+                  <div key={reminder.id} className="p-4 hover:bg-secondary/30 transition-colors">
+                    <p className="font-bold text-sm">{reminder.title}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {(reminder.bikes as any)?.name} • {reminder.due_date ? new Date(reminder.due_date).toLocaleDateString() : `${km(reminder.due_odometer)}`}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div className="p-6 text-center">
+                  <p className="text-xs text-muted-foreground">No pending alerts.</p>
+                </div>
+              )}
+            </div>
           </div>
-          <div className="divide-y divide-border">
-            {bikes && bikes.length > 0 ? (
-              bikes.slice(0, 4).map((bike) => (
-                <Link 
-                  key={bike.id} 
-                  to="/bikes/$bikeId" 
-                  params={{ bikeId: bike.id }}
-                  className="flex items-center gap-4 p-5 hover:bg-secondary/30 transition-colors"
-                >
-                  <div className="size-10 rounded-lg bg-secondary flex items-center justify-center">
-                    <BikeIcon className="size-5 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <p className="font-bold leading-none">{bike.name}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{bike.model}</p>
-                  </div>
-                  <div className="ml-auto text-right">
-                    <p className="num text-sm font-bold">{km(bike.current_odometer)}</p>
-                  </div>
-                </Link>
-              ))
-            ) : (
-              <div className="p-10 text-center">
-                <Button size="sm" asChild>
-                  <Link to="/bikes">Add your first bike</Link>
-                </Button>
-              </div>
-            )}
+
+          {/* Garage Summary */}
+          <div className="panel overflow-hidden">
+            <div className="border-b border-border p-5">
+              <h2 className="flex items-center gap-2 font-bold uppercase tracking-tight">
+                <BikeIcon className="size-4 text-primary" />
+                Garage
+              </h2>
+            </div>
+            <div className="divide-y divide-border">
+              {bikes && bikes.length > 0 ? (
+                bikes.slice(0, 3).map((bike) => (
+                  <Link 
+                    key={bike.id} 
+                    to="/bikes/$bikeId" 
+                    params={{ bikeId: bike.id }}
+                    className="flex items-center gap-4 p-4 hover:bg-secondary/30 transition-colors"
+                  >
+                    <div className="size-8 rounded-lg bg-secondary flex items-center justify-center">
+                      <BikeIcon className="size-4 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-sm leading-none">{bike.name}</p>
+                      <p className="text-[10px] text-muted-foreground mt-1">{bike.model}</p>
+                    </div>
+                    <div className="ml-auto text-right">
+                      <p className="num text-xs font-bold">{km(bike.current_odometer)}</p>
+                    </div>
+                  </Link>
+                ))
+              ) : (
+                <div className="p-6 text-center">
+                  <Button size="sm" asChild>
+                    <Link to="/bikes">Add Bike</Link>
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
