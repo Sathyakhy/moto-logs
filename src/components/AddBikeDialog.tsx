@@ -24,6 +24,7 @@ type BikeForm = {
   year: number;
   plate_number: string;
   current_odometer: number;
+  purchase_date: string;
 };
 
 export function AddBikeDialog() {
@@ -40,6 +41,7 @@ export function AddBikeDialog() {
       year: new Date().getFullYear(),
       plate_number: "",
       current_odometer: 0,
+      purchase_date: new Date().toISOString().split("T")[0],
     },
   });
 
@@ -135,6 +137,10 @@ export function AddBikeDialog() {
               <Label htmlFor="odometer">Odometer (km)</Label>
               <Input id="odometer" type="number" {...form.register("current_odometer", { valueAsNumber: true })} />
             </div>
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="purchase_date">Purchase Date</Label>
+            <Input id="purchase_date" type="date" {...form.register("purchase_date")} />
           </div>
           <DialogFooter>
             <Button type="submit" disabled={createBike.isPending}>
