@@ -83,7 +83,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "MotoLog" },
-      { name: "theme-color", content: "#c79848" },
+      { name: "theme-color", content: "#0F172A", media: "(prefers-color-scheme: dark)" },
+      { name: "theme-color", content: "#f8f9fa", media: "(prefers-color-scheme: light)" },
       { title: "MotoLog — Motorcycle Maintenance & Cost Tracker" },
       {
         name: "description",
