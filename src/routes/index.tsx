@@ -62,7 +62,10 @@ function Landing() {
 
       <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-10 lg:grid-cols-2 lg:py-20">
         <div>
-          <p className="label-caps">Motorcycle maintenance tracker</p>
+          <p className="label-caps">'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
+                                        
+                                            
+                                            How far have we come</p>
           <h1 className="text-display mt-3 text-6xl sm:text-7xl">
             Know what's due.
             <br />
