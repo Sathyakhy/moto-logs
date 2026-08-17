@@ -24,8 +24,14 @@ import { EditBikeDialog } from "@/components/EditBikeDialog";
 import { useFuelLogs } from "@/hooks/useMaintenance";
 
 export const Route = createFileRoute("/_authenticated/bikes/$bikeId")({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      hash: (search.hash as string) || undefined,
+    }
+  },
   component: BikeDetail,
 });
+
 
 function BikeDetail() {
   const { bikeId } = useParams({ from: "/_authenticated/bikes/$bikeId" });
