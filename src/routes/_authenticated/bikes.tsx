@@ -80,13 +80,14 @@ function Bikes() {
                       {bike.year} {bike.model}
                     </p>
                   </Link>
-                  <div className="flex flex-col items-end gap-2">
+                  <div className="flex flex-col items-end gap-2 shrink-0">
                     {bike.plate_number && (
                       <div className="rounded bg-secondary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground border border-border">
                         {bike.plate_number}
                       </div>
                     )}
-                    <div className="flex gap-2">
+                    <div className="flex gap-1.5 sm:gap-2">
+
                       <LogMaintenanceDialog 
                         bikeId={bike.id} 
                         currentOdometer={bike.current_odometer}
