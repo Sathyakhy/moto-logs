@@ -166,9 +166,11 @@ export type Database = {
           fill_date: string
           fuel_type: string | null
           full_tank: boolean
+          gas_station: string | null
           id: string
           liters: number
           odometer: number
+          price_per_liter: number | null
           user_id: string
         }
         Insert: {
@@ -179,9 +181,11 @@ export type Database = {
           fill_date?: string
           fuel_type?: string | null
           full_tank?: boolean
+          gas_station?: string | null
           id?: string
           liters?: number
           odometer?: number
+          price_per_liter?: number | null
           user_id: string
         }
         Update: {
@@ -192,9 +196,11 @@ export type Database = {
           fill_date?: string
           fuel_type?: string | null
           full_tank?: boolean
+          gas_station?: string | null
           id?: string
           liters?: number
           odometer?: number
+          price_per_liter?: number | null
           user_id?: string
         }
         Relationships: [

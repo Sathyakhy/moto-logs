@@ -7,7 +7,8 @@ import { useBikes } from "@/hooks/useBikes";
 import { km } from "@/lib/moto";
 import { EditBikeDialog } from "@/components/EditBikeDialog";
 import { LogMaintenanceDialog } from "@/components/LogMaintenanceDialog";
-import { Wrench } from "lucide-react";
+import { LogFuelDialog } from "@/components/LogFuelDialog";
+import { Wrench, Fuel } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSignedUrl } from "@/hooks/useBikes";
 
@@ -90,8 +91,17 @@ function Bikes() {
                         bikeId={bike.id} 
                         currentOdometer={bike.current_odometer}
                         trigger={
-                          <Button variant="outline" size="icon" className="size-8">
+                          <Button variant="outline" size="icon" className="size-8" title="Add Maintenance">
                             <Wrench className="size-4" />
+                          </Button>
+                        }
+                      />
+                      <LogFuelDialog 
+                        bikeId={bike.id} 
+                        currentOdometer={bike.current_odometer}
+                        trigger={
+                          <Button variant="outline" size="icon" className="size-8 text-amber-600 dark:text-amber-500 border-amber-200 dark:border-amber-900/50" title="Log Fuel">
+                            <Fuel className="size-4" />
                           </Button>
                         }
                       />
