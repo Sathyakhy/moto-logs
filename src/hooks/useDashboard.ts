@@ -13,7 +13,7 @@ export function useStats(userId: string | undefined, filter: TimeFilter = "all")
       if (!userId) return null;
 
       let maintenanceQuery = supabase.from("maintenance_records").select("total_cost, currency, service_date").eq("user_id", userId);
-      let fuelQuery = supabase.from("fuel_logs").select("amount, currency, fill_date").eq("user_id", userId);
+      let fuelQuery = supabase.from("fuel_logs").select("amount, currency, fill_date, liters, odometer, bike_id").eq("user_id", userId).order("fill_date", { ascending: true });
       let expensesQuery = supabase.from("expenses").select("amount, currency, expense_date").eq("user_id", userId);
 
       if (filter !== "all") {

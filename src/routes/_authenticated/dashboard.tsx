@@ -46,6 +46,48 @@ function Dashboard() {
 
   const maintenanceTotal = stats?.maintenance.reduce((sum, r) => sum + (Number(r.total_cost) || 0), 0) || 0;
   const fuelTotal = stats?.fuel.reduce((sum, r) => sum + (Number(r.amount) || 0), 0) || 0;
+  const totalLiters = stats?.fuel.reduce((sum, r) => sum + (Number(r.liters) || 0), 0) || 0;
+
+  // Calculate Fuel Consumption (KM/L) per bike then average
+  const fuelConsumption = (() => {
+    if (!stats?.fuel || stats.fuel.length < 2) return 0;
+    
+    // Group fuel logs by bike
+    const logsByBike: Record<string, any[]> = {};
+    stats.fuel.forEach((log: any) => {
+      const bikeId = log.bike_id;
+      if (!bikeId) return;
+      if (!logsByBike[bikeId]) logsByBike[bikeId] = [];
+      logsByBike[bikeId].push(log);
+    });
+
+
+
+    let totalKm = 0;
+    let totalL = 0;
+
+    Object.values(logsByBike).forEach(bikeLogs => {
+      if (bikeLogs.length < 2) return;
+      
+      // Sort logs by date just in case
+      const sorted = [...bikeLogs].sort((a, b) => new Date(a.fill_date).getTime() - new Date(b.fill_date).getTime());
+      
+      const firstOdo = sorted[0].odometer;
+      const lastOdo = sorted[sorted.length - 1].odometer;
+      const distance = lastOdo - firstOdo;
+      
+      // We exclude the liters of the first fill because it filled the tank to start the measurement
+      const liters = sorted.slice(1).reduce((sum, l) => sum + (Number(l.liters) || 0), 0);
+      
+      if (distance > 0 && liters > 0) {
+        totalKm += distance;
+        totalL += liters;
+      }
+    });
+
+    return totalL > 0 ? totalKm / totalL : 0;
+  })();
+
 
   return (
     <AppShell 
@@ -68,7 +110,7 @@ function Dashboard() {
         </div>
       }
     >
-      <div className="grid gap-4 md:gap-6 grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:gap-6 grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <Stat 
           label="Total Spent" 
           value={money(totalSpent, "USD", display, rate)} 
@@ -80,9 +122,19 @@ function Dashboard() {
           hint="Service costs"
         />
         <Stat 
-          label="Fuel" 
+          label="Fuel Costs" 
           value={money(fuelTotal, "USD", display, rate)} 
           hint="Refuel costs"
+        />
+        <Stat 
+          label="Fuel Usage" 
+          value={`${totalLiters.toFixed(1)} L`} 
+          hint="Total liters consumed"
+        />
+        <Stat 
+          label="Consumption" 
+          value={fuelConsumption > 0 ? `${fuelConsumption.toFixed(2)} KM/L` : "N/A"} 
+          hint="Avg. fuel economy"
         />
         <Stat 
           label="Total Distance" 
@@ -90,6 +142,8 @@ function Dashboard() {
           hint="Cumulative mileage"
         />
       </div>
+
+
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         {/* Maintenance History */}
