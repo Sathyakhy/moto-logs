@@ -35,7 +35,7 @@ function SettingsPage() {
     const profileSchedule = (profile?.default_maintenance_schedule as unknown as DefaultScheduleItem[]) || [];
     const mergedSchedule = DEFAULT_SCHEDULE_ITEMS.map(fallback => {
       const custom = profileSchedule.find(c => c.item === fallback.item);
-      return custom ? { ...fallback, ...custom } : fallback;
+      return custom ? { ...fallback, ...custom, item: fallback.item } : fallback;
     });
     setSchedule(mergedSchedule);
   }, [profile]);

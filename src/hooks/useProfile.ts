@@ -8,6 +8,7 @@ export type Profile = {
   display_name: string | null;
   display_currency: Currency;
   khr_per_usd: number;
+  default_maintenance_schedule?: any;
 };
 
 export function useProfile() {
@@ -18,7 +19,7 @@ export function useProfile() {
       if (!auth.user) return null;
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, display_name, display_currency, khr_per_usd")
+        .select("id, display_name, display_currency, khr_per_usd, default_maintenance_schedule")
         .eq("id", auth.user.id)
         .maybeSingle();
       if (error) throw error;
@@ -26,7 +27,7 @@ export function useProfile() {
         const inserted = await supabase
           .from("profiles")
           .insert({ id: auth.user.id, display_name: auth.user.email?.split("@")[0] ?? null })
-          .select("id, display_name, display_currency, khr_per_usd")
+          .select("id, display_name, display_currency, khr_per_usd, default_maintenance_schedule")
           .single();
         if (inserted.error) throw inserted.error;
         return normalize(inserted.data);
@@ -49,11 +50,13 @@ function normalize(row: {
   display_name: string | null;
   display_currency: string;
   khr_per_usd: number;
+  default_maintenance_schedule?: any;
 }): Profile {
   return {
     id: row.id,
     display_name: row.display_name,
     display_currency: row.display_currency === "KHR" ? "KHR" : "USD",
     khr_per_usd: Number(row.khr_per_usd) || 4100,
+    default_maintenance_schedule: row.default_maintenance_schedule,
   };
 }
