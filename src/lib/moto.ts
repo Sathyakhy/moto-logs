@@ -150,6 +150,8 @@ export function calculateDailyUsage(fuelLogs: { fill_date: string; odometer: num
   const oldest = sortedLogs[0];
   const newest = sortedLogs[sortedLogs.length - 1];
 
+  if (!oldest || !newest) return null;
+
   const kmDiff = Number(newest.odometer) - Number(oldest.odometer);
   const daysDiff = daysBetween(new Date(oldest.fill_date), new Date(newest.fill_date));
 
