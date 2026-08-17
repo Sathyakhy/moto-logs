@@ -124,3 +124,23 @@ function Bikes() {
     </AppShell>
   );
 }
+
+function BikeImage({ path }: { path: string }) {
+  const { data: url } = useSignedUrl(path);
+  
+  if (!url) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/20">
+        <BikeIcon className="size-16" />
+      </div>
+    );
+  }
+
+  return (
+    <img 
+      src={url} 
+      alt="Motorcycle" 
+      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" 
+    />
+  );
+}
