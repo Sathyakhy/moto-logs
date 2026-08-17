@@ -63,7 +63,7 @@ function Bikes() {
                     </div>
                   )}
                   <div className="absolute bottom-3 right-3">
-                     <StatusPill status="good" />
+                     <StatusPill status={bike.status} />
                   </div>
                 </div>
               </Link>
