@@ -116,7 +116,14 @@ function Bikes() {
                           </Button>
                         }
                       />
-                      <EditBikeDialog bike={bike} />
+                      <EditBikeDialog 
+                        bike={bike} 
+                        trigger={
+                          <Button variant="outline" size="icon" className="size-8 sm:size-9" title="Edit">
+                            <Settings className="size-4" />
+                          </Button>
+                        }
+                      />
                     </div>
                   </div>
                 </div>
