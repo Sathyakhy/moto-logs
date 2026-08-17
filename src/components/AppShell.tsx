@@ -133,9 +133,9 @@ export function Stat({
   hint?: ReactNode;
 }) {
   return (
-    <div className="panel p-4">
-      <p className="label-caps">{label}</p>
-      <p className="num mt-2 text-2xl font-semibold">{value}</p>
+    <div className="panel p-5">
+      <p className="label-caps font-medium text-[0.65rem] tracking-[0.2em]">{label}</p>
+      <p className="num mt-2.5 text-2xl font-bold tracking-tight">{value}</p>
       {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
     </div>
   );
