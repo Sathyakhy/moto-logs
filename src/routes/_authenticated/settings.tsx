@@ -33,9 +33,9 @@ function SettingsPage() {
     
     // Initialize schedule from profile or fallbacks
     const profileSchedule = (profile?.default_maintenance_schedule as unknown as DefaultScheduleItem[]) || [];
-    const mergedSchedule = DEFAULT_SCHEDULE_ITEMS.map(fallback => {
+    const mergedSchedule: DefaultScheduleItem[] = DEFAULT_SCHEDULE_ITEMS.map(fallback => {
       const custom = profileSchedule.find(c => c.item === fallback.item);
-      return custom ? { ...fallback, ...custom, item: fallback.item } : fallback;
+      return custom ? { ...fallback, ...custom } : fallback;
     });
     setSchedule(mergedSchedule);
   }, [profile]);
