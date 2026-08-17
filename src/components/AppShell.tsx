@@ -80,7 +80,7 @@ export function AppShell({
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <div>
             <h1 className="text-display text-3xl md:text-4xl">{title}</h1>
-            {subtitle ? <p className="mt-1 text-xs md:text-sm text-muted-foreground">{subtitle}</p> : null}
+            {subtitle ? <p className="mt-1 text-xs md:text-sm text-muted-foreground line-clamp-1">{subtitle}</p> : null}
           </div>
           {actions}
         </div>
