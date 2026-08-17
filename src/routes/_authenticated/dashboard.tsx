@@ -35,7 +35,7 @@ function Dashboard() {
 
   return (
     <AppShell title="Dashboard" subtitle="Your garage at a glance">
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:gap-6 grid-cols-2 lg:grid-cols-4">
         <Stat 
           label="Total Spent" 
           value={money(totalSpent, "USD", display, rate)} 

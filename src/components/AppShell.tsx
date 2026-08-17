@@ -40,35 +40,55 @@ export function AppShell({
             <Wrench className="size-5 text-primary" aria-hidden />
             <span className="text-display text-2xl">MotoLog</span>
           </Link>
-          <nav className="ml-auto flex items-center gap-1">
-            {NAV.map(({ to, label, icon: Icon }) => (
-              <Link
-                key={to}
-                to={to}
-                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                activeProps={{ className: "bg-secondary text-foreground" }}
-              >
-                <Icon className="size-4" aria-hidden />
-                <span className="hidden sm:inline">{label}</span>
-              </Link>
-            ))}
-            <Button variant="ghost" size="sm" onClick={signOut} aria-label="Sign out">
-              <LogOut className="size-4" aria-hidden />
+          <nav className="ml-auto flex items-center gap-1 md:gap-2">
+            <div className="hidden md:flex items-center gap-1">
+              {NAV.map(({ to, label, icon: Icon }) => (
+                <Link
+                  key={to}
+                  to={to}
+                  className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                  activeProps={{ className: "bg-secondary text-foreground" }}
+                >
+                  <Icon className="size-4" aria-hidden />
+                  <span>{label}</span>
+                </Link>
+              ))}
+            </div>
+            <Button variant="ghost" size="sm" onClick={signOut} aria-label="Sign out" className="md:ml-2">
+              <LogOut className="size-4 md:mr-2" aria-hidden />
+              <span className="hidden md:inline">Sign out</span>
             </Button>
           </nav>
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-8">
+      <main className="mx-auto max-w-6xl px-4 py-6 pb-24 md:pb-8 md:py-8">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h1 className="text-display text-4xl">{title}</h1>
-            {subtitle ? <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p> : null}
+            <h1 className="text-display text-3xl md:text-4xl">{title}</h1>
+            {subtitle ? <p className="mt-1 text-xs md:text-sm text-muted-foreground">{subtitle}</p> : null}
           </div>
           {actions}
         </div>
         {children}
       </main>
+
+      {/* Bottom navigation for mobile */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/80 bg-background/95 pb-safe backdrop-blur md:hidden">
+        <div className="flex items-center justify-around px-2 py-3">
+          {NAV.map(({ to, label, icon: Icon }) => (
+            <Link
+              key={to}
+              to={to}
+              className="flex flex-col items-center gap-1 px-3 text-muted-foreground transition-colors"
+              activeProps={{ className: "text-primary" }}
+            >
+              <Icon className="size-5" aria-hidden />
+              <span className="text-[10px] font-medium uppercase tracking-wider">{label}</span>
+            </Link>
+          ))}
+        </div>
+      </nav>
     </div>
   );
 }
