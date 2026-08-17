@@ -14,9 +14,12 @@ import {
 
 import { AppShell, StatusPill, Stat } from "@/components/AppShell";
 import { useBike } from "@/hooks/useBikes";
+import { useMaintenanceRecords } from "@/hooks/useMaintenance";
 import { km } from "@/lib/moto";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LogMaintenanceDialog } from "@/components/LogMaintenanceDialog";
+import { EditBikeDialog } from "@/components/EditBikeDialog";
 
 export const Route = createFileRoute("/_authenticated/bikes/$bikeId")({
   component: BikeDetail,
@@ -25,6 +28,7 @@ export const Route = createFileRoute("/_authenticated/bikes/$bikeId")({
 function BikeDetail() {
   const { bikeId } = useParams({ from: "/_authenticated/bikes/$bikeId" });
   const { data: bike, isLoading } = useBike(bikeId);
+  const { data: history } = useMaintenanceRecords(bikeId);
 
   if (isLoading) return <div className="p-8 text-center">Loading bike details...</div>;
   if (!bike) return <div className="p-8 text-center text-destructive">Bike not found</div>;
@@ -41,10 +45,7 @@ function BikeDetail() {
               Back
             </Link>
           </Button>
-          <Button size="sm">
-            <Settings className="size-4 mr-2" />
-            Edit
-          </Button>
+          <EditBikeDialog bike={bike} />
         </div>
       }
     >
@@ -120,15 +121,39 @@ function BikeDetail() {
           </TabsContent>
 
           <TabsContent value="history" className="mt-6">
-            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border p-12 text-center">
-              <Wrench className="size-12 text-muted-foreground/50 mb-4" />
-              <h3 className="text-lg font-semibold">No history logs</h3>
-              <p className="text-muted-foreground mb-6">Start logging maintenance records to see them here.</p>
-              <Button className="gap-2">
-                <Plus className="size-4" />
-                Log Maintenance
-              </Button>
-            </div>
+            {history && history.length > 0 ? (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold uppercase tracking-tight">Service History</h2>
+                  <LogMaintenanceDialog bikeId={bikeId} currentOdometer={bike.current_odometer || 0} />
+                </div>
+                <div className="grid gap-4">
+                  {history.map((record) => (
+                    <div key={record.id} className="panel p-5">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="font-bold">{record.notes || record.categories?.[0] || "Service Record"}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {new Date(record.service_date).toLocaleDateString()} • {km(record.odometer)}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="num font-bold text-primary">${Number(record.total_cost).toFixed(2)}</p>
+                          {record.workshop && <p className="text-xs text-muted-foreground">{record.workshop}</p>}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border p-12 text-center">
+                <Wrench className="size-12 text-muted-foreground/50 mb-4" />
+                <h3 className="text-lg font-semibold">No history logs</h3>
+                <p className="text-muted-foreground mb-6">Start logging maintenance records to see them here.</p>
+                <LogMaintenanceDialog bikeId={bikeId} currentOdometer={bike.current_odometer || 0} />
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="fuel" className="mt-6">
