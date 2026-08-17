@@ -41,7 +41,7 @@ function Bikes() {
           {bikes?.map((bike) => (
             <Link 
               key={bike.id} 
-              to="/_authenticated/bikes/$bikeId" 
+              to="/bikes/$bikeId" 
               params={{ bikeId: bike.id }}
               className="panel group block overflow-hidden transition-all hover:border-primary hover:shadow-glow"
             >

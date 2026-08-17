@@ -36,7 +36,7 @@ function BikeDetail() {
       actions={
         <div className="flex gap-2">
           <Button variant="outline" size="sm" asChild>
-            <Link to="/_authenticated/bikes">
+            <Link to="/bikes">
               <ArrowLeft className="size-4 mr-2" />
               Back
             </Link>
