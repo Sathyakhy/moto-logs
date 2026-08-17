@@ -61,23 +61,22 @@ function Dashboard() {
       logsByBike[bikeId].push(log);
     });
 
-
-
     let totalKm = 0;
     let totalL = 0;
 
     Object.values(logsByBike).forEach(bikeLogs => {
       if (bikeLogs.length < 2) return;
       
-      // Sort logs by date just in case
-      const sorted = [...bikeLogs].sort((a, b) => new Date(a.fill_date).getTime() - new Date(b.fill_date).getTime());
+      // Sort logs by date descending (latest first)
+      const sorted = [...bikeLogs].sort((a, b) => new Date(b.fill_date).getTime() - new Date(a.fill_date).getTime());
       
-      const firstOdo = sorted[0].odometer;
-      const lastOdo = sorted[sorted.length - 1].odometer;
-      const distance = lastOdo - firstOdo;
+      // "Latest available data" logic: calculate consumption between the last two fill-ups
+      // This is more reactive to recent changes in riding style or bike health
+      const lastLog = sorted[0];
+      const prevLog = sorted[1];
       
-      // We exclude the liters of the first fill because it filled the tank to start the measurement
-      const liters = sorted.slice(1).reduce((sum, l) => sum + (Number(l.liters) || 0), 0);
+      const distance = (lastLog.odometer || 0) - (prevLog.odometer || 0);
+      const liters = Number(lastLog.liters) || 0;
       
       if (distance > 0 && liters > 0) {
         totalKm += distance;
@@ -114,7 +113,7 @@ function Dashboard() {
         <Stat 
           label="Total Spent" 
           value={money(totalSpent, "USD", display, rate)} 
-          hint={`${filter === 'all' ? 'All time' : 'Selected period'}`}
+          hint="Maintenance + Fuel + Expenses"
         />
         <Stat 
           label="Maintenance" 
