@@ -18,22 +18,9 @@ export function useMaintenanceRecords(bikeId: string) {
 }
 
 export function useCreateMaintenanceRecord() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (record: TablesInsert<"maintenance_records">) => {
-      const { data, error } = await supabase
-        .from("maintenance_records")
-        .insert(record)
-        .select()
-        .single();
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["maintenance", variables.bike_id] });
-      queryClient.invalidateQueries({ queryKey: ["bikes"] });
-    },
-  });
+  // Now imported from useUpdateLogs to avoid duplication
+  const { useCreateMaintenanceRecord: useCreate } = require("./useUpdateLogs");
+  return useCreate();
 }
 
 export function useFuelLogs(bikeId: string) {

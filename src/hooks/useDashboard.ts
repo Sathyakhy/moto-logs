@@ -116,7 +116,7 @@ export function useUpcomingMaintenance(userId: string | undefined) {
         if (!a.estimatedDate) return 1;
         if (!b.estimatedDate) return -1;
         return new Date(a.estimatedDate).getTime() - new Date(b.estimatedDate).getTime();
-      }).slice(0, 10);
+      }).filter(item => item.status !== 'good').slice(0, 5);
     }
   });
 }
