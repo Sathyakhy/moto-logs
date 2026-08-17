@@ -93,10 +93,11 @@ function Bikes() {
                     <div className="flex gap-1.5 sm:gap-2">
 
                       <Button variant="outline" size="icon" className="size-8" title="History" asChild>
-                        <Link to="/bikes/$bikeId" params={{ bikeId: bike.id }} hash="history">
+                        <Link to="/bikes/$bikeId" params={{ bikeId: bike.id }} search={{ tab: 'history' }}>
                           <History className="size-4" />
                         </Link>
                       </Button>
+
                       <LogMaintenanceDialog 
                         bikeId={bike.id} 
                         currentOdometer={bike.current_odometer}
