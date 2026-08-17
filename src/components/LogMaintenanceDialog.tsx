@@ -59,12 +59,14 @@ const formSchema = z.object({
   bike_id: z.string().uuid(),
   title: z.string().min(2, "Title is required"),
   category: z.string().min(1, "Category is required"),
+  brand_model: z.string().optional(),
   service_date: z.date(),
   odometer: z.coerce.number().min(0, "Odometer must be positive"),
   total_cost: z.coerce.number().min(0, "Cost must be positive"),
   notes: z.string().optional(),
   workshop: z.string().optional(),
 });
+
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -93,12 +95,16 @@ export function LogMaintenanceDialog({
       bike_id: bikeId,
       title: editRecord?.notes?.split('\n')[0] || "",
       category: editRecord?.categories?.[0] || "",
+      brand_model: editRecord?.notes?.includes("Brand/Model: ") 
+        ? editRecord.notes.split("Brand/Model: ")[1].split('\n')[0] 
+        : "",
       service_date: editRecord ? new Date(editRecord.service_date) : new Date(),
       odometer: editRecord?.odometer || currentOdometer || 0,
       total_cost: Number(editRecord?.total_cost || 0),
       notes: editRecord?.notes || "",
       workshop: editRecord?.workshop || "",
     },
+
   });
 
   async function onSubmit(values: FormValues) {
@@ -107,6 +113,10 @@ export function LogMaintenanceDialog({
       return;
     }
 
+    const fullNotes = values.brand_model 
+      ? `Brand/Model: ${values.brand_model}\n${values.notes || ""}`.trim()
+      : values.notes || null;
+
     try {
       if (isEditing) {
         await updateMutation.mutateAsync({
@@ -114,7 +124,7 @@ export function LogMaintenanceDialog({
           service_date: values.service_date.toISOString(),
           odometer: values.odometer,
           total_cost: values.total_cost,
-          notes: values.notes || null,
+          notes: fullNotes,
           workshop: values.workshop || null,
           categories: [values.category],
         });
@@ -126,7 +136,7 @@ export function LogMaintenanceDialog({
           service_date: values.service_date.toISOString(),
           odometer: values.odometer,
           total_cost: values.total_cost,
-          notes: values.notes || null,
+          notes: fullNotes,
           workshop: values.workshop || null,
           categories: [values.category],
         });
@@ -138,6 +148,7 @@ export function LogMaintenanceDialog({
       toast.error(error.message || "Failed to save maintenance log");
     }
   }
+
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
