@@ -42,7 +42,7 @@ function SettingsPage() {
 
   const updateScheduleItem = (index: number, field: keyof DefaultScheduleItem, value: string | number) => {
     const newSchedule = [...schedule];
-    newSchedule[index] = { ...newSchedule[index], [field]: value };
+    newSchedule[index] = { ...newSchedule[index], [field]: value } as DefaultScheduleItem;
     setSchedule(newSchedule);
   };
 
