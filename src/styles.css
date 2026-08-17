@@ -110,6 +110,11 @@
 }
 
 @layer base {
+  :root {
+    --safe-area-inset-top: env(safe-area-inset-top);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom);
+  }
+
   * {
     border-color: var(--color-border);
   }
@@ -154,6 +159,10 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-panel);
+}
+
+@utility pb-safe {
+  padding-bottom: var(--safe-area-inset-bottom);
 }
 
 @utility label-caps {
