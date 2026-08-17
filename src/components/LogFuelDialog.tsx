@@ -81,6 +81,8 @@ export function LogFuelDialog({
     mutationFn: async (values: FormValues) => {
       if (!profile?.id) throw new Error("Not logged in");
 
+      const pricePerLiterNum = values.liters > 0 ? values.total_amount / values.liters : 0;
+
       // 1. Insert fuel log
       const { error: logError } = await supabase.from("fuel_logs").insert({
         bike_id: values.bike_id,
@@ -90,10 +92,8 @@ export function LogFuelDialog({
         liters: values.liters,
         amount: values.total_amount,
         fuel_type: values.fuel_type || null,
-        // We'll store gas station in a JSON or we might need to add a column if not present
-        // Since we can't easily add columns to fuel_logs in this turn without a migration
-        // I will check if fuel_logs has a notes/description field or similar.
-        // Looking at the schema view earlier, it didn't have gas_station.
+        gas_station: values.gas_station || null,
+        price_per_liter: pricePerLiterNum,
       });
       if (logError) throw logError;
 
