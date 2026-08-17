@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN default_maintenance_schedule JSONB DEFAULT '[]'::jsonb;
