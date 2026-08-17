@@ -38,7 +38,8 @@ function BikeDetail() {
   const { data: bike, isLoading } = useBike(bikeId);
   const { data: history } = useMaintenanceRecords(bikeId);
   const { data: fuelLogs } = useFuelLogs(bikeId);
-  const defaultTab = search.tab === 'history' ? 'history' : 'schedule';
+  const defaultTab = search['tab'] === 'history' ? 'history' : 'schedule';
+
 
 
 
