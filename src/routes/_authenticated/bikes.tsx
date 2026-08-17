@@ -110,7 +110,7 @@ function Bikes() {
                   </div>
                 </div>
                 
-                <div className="mt-6 grid grid-cols-2 gap-4 border-t border-border pt-4">
+                <div className="mt-4 grid grid-cols-2 gap-4 border-t border-border pt-4">
                   <div>
                     <p className="label-caps mb-1">Odometer</p>
                     <div className="flex items-center gap-1.5">
