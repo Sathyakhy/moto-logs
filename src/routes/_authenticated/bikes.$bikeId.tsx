@@ -48,6 +48,7 @@ function BikeDetail() {
 
   return (
 
+
     <AppShell 
       title={bike.name} 
       subtitle={`${bike.year} ${bike.model || ""} ${bike.purchase_date ? `• Purchased ${new Date(bike.purchase_date).toLocaleDateString()}` : ""}`}
