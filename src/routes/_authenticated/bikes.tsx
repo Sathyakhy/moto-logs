@@ -1,11 +1,10 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Bike as BikeIcon, Calendar, Edit2, Gauge, Trash2 } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Bike as BikeIcon, Calendar, Gauge } from "lucide-react";
 
 import { AppShell, StatusPill } from "@/components/AppShell";
 import { AddBikeDialog } from "@/components/AddBikeDialog";
 import { useBikes } from "@/hooks/useBikes";
 import { km } from "@/lib/moto";
-import { Button } from "@/components/ui/button";
 import { EditBikeDialog } from "@/components/EditBikeDialog";
 
 export const Route = createFileRoute("/_authenticated/bikes")({
@@ -48,22 +47,24 @@ function Bikes() {
               <Link
                 to="/bikes/$bikeId" 
                 params={{ bikeId: bike.id }}
-                className="block group-hover:border-primary transition-all"
+                className="block"
               >
-              <div className="aspect-video w-full bg-secondary relative overflow-hidden">
-                {bike.photo_path ? (
-                   <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-xs uppercase font-semibold">
-                     Photo Uploaded
-                   </div>
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/20">
-                    <BikeIcon className="size-16" />
+                <div className="aspect-video w-full bg-secondary relative overflow-hidden">
+                  {bike.photo_path ? (
+                     <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-xs uppercase font-semibold">
+                       Photo Uploaded
+                     </div>
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/20">
+                      <BikeIcon className="size-16" />
+                    </div>
+                  )}
+                  <div className="absolute bottom-3 right-3">
+                     <StatusPill status="good" />
                   </div>
-                )}
-                <div className="absolute bottom-3 right-3">
-                   <StatusPill status="good" />
                 </div>
-              </div>
+              </Link>
+              
               <div className="p-5">
                 <div className="flex items-start justify-between gap-2">
                   <Link
@@ -110,4 +111,3 @@ function Bikes() {
     </AppShell>
   );
 }
-
