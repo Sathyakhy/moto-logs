@@ -9,6 +9,7 @@ import { EditBikeDialog } from "@/components/EditBikeDialog";
 import { LogMaintenanceDialog } from "@/components/LogMaintenanceDialog";
 import { Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSignedUrl } from "@/hooks/useBikes";
 
 export const Route = createFileRoute("/_authenticated/bikes")({
   component: Bikes,
@@ -54,9 +55,7 @@ function Bikes() {
               >
                 <div className="aspect-video w-full bg-secondary relative overflow-hidden">
                   {bike.photo_path ? (
-                     <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-xs uppercase font-semibold">
-                       Photo Uploaded
-                     </div>
+                    <BikeImage path={bike.photo_path} />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/20">
                       <BikeIcon className="size-16" />
