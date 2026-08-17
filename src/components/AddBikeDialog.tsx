@@ -20,11 +20,11 @@ import { uploadFile } from "@/hooks/useBikes";
 
 type BikeForm = {
   name: string;
-  model: string | null;
-  year: number | null;
-  plate_number: string | null;
+  model: string | null | undefined;
+  year: number | null | undefined;
+  plate_number: string | null | undefined;
   current_odometer: number;
-  purchase_date: string | null;
+  purchase_date: string | null | undefined;
 };
 
 export function AddBikeDialog() {
@@ -66,9 +66,14 @@ export function AddBikeDialog() {
 
     try {
       await createBike.mutateAsync({
-        ...values,
         user_id: profile.id,
         photo_path: photoPath,
+        name: values.name,
+        model: values.model ?? null,
+        year: values.year ?? null,
+        plate_number: values.plate_number ?? null,
+        current_odometer: values.current_odometer,
+        purchase_date: values.purchase_date ?? null,
       });
       toast.success("Bike added to garage");
       setOpen(false);
