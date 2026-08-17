@@ -80,7 +80,7 @@ function Bikes() {
                   >
 
                     <h3 className="text-xl font-bold leading-tight group-hover:text-primary transition-colors">{bike.name}</h3>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground line-clamp-1">
                       {bike.year} {bike.model}
                     </p>
                   </Link>
