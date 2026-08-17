@@ -32,7 +32,7 @@ function SettingsPage() {
     setRate(String(profile.khr_per_usd));
     
     // Initialize schedule from profile or fallbacks
-    const profileSchedule = (profile.default_maintenance_schedule as DefaultScheduleItem[]) || [];
+    const profileSchedule = (profile?.default_maintenance_schedule as unknown as DefaultScheduleItem[]) || [];
     const mergedSchedule = DEFAULT_SCHEDULE_ITEMS.map(fallback => {
       const custom = profileSchedule.find(c => c.item === fallback.item);
       return custom ? { ...fallback, ...custom } : fallback;

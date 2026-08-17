@@ -23,7 +23,7 @@ export function useCreateBike() {
         .eq("id", bike.user_id)
         .single();
 
-      const customDefaults = (profile?.default_maintenance_schedule as DefaultScheduleItem[]) || [];
+      const customDefaults = (profile?.default_maintenance_schedule as unknown as DefaultScheduleItem[]) || [];
       
       // Merge custom defaults with fallback hardcoded defaults
       // We use the custom one if it exists for a specific item name
@@ -48,7 +48,7 @@ export function useCreateBike() {
           interval_km: item.interval_km,
           interval_days: item.interval_days || null,
           last_service_odometer: bike.current_odometer || 0,
-          last_service_date: bike.purchase_date || new Date().toISOString().split("T")[0],
+          last_service_date: bike.purchase_date || new Date().toISOString().split("T")[0] || null,
         }));
 
         const { error: scheduleError } = await supabase
