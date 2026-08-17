@@ -109,6 +109,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  useEffect(() => {
+    // Sync with system preference on first load if no manual class set
+    if (!document.documentElement.classList.contains("dark") && 
+        window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      document.documentElement.classList.add("dark");
+    }
+  }, []);
+
   return (
     <html lang="en">
       <head>
