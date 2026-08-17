@@ -35,7 +35,7 @@ export const Route = createFileRoute("/_authenticated/bikes/$bikeId")({
 
 function BikeDetail() {
   const { bikeId } = useParams({ from: "/_authenticated/bikes/$bikeId" });
-  const navigate = useNavigate({ from: "/_authenticated/bikes/$bikeId" });
+  const navigate = useNavigate();
   const search = Route.useSearch();
   const { data: bike, isLoading } = useBike(bikeId);
   const { data: history } = useMaintenanceRecords(bikeId);
