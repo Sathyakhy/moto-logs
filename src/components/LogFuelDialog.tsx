@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CalendarIcon, Fuel, Plus } from "lucide-react";
+import { CalendarIcon, Fuel, Plus, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
@@ -28,15 +28,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { FUEL_TYPES } from "@/lib/moto";
-import { supabase } from "@/integrations/supabase/client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useProfile } from "@/hooks/useProfile";
-import { useUpdateFuelLog, useDeleteFuelLog } from "@/hooks/useUpdateLogs";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-import { Tables } from "@/integrations/supabase/types";
-import { Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -48,7 +39,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
+import { FUEL_TYPES } from "@/lib/moto";
+import { supabase } from "@/integrations/supabase/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useProfile } from "@/hooks/useProfile";
+import { useUpdateFuelLog, useDeleteFuelLog } from "@/hooks/useUpdateLogs";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { Tables } from "@/integrations/supabase/types";
 
 const formSchema = z.object({
   bike_id: z.string().uuid(),
@@ -65,26 +63,32 @@ type FormValues = z.infer<typeof formSchema>;
 export function LogFuelDialog({ 
   bikeId, 
   currentOdometer, 
-  trigger 
+  trigger,
+  editLog
 }: { 
   bikeId: string, 
   currentOdometer?: number,
-  trigger?: React.ReactNode
+  trigger?: React.ReactNode,
+  editLog?: Tables<"fuel_logs">
 }) {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
   const { profile } = useProfile();
+  const updateMutation = useUpdateFuelLog();
+  const deleteMutation = useDeleteFuelLog();
+
+  const isEditing = !!editLog;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       bike_id: bikeId,
-      fill_date: new Date(),
-      odometer: currentOdometer || 0,
-      liters: 0,
-      total_amount: 0,
-      fuel_type: FUEL_TYPES[0],
-      gas_station: "",
+      fill_date: editLog ? new Date(editLog.fill_date) : new Date(),
+      odometer: editLog?.odometer || currentOdometer || 0,
+      liters: Number(editLog?.liters || 0),
+      total_amount: Number(editLog?.amount || 0),
+      fuel_type: editLog?.fuel_type || FUEL_TYPES[0],
+      gas_station: editLog?.gas_station || "",
     },
   });
 
@@ -113,7 +117,6 @@ export function LogFuelDialog({
           .eq("id", editLog.id);
         if (error) throw error;
       } else {
-        // 1. Insert fuel log
         const { error: logError } = await supabase.from("fuel_logs").insert({
           bike_id: values.bike_id,
           user_id: profile.id,
@@ -128,7 +131,6 @@ export function LogFuelDialog({
         if (logError) throw logError;
       }
 
-      // 2. Update bike odometer if the new one is higher
       if (currentOdometer !== undefined && values.odometer > currentOdometer) {
         await supabase
           .from("bikes")
@@ -147,7 +149,6 @@ export function LogFuelDialog({
       toast.error(error.message || "Failed to save fuel log");
     }
   });
-
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -307,7 +308,6 @@ export function LogFuelDialog({
                 ? (isEditing ? "Updating..." : "Logging...") 
                 : (isEditing ? "Update Fuel Log" : "Log Fuel Fill")}
             </Button>
-
           </form>
         </Form>
       </DialogContent>

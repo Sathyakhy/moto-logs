@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CalendarIcon, Plus } from "lucide-react";
+import { CalendarIcon, Plus, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
@@ -36,14 +36,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { SERVICE_CATEGORIES } from "@/lib/moto";
-import { useCreateMaintenanceRecord } from "@/hooks/useMaintenance";
-import { useUpdateMaintenanceRecord, useDeleteMaintenanceRecord } from "@/hooks/useUpdateLogs";
-import { useProfile } from "@/hooks/useProfile";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-import { Tables } from "@/integrations/supabase/types";
-import { Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -55,7 +47,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
+import { SERVICE_CATEGORIES } from "@/lib/moto";
+import { useCreateMaintenanceRecord } from "@/hooks/useMaintenance";
+import { useUpdateMaintenanceRecord, useDeleteMaintenanceRecord } from "@/hooks/useUpdateLogs";
+import { useProfile } from "@/hooks/useProfile";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { Tables } from "@/integrations/supabase/types";
 
 const formSchema = z.object({
   bike_id: z.string().uuid(),
@@ -73,27 +71,33 @@ type FormValues = z.infer<typeof formSchema>;
 export function LogMaintenanceDialog({ 
   bikeId, 
   currentOdometer, 
-  trigger 
+  trigger,
+  editRecord
 }: { 
   bikeId: string, 
   currentOdometer?: number,
-  trigger?: React.ReactNode
+  trigger?: React.ReactNode,
+  editRecord?: Tables<"maintenance_records">
 }) {
   const [open, setOpen] = useState(false);
   const mutation = useCreateMaintenanceRecord();
+  const updateMutation = useUpdateMaintenanceRecord();
+  const deleteMutation = useDeleteMaintenanceRecord();
   const { profile } = useProfile();
+
+  const isEditing = !!editRecord;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       bike_id: bikeId,
-      title: "",
-      category: "",
-      service_date: new Date(),
-      odometer: currentOdometer || 0,
-      total_cost: 0,
-      notes: "",
-      workshop: "",
+      title: editRecord?.notes?.split('\n')[0] || "",
+      category: editRecord?.categories?.[0] || "",
+      service_date: editRecord ? new Date(editRecord.service_date) : new Date(),
+      odometer: editRecord?.odometer || currentOdometer || 0,
+      total_cost: Number(editRecord?.total_cost || 0),
+      notes: editRecord?.notes || "",
+      workshop: editRecord?.workshop || "",
     },
   });
 
@@ -130,9 +134,8 @@ export function LogMaintenanceDialog({
       }
       setOpen(false);
       if (!isEditing) form.reset();
-
     } catch (error: any) {
-      toast.error(error.message || "Failed to add maintenance log");
+      toast.error(error.message || "Failed to save maintenance log");
     }
   }
 
@@ -180,7 +183,6 @@ export function LogMaintenanceDialog({
             </AlertDialog>
           )}
         </DialogHeader>
-
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
             <FormField
@@ -333,7 +335,6 @@ export function LogMaintenanceDialog({
                 ? (updateMutation.isPending ? "Updating..." : "Update Record")
                 : (mutation.isPending ? "Adding..." : "Add Record")}
             </Button>
-
           </form>
         </Form>
       </DialogContent>
