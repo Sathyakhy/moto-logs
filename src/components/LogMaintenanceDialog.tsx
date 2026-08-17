@@ -100,7 +100,7 @@ export function LogMaintenanceDialog({
         // Categories in the DB is an array of strings
         categories: [values.category],
       });
-      toast.success("Maintenance log added");
+      toast.success("Maintenance log added successfully");
       setOpen(false);
       form.reset();
     } catch (error: any) {
