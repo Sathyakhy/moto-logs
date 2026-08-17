@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { Tables } from "@/integrations/supabase/types";
-import { startOfWeek, startOfMonth, startOfYear, endOfDay } from "date-fns";
+import { startOfWeek, startOfMonth, startOfYear } from "date-fns";
 
 export type TimeFilter = "all" | "year" | "month" | "week";
 
@@ -14,7 +13,7 @@ export function useStats(userId: string | undefined, filter: TimeFilter = "all")
 
       let maintenanceQuery = supabase.from("maintenance_records").select("total_cost, currency, service_date").eq("user_id", userId);
       let fuelQuery = supabase.from("fuel_logs").select("amount, currency, fill_date").eq("user_id", userId);
-      let expensesQuery = supabase.from("expenses").select("amount, currency, date").eq("user_id", userId);
+      let expensesQuery = supabase.from("expenses").select("amount, currency, expense_date").eq("user_id", userId);
 
       if (filter !== "all") {
         const now = new Date();
@@ -27,7 +26,7 @@ export function useStats(userId: string | undefined, filter: TimeFilter = "all")
         
         maintenanceQuery = maintenanceQuery.gte("service_date", startDateISO);
         fuelQuery = fuelQuery.gte("fill_date", startDateISO);
-        expensesQuery = expensesQuery.gte("date", startDateISO);
+        expensesQuery = expensesQuery.gte("expense_date", startDateISO);
       }
 
       const [maintenance, fuel, expenses] = await Promise.all([
