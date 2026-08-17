@@ -79,8 +79,8 @@ function Bikes() {
                     className="flex-1"
                   >
 
-                    <h3 className="text-xl font-bold leading-tight group-hover:text-primary transition-colors">{bike.name}</h3>
-                    <p className="text-sm text-muted-foreground line-clamp-1">
+                    <h3 className="text-display text-2xl group-hover:text-primary transition-colors">{bike.name}</h3>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
                       {bike.year} {bike.model}
                     </p>
                   </Link>

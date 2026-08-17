@@ -147,7 +147,7 @@ function Dashboard() {
         {/* Maintenance History */}
         <div className="panel overflow-hidden">
           <div className="flex items-center justify-between border-b border-border p-5">
-            <h2 className="flex items-center gap-2 font-bold uppercase tracking-tight">
+            <h2 className="flex items-center gap-2 font-display text-xl uppercase tracking-wider">
               <Wrench className="size-4 text-primary" />
               Maintenance History
             </h2>
@@ -187,7 +187,7 @@ function Dashboard() {
         {/* Fuel History */}
         <div className="panel overflow-hidden">
           <div className="flex items-center justify-between border-b border-border p-5">
-            <h2 className="flex items-center gap-2 font-bold uppercase tracking-tight">
+            <h2 className="flex items-center gap-2 font-display text-xl uppercase tracking-wider">
               <Fuel className="size-4 text-amber-500" />
               Fuel History
             </h2>
@@ -230,7 +230,7 @@ function Dashboard() {
         {/* Service Alerts */}
         <div className="panel overflow-hidden">
           <div className="flex items-center justify-between border-b border-border p-5">
-            <h2 className="flex items-center gap-2 font-bold uppercase tracking-tight">
+            <h2 className="flex items-center gap-2 font-display text-xl uppercase tracking-wider">
               <AlertCircle className="size-4 text-primary" />
               Active Alerts
             </h2>
@@ -259,7 +259,7 @@ function Dashboard() {
         {/* Upcoming Maintenance (Predictive) */}
         <div className="panel overflow-hidden">
           <div className="flex items-center justify-between border-b border-border p-5">
-            <h2 className="flex items-center gap-2 font-bold uppercase tracking-tight">
+            <h2 className="flex items-center gap-2 font-display text-xl uppercase tracking-wider">
               <TrendingUp className="size-4 text-primary" />
               Upcoming Maintenance
             </h2>
