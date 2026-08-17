@@ -29,9 +29,12 @@ export const Route = createFileRoute("/_authenticated/bikes/$bikeId")({
 
 function BikeDetail() {
   const { bikeId } = useParams({ from: "/_authenticated/bikes/$bikeId" });
+  const search = Route.useSearch();
   const { data: bike, isLoading } = useBike(bikeId);
   const { data: history } = useMaintenanceRecords(bikeId);
   const { data: fuelLogs } = useFuelLogs(bikeId);
+  const defaultTab = search.hash === 'history' ? 'history' : 'schedule';
+
 
   if (isLoading) return <div className="p-8 text-center">Loading bike details...</div>;
   if (!bike) return <div className="p-8 text-center text-destructive">Bike not found</div>;
