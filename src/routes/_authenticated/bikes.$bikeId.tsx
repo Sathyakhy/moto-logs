@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { createFileRoute, Link, useParams, useNavigate } from "@tanstack/react-router";
 import { 
   ArrowLeft, 
   Calendar, 
@@ -26,7 +26,7 @@ import { useFuelLogs } from "@/hooks/useMaintenance";
 export const Route = createFileRoute("/_authenticated/bikes/$bikeId")({
   validateSearch: (search: Record<string, unknown>) => {
     return {
-      tab: search['tab'] as string | undefined,
+      tab: (search['tab'] as string) || undefined,
     }
   },
   component: BikeDetail,
@@ -35,21 +35,20 @@ export const Route = createFileRoute("/_authenticated/bikes/$bikeId")({
 
 function BikeDetail() {
   const { bikeId } = useParams({ from: "/_authenticated/bikes/$bikeId" });
-  const navigate = Route.useNavigate();
+  const navigate = useNavigate();
   const search = Route.useSearch();
   const { data: bike, isLoading } = useBike(bikeId);
   const { data: history } = useMaintenanceRecords(bikeId);
   const { data: fuelLogs } = useFuelLogs(bikeId);
   
-  const currentTab = search.tab || "schedule";
-
-
-
+  const currentTab = (search as any).tab || "schedule";
 
   if (isLoading) return <div className="p-8 text-center">Loading bike details...</div>;
   if (!bike) return <div className="p-8 text-center text-destructive">Bike not found</div>;
 
   return (
+
+
     <AppShell 
       title={bike.name} 
       subtitle={`${bike.year} ${bike.model || ""} ${bike.purchase_date ? `• Purchased ${new Date(bike.purchase_date).toLocaleDateString()}` : ""}`}
@@ -92,7 +91,12 @@ function BikeDetail() {
         <Tabs 
           value={currentTab} 
           onValueChange={(val) => {
-            navigate({ search: { tab: val } });
+            navigate({ 
+              to: "/bikes/$bikeId",
+              params: { bikeId },
+              search: { tab: val },
+              replace: true
+            });
           }}
         >
           <TabsList className="bg-secondary/50 p-1">
