@@ -1,3 +1,4 @@
+import React from "react";
 import { createFileRoute, Link, useParams, useNavigate } from "@tanstack/react-router";
 import { 
   ArrowLeft, 
@@ -43,12 +44,29 @@ function BikeDetail() {
   
   const currentTab = (search as any).tab || "schedule";
 
+  const totalMaintenance = history?.reduce((acc, curr) => acc + Number(curr.total_cost || 0), 0) || 0;
+  const totalFuel = fuelLogs?.reduce((acc, curr) => acc + Number(curr.amount || 0), 0) || 0;
+  const totalSpent = totalMaintenance + totalFuel;
+
+  const fuelEconomy = React.useMemo(() => {
+    if (!fuelLogs || fuelLogs.length < 2) return null;
+    // fuelLogs are ordered by fill_date DESC
+    const latest = fuelLogs[0];
+    const previous = fuelLogs[1];
+    if (latest.odometer && previous.odometer && latest.liters) {
+      const distance = latest.odometer - previous.odometer;
+      if (distance > 0) {
+        // L/100km = (liters / distance) * 100
+        return (latest.liters / distance) * 100;
+      }
+    }
+    return null;
+  }, [fuelLogs]);
+
   if (isLoading) return <div className="p-8 text-center">Loading bike details...</div>;
   if (!bike) return <div className="p-8 text-center text-destructive">Bike not found</div>;
 
   return (
-
-
     <AppShell 
       title={bike.name} 
       subtitle={`${bike.year} ${bike.model || ""} ${bike.purchase_date ? `• Purchased ${new Date(bike.purchase_date).toLocaleDateString()}` : ""}`}
@@ -77,13 +95,13 @@ function BikeDetail() {
         />
         <Stat 
           label="Fuel Economy" 
-          value="-- L/100km" 
-          hint="No logs yet" 
+          value={fuelEconomy ? `${fuelEconomy.toFixed(2)} L/100km` : "-- L/100km"} 
+          hint={fuelEconomy ? "Based on latest fill" : "No logs yet"} 
         />
         <Stat 
           label="Total Spent" 
-          value="$0.00" 
-          hint="Since purchase" 
+          value={`$${totalSpent.toFixed(2)}`} 
+          hint="Maintenance + Fuel" 
         />
       </div>
 
