@@ -155,7 +155,7 @@ function BikeImage({ path }: { path: string }) {
     <img 
       src={url} 
       alt="Motorcycle" 
-      className="h-full w-full object-contain bg-secondary transition-transform duration-500 group-hover:scale-105" 
+      className="h-full w-full object-contain bg-white transition-transform duration-500 group-hover:scale-105" 
     />
   );
 }
