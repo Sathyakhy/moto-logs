@@ -67,6 +67,45 @@
 
 :root {
   --radius: 0.5rem;
+  --background: oklch(0.98 0.005 260);
+  --foreground: oklch(0.17 0.012 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.17 0.012 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.17 0.012 260);
+  --primary: oklch(0.65 0.16 68);
+  --primary-foreground: oklch(0.98 0.01 60);
+  --secondary: oklch(0.94 0.005 260);
+  --secondary-foreground: oklch(0.17 0.012 260);
+  --muted: oklch(0.92 0.005 260);
+  --muted-foreground: oklch(0.45 0.014 260);
+  --accent: oklch(0.62 0.13 215);
+  --accent-foreground: oklch(0.97 0.01 215);
+  --destructive: oklch(0.6 0.21 25);
+  --destructive-foreground: oklch(0.98 0.01 25);
+  --success: oklch(0.6 0.15 150);
+  --success-foreground: oklch(0.98 0.03 150);
+  --warning: oklch(0.7 0.15 85);
+  --warning-foreground: oklch(0.1 0.03 85);
+  --border: oklch(0.88 0.014 260);
+  --input: oklch(0.88 0.014 260);
+  --ring: oklch(0.65 0.16 68);
+  --chart-1: oklch(0.65 0.16 68);
+  --chart-2: oklch(0.62 0.13 215);
+  --chart-3: oklch(0.6 0.15 150);
+  --chart-4: oklch(0.6 0.21 25);
+  --chart-5: oklch(0.72 0.11 300);
+  --sidebar: oklch(0.97 0.005 260);
+  --sidebar-foreground: oklch(0.17 0.012 260);
+  --sidebar-primary: oklch(0.65 0.16 68);
+  --sidebar-primary-foreground: oklch(0.98 0.01 60);
+  --sidebar-accent: oklch(0.94 0.005 260);
+  --sidebar-accent-foreground: oklch(0.17 0.012 260);
+  --sidebar-border: oklch(0.9 0.014 260);
+  --sidebar-ring: oklch(0.65 0.16 68);
+}
+
+.dark {
   --background: oklch(0.17 0.012 260);
   --foreground: oklch(0.95 0.005 260);
   --card: oklch(0.215 0.014 260);
@@ -105,10 +144,6 @@
   --sidebar-ring: oklch(0.78 0.16 68);
 }
 
-.dark {
-  color-scheme: dark;
-}
-
 @layer base {
   :root {
     --safe-area-inset-top: env(safe-area-inset-top);
@@ -128,8 +163,8 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     background-image:
-      radial-gradient(ellipse 80% 50% at 50% -10%, oklch(0.78 0.16 68 / 10%), transparent),
-      linear-gradient(oklch(1 0 0 / 2%) 1px, transparent 1px);
+      radial-gradient(ellipse 80% 50% at 50% -10%, var(--primary) / 10%, transparent),
+      linear-gradient(oklch(0 0 0 / 2%) 1px, transparent 1px);
     background-size:
       auto,
       100% 3px;
