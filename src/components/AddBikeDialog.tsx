@@ -20,10 +20,11 @@ import { uploadFile } from "@/hooks/useBikes";
 
 type BikeForm = {
   name: string;
-  model: string;
-  year: number;
-  plate_number: string;
+  model: string | null | undefined;
+  year: number | null | undefined;
+  plate_number: string | null | undefined;
   current_odometer: number;
+  purchase_date: string | null | undefined;
 };
 
 export function AddBikeDialog() {
@@ -36,10 +37,11 @@ export function AddBikeDialog() {
   const form = useForm<BikeForm>({
     defaultValues: {
       name: "",
-      model: "",
+      model: null,
       year: new Date().getFullYear(),
-      plate_number: "",
+      plate_number: null,
       current_odometer: 0,
+      purchase_date: new Date().toISOString().split("T")[0],
     },
   });
 
@@ -64,9 +66,14 @@ export function AddBikeDialog() {
 
     try {
       await createBike.mutateAsync({
-        ...values,
         user_id: profile.id,
         photo_path: photoPath,
+        name: values.name,
+        model: values.model ?? null,
+        year: values.year ?? null,
+        plate_number: values.plate_number ?? null,
+        current_odometer: values.current_odometer,
+        purchase_date: values.purchase_date ?? null,
       });
       toast.success("Bike added to garage");
       setOpen(false);
@@ -135,6 +142,10 @@ export function AddBikeDialog() {
               <Label htmlFor="odometer">Odometer (km)</Label>
               <Input id="odometer" type="number" {...form.register("current_odometer", { valueAsNumber: true })} />
             </div>
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="purchase_date">Purchase Date</Label>
+            <Input id="purchase_date" type="date" {...form.register("purchase_date")} />
           </div>
           <DialogFooter>
             <Button type="submit" disabled={createBike.isPending}>
