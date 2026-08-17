@@ -118,9 +118,19 @@ function Dashboard() {
           hint="Service costs"
         />
         <Stat 
-          label="Fuel" 
+          label="Fuel Costs" 
           value={money(fuelTotal, "USD", display, rate)} 
           hint="Refuel costs"
+        />
+        <Stat 
+          label="Fuel Usage" 
+          value={`${totalLiters.toFixed(1)} L`} 
+          hint="Total liters consumed"
+        />
+        <Stat 
+          label="Consumption" 
+          value={fuelConsumption > 0 ? `${fuelConsumption.toFixed(2)} KM/L` : "N/A"} 
+          hint="Avg. fuel economy"
         />
         <Stat 
           label="Total Distance" 
@@ -128,6 +138,7 @@ function Dashboard() {
           hint="Cumulative mileage"
         />
       </div>
+
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         {/* Maintenance History */}
