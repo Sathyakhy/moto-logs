@@ -55,7 +55,15 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export function LogMaintenanceDialog({ bikeId, currentOdometer }: { bikeId: string, currentOdometer?: number }) {
+export function LogMaintenanceDialog({ 
+  bikeId, 
+  currentOdometer, 
+  trigger 
+}: { 
+  bikeId: string, 
+  currentOdometer?: number,
+  trigger?: React.ReactNode
+}) {
   const [open, setOpen] = useState(false);
   const mutation = useCreateMaintenanceRecord();
   const { profile } = useProfile();
@@ -103,10 +111,12 @@ export function LogMaintenanceDialog({ bikeId, currentOdometer }: { bikeId: stri
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="gap-2">
-          <Plus className="size-4" />
-          Log Maintenance
-        </Button>
+        {trigger || (
+          <Button className="gap-2">
+            <Plus className="size-4" />
+            Log Maintenance
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

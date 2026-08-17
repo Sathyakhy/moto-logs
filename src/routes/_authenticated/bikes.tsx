@@ -6,6 +6,9 @@ import { AddBikeDialog } from "@/components/AddBikeDialog";
 import { useBikes } from "@/hooks/useBikes";
 import { km } from "@/lib/moto";
 import { EditBikeDialog } from "@/components/EditBikeDialog";
+import { LogMaintenanceDialog } from "@/components/LogMaintenanceDialog";
+import { Wrench } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/bikes")({
   component: Bikes,
@@ -83,7 +86,18 @@ function Bikes() {
                         {bike.plate_number}
                       </div>
                     )}
-                    <EditBikeDialog bike={bike} />
+                    <div className="flex gap-2">
+                      <LogMaintenanceDialog 
+                        bikeId={bike.id} 
+                        currentOdometer={bike.current_odometer}
+                        trigger={
+                          <Button variant="outline" size="icon" className="size-8">
+                            <Wrench className="size-4" />
+                          </Button>
+                        }
+                      />
+                      <EditBikeDialog bike={bike} />
+                    </div>
                   </div>
                 </div>
                 
