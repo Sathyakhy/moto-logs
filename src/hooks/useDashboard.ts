@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { startOfWeek, startOfMonth, startOfYear } from "date-fns";
+import { calculateDailyUsage, computeSchedule, ScheduleComputed } from "@/lib/moto";
 
 export type TimeFilter = "all" | "year" | "month" | "week";
 
@@ -60,6 +61,63 @@ export function useUpcomingReminders(userId: string | undefined) {
       if (error) throw error;
       return data ?? [];
     },
+  });
+}
+
+export function useUpcomingMaintenance(userId: string | undefined) {
+  return useQuery({
+    queryKey: ["upcoming-maintenance", userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      if (!userId) return [];
+
+      // Fetch bikes
+      const { data: bikes } = await supabase
+        .from("bikes")
+        .select("*")
+        .eq("user_id", userId);
+
+      if (!bikes || bikes.length === 0) return [];
+
+      // Fetch fuel logs for usage calculation
+      const { data: fuelLogs } = await supabase
+        .from("fuel_logs")
+        .select("bike_id, fill_date, odometer")
+        .eq("user_id", userId)
+        .order("fill_date", { ascending: false });
+
+      // Fetch schedules
+      const { data: schedules } = await supabase
+        .from("service_schedules")
+        .select("*")
+        .in("bike_id", bikes.map(b => b.id));
+
+      const upcomingItems: (ScheduleComputed & { bikeName: string; bikeId: string; item: string })[] = [];
+
+      bikes.forEach(bike => {
+        const bikeFuel = fuelLogs?.filter(l => l.bike_id === bike.id) || [];
+        const dailyUsage = calculateDailyUsage(bikeFuel);
+        const bikeSchedules = schedules?.filter(s => s.bike_id === bike.id) || [];
+
+        bikeSchedules.forEach(schedule => {
+          const computed = computeSchedule(schedule as any, bike.current_odometer || 0, dailyUsage);
+          // Only show items that are not yet overdue but coming up, or already overdue
+          upcomingItems.push({
+            ...computed,
+            bikeName: bike.name,
+            bikeId: bike.id,
+            item: schedule.item
+          });
+        });
+      });
+
+      // Sort by estimated date
+      return upcomingItems.sort((a, b) => {
+        if (!a.estimatedDate) return 1;
+        if (!b.estimatedDate) return -1;
+        return new Date(a.estimatedDate).getTime() - new Date(b.estimatedDate).getTime();
+      }).slice(0, 10);
+    }
   });
 }
 
