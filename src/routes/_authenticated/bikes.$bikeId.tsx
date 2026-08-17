@@ -87,7 +87,7 @@ function BikeDetail() {
       </div>
 
       <div className="mt-8">
-        <Tabs defaultValue="schedule">
+        <Tabs defaultValue={defaultTab}>
           <TabsList className="bg-secondary/50 p-1">
             <TabsTrigger value="schedule" className="gap-2">
               <Clock className="size-4" />
