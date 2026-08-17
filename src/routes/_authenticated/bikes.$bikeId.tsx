@@ -132,21 +132,31 @@ function BikeDetail() {
                 </div>
                 <div className="grid gap-4">
                   {history.map((record) => (
-                    <div key={record.id} className="panel p-5">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="font-bold">{record.notes || record.categories?.[0] || "Service Record"}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {new Date(record.service_date).toLocaleDateString()} • {km(record.odometer)}
-                          </p>
+                    <LogMaintenanceDialog 
+                      key={record.id}
+                      bikeId={bikeId} 
+                      editRecord={record}
+                      trigger={
+                        <div className="panel p-5 cursor-pointer hover:bg-secondary/20 transition-colors group">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <h3 className="font-bold group-hover:text-primary transition-colors">
+                                {record.notes?.split('\n')[0] || record.categories?.[0] || "Service Record"}
+                              </h3>
+                              <p className="text-sm text-muted-foreground">
+                                {new Date(record.service_date).toLocaleDateString()} • {km(record.odometer)}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="num font-bold text-primary">${Number(record.total_cost).toFixed(2)}</p>
+                              {record.workshop && <p className="text-xs text-muted-foreground">{record.workshop}</p>}
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className="num font-bold text-primary">${Number(record.total_cost).toFixed(2)}</p>
-                          {record.workshop && <p className="text-xs text-muted-foreground">{record.workshop}</p>}
-                        </div>
-                      </div>
-                    </div>
+                      }
+                    />
                   ))}
+
                 </div>
               </div>
             ) : (
@@ -177,29 +187,39 @@ function BikeDetail() {
                 </div>
                 <div className="grid gap-4">
                   {fuelLogs.map((log) => (
-                    <div key={log.id} className="panel p-5">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="font-bold">{log.gas_station || "Fuel Fill"}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {new Date(log.fill_date).toLocaleDateString()} • {km(log.odometer)}
-                          </p>
-                          <div className="mt-2 flex gap-4 text-xs font-medium">
-                            <span className="bg-secondary/50 px-2 py-1 rounded">{log.liters} L</span>
-                            {log.fuel_type && <span className="bg-secondary/50 px-2 py-1 rounded">{log.fuel_type}</span>}
-                            {log.price_per_liter && (
-                              <span className="text-muted-foreground flex items-center">
-                                ${Number(log.price_per_liter).toFixed(3)}/L
-                              </span>
-                            )}
+                    <LogFuelDialog 
+                      key={log.id}
+                      bikeId={bikeId} 
+                      editLog={log}
+                      trigger={
+                        <div className="panel p-5 cursor-pointer hover:bg-secondary/20 transition-colors group">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <h3 className="font-bold group-hover:text-amber-500 transition-colors">
+                                {log.gas_station || "Fuel Fill"}
+                              </h3>
+                              <p className="text-sm text-muted-foreground">
+                                {new Date(log.fill_date).toLocaleDateString()} • {km(log.odometer)}
+                              </p>
+                              <div className="mt-2 flex gap-4 text-xs font-medium">
+                                <span className="bg-secondary/50 px-2 py-1 rounded">{log.liters} L</span>
+                                {log.fuel_type && <span className="bg-secondary/50 px-2 py-1 rounded">{log.fuel_type}</span>}
+                                {log.price_per_liter && (
+                                  <span className="text-muted-foreground flex items-center">
+                                    ${Number(log.price_per_liter).toFixed(3)}/L
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="num font-bold text-amber-500">${Number(log.amount).toFixed(2)}</p>
+                            </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className="num font-bold text-amber-500">${Number(log.amount).toFixed(2)}</p>
-                        </div>
-                      </div>
-                    </div>
+                      }
+                    />
                   ))}
+
                 </div>
               </div>
             ) : (
