@@ -41,7 +41,7 @@ type BikeForm = {
   purchase_date: string | null | undefined;
 };
 
-export function EditBikeDialog({ bike }: { bike: Tables<"bikes"> }) {
+export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigger?: React.ReactNode }) {
   const [open, setOpen] = React.useState(false);
   const [isUploading, setIsUploading] = React.useState(false);
   const [photoPath, setPhotoPath] = React.useState<string | null>(bike.photo_path);
@@ -129,9 +129,11 @@ export function EditBikeDialog({ bike }: { bike: Tables<"bikes"> }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          <span>Edit</span>
-        </Button>
+        {trigger || (
+          <Button variant="outline" size="sm">
+            <span>Edit</span>
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

@@ -80,7 +80,7 @@ export function AppShell({
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <div>
             <h1 className="text-display text-3xl md:text-4xl">{title}</h1>
-            {subtitle ? <p className="mt-1 text-xs md:text-sm text-muted-foreground">{subtitle}</p> : null}
+            {subtitle ? <p className="mt-1 text-xs md:text-sm text-muted-foreground line-clamp-1">{subtitle}</p> : null}
           </div>
           {actions}
         </div>
@@ -88,8 +88,8 @@ export function AppShell({
       </main>
 
       {/* Bottom navigation for mobile */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/80 bg-background/95 pb-safe backdrop-blur md:hidden">
-        <div className="flex items-center justify-around px-2 py-3">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/80 bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
+        <div className="flex items-center justify-around px-2 py-3 mb-[env(safe-area-inset-bottom,0px)]">
           {NAV.map(({ to, label, icon: Icon }) => (
             <Link
               key={to}

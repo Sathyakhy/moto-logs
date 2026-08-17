@@ -41,8 +41,7 @@ function Dashboard() {
   const { data: upcomingMaint } = useUpcomingMaintenance(profile?.id);
 
   const totalSpent = (stats?.maintenance.reduce((sum, r) => sum + (Number(r.total_cost) || 0), 0) || 0) +
-                     (stats?.fuel.reduce((sum, r) => sum + (Number(r.amount) || 0), 0) || 0) +
-                     (stats?.expenses.reduce((sum, r) => sum + (Number(r.amount) || 0), 0) || 0);
+                     (stats?.fuel.reduce((sum, r) => sum + (Number(r.amount) || 0), 0) || 0);
 
   const maintenanceTotal = stats?.maintenance.reduce((sum, r) => sum + (Number(r.total_cost) || 0), 0) || 0;
   const fuelTotal = stats?.fuel.reduce((sum, r) => sum + (Number(r.amount) || 0), 0) || 0;
@@ -113,7 +112,7 @@ function Dashboard() {
         <Stat 
           label="Total Spent" 
           value={money(totalSpent, "USD", display, rate)} 
-          hint="Maintenance + Fuel + Expenses"
+          hint="Maintenance + Fuel"
         />
         <Stat 
           label="Maintenance" 
