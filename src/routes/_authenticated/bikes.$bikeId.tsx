@@ -23,14 +23,19 @@ import { LogFuelDialog } from "@/components/LogFuelDialog";
 import { EditBikeDialog } from "@/components/EditBikeDialog";
 import { useFuelLogs } from "@/hooks/useMaintenance";
 
+type BikeSearch = {
+  tab?: string
+}
+
 export const Route = createFileRoute("/_authenticated/bikes/$bikeId")({
-  validateSearch: (search: Record<string, unknown>) => {
+  validateSearch: (search: Record<string, unknown>): BikeSearch => {
     return {
       tab: search.tab as string | undefined,
     }
   },
   component: BikeDetail,
 });
+
 
 
 
