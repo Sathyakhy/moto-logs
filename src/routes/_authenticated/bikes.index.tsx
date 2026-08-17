@@ -8,7 +8,7 @@ import { km } from "@/lib/moto";
 import { EditBikeDialog } from "@/components/EditBikeDialog";
 import { LogMaintenanceDialog } from "@/components/LogMaintenanceDialog";
 import { LogFuelDialog } from "@/components/LogFuelDialog";
-import { Wrench, Fuel, History } from "lucide-react";
+import { Wrench, Fuel, History, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSignedUrl } from "@/hooks/useBikes";
 
