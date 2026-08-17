@@ -26,11 +26,12 @@ import { useFuelLogs } from "@/hooks/useMaintenance";
 export const Route = createFileRoute("/_authenticated/bikes/$bikeId")({
   validateSearch: (search: Record<string, unknown>) => {
     return {
-      hash: (search.hash as string) || undefined,
+      hash: search.hash as string | undefined,
     }
   },
   component: BikeDetail,
 });
+
 
 
 function BikeDetail() {
