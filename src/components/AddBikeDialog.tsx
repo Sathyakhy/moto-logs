@@ -20,11 +20,11 @@ import { uploadFile } from "@/hooks/useBikes";
 
 type BikeForm = {
   name: string;
-  model: string;
-  year: number;
-  plate_number: string;
+  model: string | null;
+  year: number | null;
+  plate_number: string | null;
   current_odometer: number;
-  purchase_date: string;
+  purchase_date: string | null;
 };
 
 export function AddBikeDialog() {
