@@ -17,11 +17,7 @@ export function useMaintenanceRecords(bikeId: string) {
   });
 }
 
-export function useCreateMaintenanceRecord() {
-  // Now imported from useUpdateLogs to avoid duplication
-  const { useCreateMaintenanceRecord: useCreate } = require("./useUpdateLogs");
-  return useCreate();
-}
+export { useCreateMaintenanceRecord } from "./useUpdateLogs";
 
 export function useFuelLogs(bikeId: string) {
   return useQuery({

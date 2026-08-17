@@ -55,7 +55,7 @@ export function useCreateMaintenanceRecord() {
       if (error) throw error;
 
       // Update schedule
-      if (record.categories && record.categories.length > 0) {
+      if (record.categories && record.categories.length > 0 && record.user_id && record.service_date) {
         await updateScheduleFromMaintenance(
           record.bike_id,
           record.user_id,
