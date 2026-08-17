@@ -54,10 +54,12 @@ function Dashboard() {
     
     // Group fuel logs by bike
     const logsByBike: Record<string, any[]> = {};
-    stats.fuel.forEach(log => {
+    stats.fuel.forEach((log: any) => {
+      if (!log.bike_id) return;
       if (!logsByBike[log.bike_id]) logsByBike[log.bike_id] = [];
       logsByBike[log.bike_id].push(log);
     });
+
 
     let totalKm = 0;
     let totalL = 0;
