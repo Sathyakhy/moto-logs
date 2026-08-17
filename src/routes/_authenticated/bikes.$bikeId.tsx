@@ -30,11 +30,12 @@ type BikeSearch = {
 export const Route = createFileRoute("/_authenticated/bikes/$bikeId")({
   validateSearch: (search: Record<string, unknown>): BikeSearch => {
     return {
-      tab: search.tab as string | undefined,
+      tab: typeof search.tab === 'string' ? search.tab : undefined,
     }
   },
   component: BikeDetail,
 });
+
 
 
 
