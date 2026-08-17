@@ -30,7 +30,13 @@ export const FUEL_TYPES = ["Regular 91", "Super 95", "E20", "Other"] as const;
 export const ATTACHMENT_KINDS = ["invoice", "receipt", "warranty", "part photo", "other"] as const;
 
 /** Sensible starter intervals (km) for small-displacement scooters/bikes. */
-export const DEFAULT_SCHEDULE_ITEMS: { item: string; interval_km: number; interval_days?: number }[] =
+export interface DefaultScheduleItem {
+  item: string;
+  interval_km: number;
+  interval_days?: number;
+}
+
+export const DEFAULT_SCHEDULE_ITEMS: DefaultScheduleItem[] =
   [
     { item: "Engine Oil", interval_km: 2000, interval_days: 180 },
     { item: "Gear Oil", interval_km: 6000, interval_days: 365 },
