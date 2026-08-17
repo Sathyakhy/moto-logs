@@ -1,0 +1,108 @@
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { Bike, Gauge, LogOut, Settings, Wrench } from "lucide-react";
+import type { ReactNode } from "react";
+
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+
+const NAV = [
+  { to: "/dashboard", label: "Dashboard", icon: Gauge },
+  { to: "/bikes", label: "Garage", icon: Bike },
+  { to: "/settings", label: "Settings", icon: Settings },
+] as const;
+
+export function AppShell({
+  title,
+  subtitle,
+  actions,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  actions?: ReactNode;
+  children: ReactNode;
+}) {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  async function signOut() {
+    await supabase.auth.signOut();
+    queryClient.clear();
+    void navigate({ to: "/auth" });
+  }
+
+  return (
+    <div className="min-h-screen">
+      <header className="sticky top-0 z-30 border-b border-border/80 bg-background/85 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
+          <Link to="/dashboard" className="flex items-center gap-2">
+            <Wrench className="size-5 text-primary" aria-hidden />
+            <span className="text-display text-2xl">MotoLog</span>
+          </Link>
+          <nav className="ml-auto flex items-center gap-1">
+            {NAV.map(({ to, label, icon: Icon }) => (
+              <Link
+                key={to}
+                to={to}
+                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                activeProps={{ className: "bg-secondary text-foreground" }}
+              >
+                <Icon className="size-4" aria-hidden />
+                <span className="hidden sm:inline">{label}</span>
+              </Link>
+            ))}
+            <Button variant="ghost" size="sm" onClick={signOut} aria-label="Sign out">
+              <LogOut className="size-4" aria-hidden />
+            </Button>
+          </nav>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-6xl px-4 py-8">
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h1 className="text-display text-4xl">{title}</h1>
+            {subtitle ? <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p> : null}
+          </div>
+          {actions}
+        </div>
+        {children}
+      </main>
+    </div>
+  );
+}
+
+export function StatusPill({ status }: { status: "good" | "due-soon" | "overdue" }) {
+  const map = {
+    good: "border-success/40 bg-success/10 text-success",
+    "due-soon": "border-warning/40 bg-warning/10 text-warning",
+    overdue: "border-destructive/40 bg-destructive/10 text-destructive",
+  } as const;
+  const label = { good: "Good", "due-soon": "Due soon", overdue: "Overdue" } as const;
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${map[status]}`}
+    >
+      {label[status]}
+    </span>
+  );
+}
+
+export function Stat({
+  label,
+  value,
+  hint,
+}: {
+  label: string;
+  value: ReactNode;
+  hint?: ReactNode;
+}) {
+  return (
+    <div className="panel p-4">
+      <p className="label-caps">{label}</p>
+      <p className="num mt-2 text-2xl font-semibold">{value}</p>
+      {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
+    </div>
+  );
+}
