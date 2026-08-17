@@ -163,8 +163,8 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     background-image:
-      radial-gradient(ellipse 80% 50% at 50% -10%, var(--primary) / 10%, transparent),
-      linear-gradient(oklch(0 0 0 / 2%) 1px, transparent 1px);
+      radial-gradient(ellipse 80% 50% at 50% -10%, var(--primary) / 8%, transparent),
+      linear-gradient(var(--foreground) / 2% 1px, transparent 1px);
     background-size:
       auto,
       100% 3px;
