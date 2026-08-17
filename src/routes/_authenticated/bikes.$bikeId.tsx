@@ -91,7 +91,9 @@ function BikeDetail() {
           value={currentTab} 
           onValueChange={(val) => {
             navigate({ 
-              search: (prev: any) => ({ ...prev, tab: val }),
+              to: "/bikes/$bikeId",
+              params: { bikeId },
+              search: { tab: val },
               replace: true
             });
           }}
