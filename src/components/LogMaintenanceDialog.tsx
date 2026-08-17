@@ -96,7 +96,7 @@ export function LogMaintenanceDialog({
       title: editRecord?.notes?.split('\n')[0] || "",
       category: editRecord?.categories?.[0] || "",
       brand_model: editRecord?.notes?.includes("Brand/Model: ") 
-        ? editRecord.notes.split("Brand/Model: ")[1].split('\n')[0] 
+        ? editRecord.notes.split("Brand/Model: ")[1]?.split('\n')[0] || ""
         : "",
       service_date: editRecord ? new Date(editRecord.service_date) : new Date(),
       odometer: editRecord?.odometer || currentOdometer || 0,
@@ -104,6 +104,7 @@ export function LogMaintenanceDialog({
       notes: editRecord?.notes || "",
       workshop: editRecord?.workshop || "",
     },
+
 
   });
 
