@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Camera, Loader2, Save } from "lucide-react";
+import { Camera, Loader2, Save, Trash2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -13,6 +13,18 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useNavigate } from "@tanstack/react-router";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,6 +47,22 @@ export function EditBikeDialog({ bike }: { bike: Tables<"bikes"> }) {
   const [photoPath, setPhotoPath] = React.useState<string | null>(bike.photo_path);
   const { profile } = useProfile();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  const deleteBike = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("bikes").delete().eq("id", bike.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Bike deleted");
+      queryClient.invalidateQueries({ queryKey: ["bikes"] });
+      navigate({ to: "/bikes" });
+    },
+    onError: () => {
+      toast.error("Failed to delete bike");
+    },
+  });
 
   const updateBike = useMutation({
     mutationFn: async (values: Partial<Tables<"bikes">>) => {
@@ -160,7 +188,34 @@ export function EditBikeDialog({ bike }: { bike: Tables<"bikes"> }) {
             <Label htmlFor="purchase_date">Purchase Date</Label>
             <Input id="purchase_date" type="date" {...form.register("purchase_date")} />
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex-row sm:justify-between items-center gap-2">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button type="button" variant="destructive" size="sm" className="gap-2">
+                  <Trash2 className="size-4" />
+                  Delete
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Motorcycle</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to delete {bike.name}? This action cannot be undone and all maintenance records will be lost.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    onClick={() => deleteBike.mutate()}
+                    disabled={deleteBike.isPending}
+                  >
+                    {deleteBike.isPending ? "Deleting..." : "Delete Bike"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
             <Button type="submit" className="gap-2" disabled={updateBike.isPending}>
               {updateBike.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
               {updateBike.isPending ? "Saving..." : "Save Changes"}
