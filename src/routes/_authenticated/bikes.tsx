@@ -8,7 +8,7 @@ import { km } from "@/lib/moto";
 import { EditBikeDialog } from "@/components/EditBikeDialog";
 import { LogMaintenanceDialog } from "@/components/LogMaintenanceDialog";
 import { LogFuelDialog } from "@/components/LogFuelDialog";
-import { Wrench, Fuel } from "lucide-react";
+import { Wrench, Fuel, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSignedUrl } from "@/hooks/useBikes";
 
@@ -52,8 +52,10 @@ function Bikes() {
               <Link
                 to="/bikes/$bikeId" 
                 params={{ bikeId: bike.id }}
+                search={{ tab: undefined }}
                 className="block"
               >
+
                 <div className="aspect-video w-full bg-secondary relative overflow-hidden">
                   {bike.photo_path ? (
                     <BikeImage path={bike.photo_path} />
@@ -73,8 +75,10 @@ function Bikes() {
                   <Link
                     to="/bikes/$bikeId" 
                     params={{ bikeId: bike.id }}
+                    search={{ tab: undefined }}
                     className="flex-1"
                   >
+
                     <h3 className="text-xl font-bold leading-tight group-hover:text-primary transition-colors">{bike.name}</h3>
                     <p className="text-sm text-muted-foreground">
                       {bike.year} {bike.model}
@@ -88,6 +92,12 @@ function Bikes() {
                     )}
                     <div className="flex gap-1.5 sm:gap-2">
 
+                      <Button variant="outline" size="icon" className="size-8" title="History" asChild>
+                        <Link to="/bikes/$bikeId" params={{ bikeId: bike.id }} search={{ tab: 'history' }}>
+                          <History className="size-4" />
+                        </Link>
+                      </Button>
+
                       <LogMaintenanceDialog 
                         bikeId={bike.id} 
                         currentOdometer={bike.current_odometer}
@@ -97,6 +107,7 @@ function Bikes() {
                           </Button>
                         }
                       />
+
                       <LogFuelDialog 
                         bikeId={bike.id} 
                         currentOdometer={bike.current_odometer}

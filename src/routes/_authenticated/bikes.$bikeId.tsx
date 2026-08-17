@@ -24,14 +24,25 @@ import { EditBikeDialog } from "@/components/EditBikeDialog";
 import { useFuelLogs } from "@/hooks/useMaintenance";
 
 export const Route = createFileRoute("/_authenticated/bikes/$bikeId")({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      tab: search['tab'] as string | undefined,
+    }
+  },
   component: BikeDetail,
 });
 
+
 function BikeDetail() {
   const { bikeId } = useParams({ from: "/_authenticated/bikes/$bikeId" });
+  const search = Route.useSearch();
   const { data: bike, isLoading } = useBike(bikeId);
   const { data: history } = useMaintenanceRecords(bikeId);
   const { data: fuelLogs } = useFuelLogs(bikeId);
+  const defaultTab = search['tab'] === 'history' ? 'history' : 'schedule';
+
+
+
 
   if (isLoading) return <div className="p-8 text-center">Loading bike details...</div>;
   if (!bike) return <div className="p-8 text-center text-destructive">Bike not found</div>;
@@ -76,7 +87,7 @@ function BikeDetail() {
       </div>
 
       <div className="mt-8">
-        <Tabs defaultValue="schedule">
+        <Tabs defaultValue={defaultTab}>
           <TabsList className="bg-secondary/50 p-1">
             <TabsTrigger value="schedule" className="gap-2">
               <Clock className="size-4" />
