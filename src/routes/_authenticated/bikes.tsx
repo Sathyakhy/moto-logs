@@ -122,7 +122,11 @@ function Bikes() {
                     <p className="label-caps mb-1">Last Service</p>
                     <div className="flex items-center gap-1.5">
                       <Calendar className="size-3.5 text-muted-foreground" />
-                      <span className="text-sm font-medium">Never</span>
+                      <span className="text-sm font-medium">
+                        {bike.lastServiceDate 
+                          ? new Date(bike.lastServiceDate).toLocaleDateString() 
+                          : "Never"}
+                      </span>
                     </div>
                   </div>
                 </div>

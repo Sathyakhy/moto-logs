@@ -9,6 +9,7 @@ export type Bike = Tables<"bikes">;
 export interface BikeWithStatus extends Bike {
   status: ScheduleStatus;
   dueItemsCount: number;
+  lastServiceDate?: string | null;
 }
 
 export function useBikes() {
@@ -28,6 +29,13 @@ export function useBikes() {
         .select("*")
         .in("bike_id", bikes.map(b => b.id));
 
+      // Fetch latest maintenance records for these bikes
+      const { data: records } = await supabase
+        .from("maintenance_records")
+        .select("bike_id, service_date")
+        .in("bike_id", bikes.map(b => b.id))
+        .order("service_date", { ascending: false });
+
       return bikes.map(bike => {
         const bikeSchedules = schedules?.filter(s => s.bike_id === bike.id) || [];
         const computed = bikeSchedules.map(s => computeSchedule(s as any, bike.current_odometer || 0));
@@ -37,8 +45,9 @@ export function useBikes() {
         else if (computed.some(c => c.status === "due-soon")) status = "due-soon";
 
         const dueItemsCount = computed.filter(c => c.status !== "good").length;
+        const lastServiceDate = records?.find(r => r.bike_id === bike.id)?.service_date;
 
-        return { ...bike, status, dueItemsCount };
+        return { ...bike, status, dueItemsCount, lastServiceDate };
       });
     },
   });
@@ -52,10 +61,18 @@ export function useBike(bikeId: string) {
       if (error) throw error;
       if (!bike) return null;
 
-      const { data: schedules } = await supabase
-        .from("service_schedules")
-        .select("*")
-        .eq("bike_id", bike.id);
+      const [{ data: schedules }, { data: records }] = await Promise.all([
+        supabase
+          .from("service_schedules")
+          .select("*")
+          .eq("bike_id", bike.id),
+        supabase
+          .from("maintenance_records")
+          .select("service_date")
+          .eq("bike_id", bike.id)
+          .order("service_date", { ascending: false })
+          .limit(1)
+      ]);
 
       const computed = schedules?.map(s => computeSchedule(s as any, bike.current_odometer || 0)) || [];
       
@@ -64,8 +81,9 @@ export function useBike(bikeId: string) {
       else if (computed.some(c => c.status === "due-soon")) status = "due-soon";
 
       const dueItemsCount = computed.filter(c => c.status !== "good").length;
+      const lastServiceDate = records?.[0]?.service_date;
 
-      return { ...bike, status, dueItemsCount };
+      return { ...bike, status, dueItemsCount, lastServiceDate };
     },
   });
 }
