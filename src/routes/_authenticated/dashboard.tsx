@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-import { AppShell, Stat } from "@/components/AppShell";
+import { AppShell, Stat, StatusPill } from "@/components/AppShell";
 import { useBikes } from "@/hooks/useBikes";
 import { useProfile } from "@/hooks/useProfile";
 import { useStats, useUpcomingReminders, useDashboardHistory, TimeFilter } from "@/hooks/useDashboard";
