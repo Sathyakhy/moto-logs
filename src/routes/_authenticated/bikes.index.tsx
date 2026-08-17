@@ -91,8 +91,7 @@ function Bikes() {
                       </div>
                     )}
                     <div className="flex gap-1.5 sm:gap-2">
-
-                      <Button variant="outline" size="icon" className="size-8" title="History" asChild>
+                      <Button variant="outline" size="icon" className="size-8 sm:size-9" title="History" asChild>
                         <Link to="/bikes/$bikeId" params={{ bikeId: bike.id }} search={{ tab: 'history' }}>
                           <History className="size-4" />
                         </Link>
@@ -102,7 +101,7 @@ function Bikes() {
                         bikeId={bike.id} 
                         currentOdometer={bike.current_odometer}
                         trigger={
-                          <Button variant="outline" size="icon" className="size-8" title="Add Maintenance">
+                          <Button variant="outline" size="icon" className="size-8 sm:size-9" title="Add Maintenance">
                             <Wrench className="size-4" />
                           </Button>
                         }
@@ -112,7 +111,7 @@ function Bikes() {
                         bikeId={bike.id} 
                         currentOdometer={bike.current_odometer}
                         trigger={
-                          <Button variant="outline" size="icon" className="size-8 text-amber-600 dark:text-amber-500 border-amber-200 dark:border-amber-900/50" title="Log Fuel">
+                          <Button variant="outline" size="icon" className="size-8 sm:size-9 text-amber-600 dark:text-amber-500 border-amber-200 dark:border-amber-900/50" title="Log Fuel">
                             <Fuel className="size-4" />
                           </Button>
                         }
