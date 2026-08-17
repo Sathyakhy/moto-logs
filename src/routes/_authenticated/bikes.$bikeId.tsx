@@ -48,7 +48,7 @@ function BikeDetail() {
         </div>
       }
     >
-      <div className="grid gap-6 md:grid-cols-4">
+      <div className="grid gap-4 md:gap-6 grid-cols-2 md:grid-cols-4">
         <Stat 
           label="Odometer" 
           value={km(bike.current_odometer)} 
