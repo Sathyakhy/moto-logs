@@ -19,6 +19,7 @@ import { km } from "@/lib/moto";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogMaintenanceDialog } from "@/components/LogMaintenanceDialog";
+import { EditBikeDialog } from "@/components/EditBikeDialog";
 
 export const Route = createFileRoute("/_authenticated/bikes/$bikeId")({
   component: BikeDetail,
@@ -44,10 +45,7 @@ function BikeDetail() {
               Back
             </Link>
           </Button>
-          <Button size="sm">
-            <Settings className="size-4 mr-2" />
-            Edit
-          </Button>
+          <EditBikeDialog bike={bike} />
         </div>
       }
     >
