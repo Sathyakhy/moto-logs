@@ -53,7 +53,7 @@ function BikeDetail() {
     // fuelLogs are ordered by fill_date DESC
     const latest = fuelLogs[0];
     const previous = fuelLogs[1];
-    if (latest.odometer && previous.odometer && latest.liters) {
+    if (latest && previous && latest.odometer && previous.odometer && latest.liters) {
       const distance = latest.odometer - previous.odometer;
       if (distance > 0) {
         // L/100km = (liters / distance) * 100
