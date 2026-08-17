@@ -32,7 +32,7 @@ function BikeDetail() {
   return (
     <AppShell 
       title={bike.name} 
-      subtitle={`${bike.year} ${bike.model || ""}`}
+      subtitle={`${bike.year} ${bike.model || ""} ${bike.purchase_date ? `• Purchased ${new Date(bike.purchase_date).toLocaleDateString()}` : ""}`}
       actions={
         <div className="flex gap-2">
           <Button variant="outline" size="sm" asChild>
