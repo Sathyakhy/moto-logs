@@ -106,7 +106,7 @@ function Dashboard() {
         </div>
       }
     >
-      <div className="grid gap-4 md:gap-6 grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:gap-6 grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <Stat 
           label="Total Spent" 
           value={money(totalSpent, "USD", display, rate)} 
@@ -138,6 +138,7 @@ function Dashboard() {
           hint="Cumulative mileage"
         />
       </div>
+
 
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
