@@ -35,13 +35,13 @@ export function AddBikeDialog() {
   const createBike = useCreateBike();
   
   const form = useForm<BikeForm>({
-    defaultValues: {
-      name: "",
-      model: "",
-      year: new Date().getFullYear(),
-      plate_number: "",
-      current_odometer: 0,
-      purchase_date: new Date().toISOString().split("T")[0],
+    values: {
+      name: form?.getValues("name") ?? "",
+      model: form?.getValues("model") ?? "",
+      year: form?.getValues("year") ?? new Date().getFullYear(),
+      plate_number: form?.getValues("plate_number") ?? "",
+      current_odometer: form?.getValues("current_odometer") ?? 0,
+      purchase_date: form?.getValues("purchase_date") ?? new Date().toISOString().split("T")[0],
     },
   });
 
