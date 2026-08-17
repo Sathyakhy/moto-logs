@@ -90,7 +90,10 @@ function BikeDetail() {
         <Tabs 
           value={currentTab} 
           onValueChange={(val) => {
-            navigate({ search: { tab: val } });
+            navigate({ 
+              search: (prev: any) => ({ ...prev, tab: val }),
+              replace: true
+            });
           }}
         >
           <TabsList className="bg-secondary/50 p-1">
