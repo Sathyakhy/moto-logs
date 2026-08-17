@@ -112,7 +112,7 @@ function Dashboard() {
         <Stat 
           label="Total Spent" 
           value={money(totalSpent, "USD", display, rate)} 
-          hint="Maintenance + Fuel + Expenses"
+          hint="Maintenance + Fuel"
         />
         <Stat 
           label="Maintenance" 
