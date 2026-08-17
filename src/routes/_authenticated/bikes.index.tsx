@@ -12,7 +12,7 @@ import { Wrench, Fuel, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSignedUrl } from "@/hooks/useBikes";
 
-export const Route = createFileRoute("/_authenticated/bikes")({
+export const Route = createFileRoute("/_authenticated/bikes/")({
   component: Bikes,
 });
 
