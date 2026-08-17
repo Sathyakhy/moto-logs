@@ -35,11 +35,13 @@ export const Route = createFileRoute("/_authenticated/bikes/$bikeId")({
 
 function BikeDetail() {
   const { bikeId } = useParams({ from: "/_authenticated/bikes/$bikeId" });
+  const navigate = Route.useNavigate();
   const search = Route.useSearch();
   const { data: bike, isLoading } = useBike(bikeId);
   const { data: history } = useMaintenanceRecords(bikeId);
   const { data: fuelLogs } = useFuelLogs(bikeId);
-  const defaultTab = search['tab'] === 'history' ? 'history' : 'schedule';
+  
+  const currentTab = search.tab || "schedule";
 
 
 
@@ -87,7 +89,12 @@ function BikeDetail() {
       </div>
 
       <div className="mt-8">
-        <Tabs defaultValue={defaultTab}>
+        <Tabs 
+          value={currentTab} 
+          onValueChange={(val) => {
+            navigate({ search: { tab: val } });
+          }}
+        >
           <TabsList className="bg-secondary/50 p-1">
             <TabsTrigger value="schedule" className="gap-2">
               <Clock className="size-4" />
