@@ -17,24 +17,7 @@ export function useMaintenanceRecords(bikeId: string) {
   });
 }
 
-export function useCreateMaintenanceRecord() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (record: TablesInsert<"maintenance_records">) => {
-      const { data, error } = await supabase
-        .from("maintenance_records")
-        .insert(record)
-        .select()
-        .single();
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["maintenance", variables.bike_id] });
-      queryClient.invalidateQueries({ queryKey: ["bikes"] });
-    },
-  });
-}
+export { useCreateMaintenanceRecord } from "./useUpdateLogs";
 
 export function useFuelLogs(bikeId: string) {
   return useQuery({
