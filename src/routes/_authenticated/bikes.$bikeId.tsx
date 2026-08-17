@@ -78,7 +78,7 @@ function BikeDetail() {
               Back
             </Link>
           </Button>
-          <EditBikeDialog bike={bike} />
+          <EditBikeDialog bike={bike} trigger={<Button variant="outline" size="sm" className="h-9 px-4 font-bold uppercase tracking-widest text-[10px]"><Settings className="size-3.5 mr-2" />Edit</Button>} />
         </div>
       }
     >
@@ -134,9 +134,9 @@ function BikeDetail() {
 
           <TabsContent value="schedule" className="mt-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold uppercase tracking-tight">Maintenance Schedule</h2>
-              <Button size="sm" variant="outline" className="gap-2">
-                <Plus className="size-3.5" />
+              <h2 className="text-display text-2xl">Maintenance Schedule</h2>
+              <Button size="sm" variant="outline" className="gap-2 h-8 text-[10px] uppercase tracking-widest font-bold">
+                <Plus className="size-3" />
                 Customize
               </Button>
             </div>
@@ -167,7 +167,7 @@ function BikeDetail() {
             {history && history.length > 0 ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold uppercase tracking-tight">Service History</h2>
+                  <h2 className="text-display text-2xl">Service History</h2>
                   <LogMaintenanceDialog bikeId={bikeId} currentOdometer={bike.current_odometer || 0} />
                 </div>
                 <div className="grid gap-4">
@@ -213,7 +213,7 @@ function BikeDetail() {
             {fuelLogs && fuelLogs.length > 0 ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold uppercase tracking-tight">Fuel History</h2>
+                  <h2 className="text-display text-2xl">Fuel History</h2>
                   <LogFuelDialog 
                     bikeId={bikeId} 
                     currentOdometer={bike.current_odometer || 0} 
