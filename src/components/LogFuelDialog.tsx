@@ -32,8 +32,23 @@ import { FUEL_TYPES } from "@/lib/moto";
 import { supabase } from "@/integrations/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useProfile } from "@/hooks/useProfile";
+import { useUpdateFuelLog, useDeleteFuelLog } from "@/hooks/useUpdateLogs";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { Tables } from "@/integrations/supabase/types";
+import { Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 
 const formSchema = z.object({
   bike_id: z.string().uuid(),
@@ -83,19 +98,35 @@ export function LogFuelDialog({
 
       const pricePerLiterNum = values.liters > 0 ? values.total_amount / values.liters : 0;
 
-      // 1. Insert fuel log
-      const { error: logError } = await supabase.from("fuel_logs").insert({
-        bike_id: values.bike_id,
-        user_id: profile.id,
-        fill_date: values.fill_date.toISOString(),
-        odometer: values.odometer,
-        liters: values.liters,
-        amount: values.total_amount,
-        fuel_type: values.fuel_type || null,
-        gas_station: values.gas_station || null,
-        price_per_liter: pricePerLiterNum,
-      });
-      if (logError) throw logError;
+      if (isEditing) {
+        const { error } = await supabase
+          .from("fuel_logs")
+          .update({
+            fill_date: values.fill_date.toISOString(),
+            odometer: values.odometer,
+            liters: values.liters,
+            amount: values.total_amount,
+            fuel_type: values.fuel_type || null,
+            gas_station: values.gas_station || null,
+            price_per_liter: pricePerLiterNum,
+          })
+          .eq("id", editLog.id);
+        if (error) throw error;
+      } else {
+        // 1. Insert fuel log
+        const { error: logError } = await supabase.from("fuel_logs").insert({
+          bike_id: values.bike_id,
+          user_id: profile.id,
+          fill_date: values.fill_date.toISOString(),
+          odometer: values.odometer,
+          liters: values.liters,
+          amount: values.total_amount,
+          fuel_type: values.fuel_type || null,
+          gas_station: values.gas_station || null,
+          price_per_liter: pricePerLiterNum,
+        });
+        if (logError) throw logError;
+      }
 
       // 2. Update bike odometer if the new one is higher
       if (currentOdometer !== undefined && values.odometer > currentOdometer) {
@@ -108,14 +139,15 @@ export function LogFuelDialog({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["fuel-logs", bikeId] });
       queryClient.invalidateQueries({ queryKey: ["bikes"] });
-      toast.success("Fuel log added");
+      toast.success(isEditing ? "Fuel log updated" : "Fuel log added");
       setOpen(false);
-      form.reset();
+      if (!isEditing) form.reset();
     },
     onError: (error: any) => {
-      toast.error(error.message || "Failed to add fuel log");
+      toast.error(error.message || "Failed to save fuel log");
     }
   });
+
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -127,9 +159,40 @@ export function LogFuelDialog({
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Log Fuel</DialogTitle>
+        <DialogHeader className="flex flex-row items-center justify-between pr-8">
+          <DialogTitle>{isEditing ? "Edit Fuel Log" : "Log Fuel"}</DialogTitle>
+          {isEditing && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-destructive">
+                  <Trash2 className="size-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete fuel log?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently remove this record from your history.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction 
+                    className="bg-destructive text-destructive-foreground"
+                    onClick={async () => {
+                      await deleteMutation.mutateAsync({ id: editLog.id, bike_id: bikeId });
+                      toast.success("Record deleted");
+                      setOpen(false);
+                    }}
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </DialogHeader>
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit((v) => mutation.mutate(v))} className="space-y-4 pt-4">
             <div className="grid grid-cols-2 gap-4">
@@ -240,8 +303,11 @@ export function LogFuelDialog({
             />
 
             <Button type="submit" className="w-full h-12 text-base font-bold shadow-lg shadow-primary/20" disabled={mutation.isPending}>
-              {mutation.isPending ? "Logging..." : "Log Fuel Fill"}
+              {mutation.isPending 
+                ? (isEditing ? "Updating..." : "Logging...") 
+                : (isEditing ? "Update Fuel Log" : "Log Fuel Fill")}
             </Button>
+
           </form>
         </Form>
       </DialogContent>

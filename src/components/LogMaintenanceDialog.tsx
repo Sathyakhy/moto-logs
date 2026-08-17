@@ -38,9 +38,24 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { SERVICE_CATEGORIES } from "@/lib/moto";
 import { useCreateMaintenanceRecord } from "@/hooks/useMaintenance";
+import { useUpdateMaintenanceRecord, useDeleteMaintenanceRecord } from "@/hooks/useUpdateLogs";
 import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { Tables } from "@/integrations/supabase/types";
+import { Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 
 const formSchema = z.object({
   bike_id: z.string().uuid(),
@@ -89,20 +104,33 @@ export function LogMaintenanceDialog({
     }
 
     try {
-      await mutation.mutateAsync({
-        bike_id: values.bike_id,
-        user_id: profile.id,
-        service_date: values.service_date.toISOString(),
-        odometer: values.odometer,
-        total_cost: values.total_cost,
-        notes: values.notes || null,
-        workshop: values.workshop || null,
-        // Categories in the DB is an array of strings
-        categories: [values.category],
-      });
-      toast.success("Maintenance log added successfully");
+      if (isEditing) {
+        await updateMutation.mutateAsync({
+          id: editRecord.id,
+          service_date: values.service_date.toISOString(),
+          odometer: values.odometer,
+          total_cost: values.total_cost,
+          notes: values.notes || null,
+          workshop: values.workshop || null,
+          categories: [values.category],
+        });
+        toast.success("Maintenance log updated successfully");
+      } else {
+        await mutation.mutateAsync({
+          bike_id: values.bike_id,
+          user_id: profile.id,
+          service_date: values.service_date.toISOString(),
+          odometer: values.odometer,
+          total_cost: values.total_cost,
+          notes: values.notes || null,
+          workshop: values.workshop || null,
+          categories: [values.category],
+        });
+        toast.success("Maintenance log added successfully");
+      }
       setOpen(false);
-      form.reset();
+      if (!isEditing) form.reset();
+
     } catch (error: any) {
       toast.error(error.message || "Failed to add maintenance log");
     }
@@ -119,9 +147,40 @@ export function LogMaintenanceDialog({
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Log Maintenance</DialogTitle>
+        <DialogHeader className="flex flex-row items-center justify-between pr-8">
+          <DialogTitle>{isEditing ? "Edit Maintenance" : "Log Maintenance"}</DialogTitle>
+          {isEditing && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-destructive">
+                  <Trash2 className="size-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete maintenance log?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently remove this record from your bike's history.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction 
+                    className="bg-destructive text-destructive-foreground"
+                    onClick={async () => {
+                      await deleteMutation.mutateAsync({ id: editRecord.id, bike_id: bikeId });
+                      toast.success("Record deleted");
+                      setOpen(false);
+                    }}
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </DialogHeader>
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
             <FormField
@@ -269,9 +328,12 @@ export function LogMaintenanceDialog({
               )}
             />
 
-            <Button type="submit" className="w-full" disabled={mutation.isPending}>
-              {mutation.isPending ? "Adding..." : "Add Record"}
+            <Button type="submit" className="w-full" disabled={mutation.isPending || updateMutation.isPending}>
+              {isEditing 
+                ? (updateMutation.isPending ? "Updating..." : "Update Record")
+                : (mutation.isPending ? "Adding..." : "Add Record")}
             </Button>
+
           </form>
         </Form>
       </DialogContent>
