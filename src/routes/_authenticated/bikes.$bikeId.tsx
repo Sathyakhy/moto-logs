@@ -60,8 +60,8 @@ function BikeDetail() {
         />
         <Stat 
           label="Service Status" 
-          value={<StatusPill status="good" />} 
-          hint="All systems go" 
+          value={<StatusPill status={bike.status} />} 
+          hint={bike.dueItemsCount > 0 ? `${bike.dueItemsCount} items need attention` : "All systems go"} 
         />
         <Stat 
           label="Fuel Economy" 

@@ -2,19 +2,44 @@ import { useQuery } from "@tanstack/react-query";
 
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { computeSchedule, ScheduleStatus } from "@/lib/moto";
 
 export type Bike = Tables<"bikes">;
+
+export interface BikeWithStatus extends Bike {
+  status: ScheduleStatus;
+  dueItemsCount: number;
+}
 
 export function useBikes() {
   return useQuery({
     queryKey: ["bikes"],
-    queryFn: async (): Promise<Bike[]> => {
-      const { data, error } = await supabase
+    queryFn: async (): Promise<BikeWithStatus[]> => {
+      const { data: bikes, error } = await supabase
         .from("bikes")
         .select("*")
         .order("created_at", { ascending: true });
       if (error) throw error;
-      return data ?? [];
+      if (!bikes) return [];
+
+      // Fetch all service schedules for these bikes
+      const { data: schedules } = await supabase
+        .from("service_schedules")
+        .select("*")
+        .in("bike_id", bikes.map(b => b.id));
+
+      return bikes.map(bike => {
+        const bikeSchedules = schedules?.filter(s => s.bike_id === bike.id) || [];
+        const computed = bikeSchedules.map(s => computeSchedule(s as any, bike.current_odometer || 0));
+        
+        let status: ScheduleStatus = "good";
+        if (computed.some(c => c.status === "overdue")) status = "overdue";
+        else if (computed.some(c => c.status === "due-soon")) status = "due-soon";
+
+        const dueItemsCount = computed.filter(c => c.status !== "good").length;
+
+        return { ...bike, status, dueItemsCount };
+      });
     },
   });
 }
@@ -22,10 +47,25 @@ export function useBikes() {
 export function useBike(bikeId: string) {
   return useQuery({
     queryKey: ["bike", bikeId],
-    queryFn: async (): Promise<Bike | null> => {
-      const { data, error } = await supabase.from("bikes").select("*").eq("id", bikeId).maybeSingle();
+    queryFn: async (): Promise<BikeWithStatus | null> => {
+      const { data: bike, error } = await supabase.from("bikes").select("*").eq("id", bikeId).maybeSingle();
       if (error) throw error;
-      return data;
+      if (!bike) return null;
+
+      const { data: schedules } = await supabase
+        .from("service_schedules")
+        .select("*")
+        .eq("bike_id", bike.id);
+
+      const computed = schedules?.map(s => computeSchedule(s as any, bike.current_odometer || 0)) || [];
+      
+      let status: ScheduleStatus = "good";
+      if (computed.some(c => c.status === "overdue")) status = "overdue";
+      else if (computed.some(c => c.status === "due-soon")) status = "due-soon";
+
+      const dueItemsCount = computed.filter(c => c.status !== "good").length;
+
+      return { ...bike, status, dueItemsCount };
     },
   });
 }

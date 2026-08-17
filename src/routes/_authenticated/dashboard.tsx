@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-import { AppShell, Stat } from "@/components/AppShell";
+import { AppShell, Stat, StatusPill } from "@/components/AppShell";
 import { useBikes } from "@/hooks/useBikes";
 import { useProfile } from "@/hooks/useProfile";
 import { useStats, useUpcomingReminders, useDashboardHistory, TimeFilter } from "@/hooks/useDashboard";
@@ -90,31 +90,26 @@ function Dashboard() {
         />
       </div>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-3">
-        {/* Recent Activity */}
-        <div className="panel lg:col-span-2 overflow-hidden">
+      <div className="mt-8 grid gap-6 lg:grid-cols-2">
+        {/* Maintenance History */}
+        <div className="panel overflow-hidden">
           <div className="flex items-center justify-between border-b border-border p-5">
             <h2 className="flex items-center gap-2 font-bold uppercase tracking-tight">
-              <History className="size-4 text-primary" />
-              Recent Logs
+              <Wrench className="size-4 text-primary" />
+              Maintenance History
             </h2>
           </div>
           <div className="divide-y divide-border">
-            {history && history.length > 0 ? (
-              history.map((item: any) => (
+            {history?.maintenance && history.maintenance.length > 0 ? (
+              history.maintenance.slice(0, 5).map((item: any) => (
                 <div key={item.id} className="flex items-center justify-between p-5 hover:bg-secondary/30 transition-colors">
                   <div className="flex items-center gap-4">
-                    <div className={cn(
-                      "size-9 rounded-lg flex items-center justify-center",
-                      item.type === 'maintenance' ? "bg-primary/10 text-primary" : "bg-amber-500/10 text-amber-500"
-                    )}>
-                      {item.type === 'maintenance' ? <Wrench className="size-4" /> : <Fuel className="size-4" />}
+                    <div className="size-9 rounded-lg flex items-center justify-center bg-primary/10 text-primary">
+                      <Wrench className="size-4" />
                     </div>
                     <div>
                       <p className="font-bold leading-tight">
-                        {item.type === 'maintenance' 
-                          ? (item.notes || item.categories?.[0] || "Maintenance") 
-                          : (item.gas_station || "Refuel")}
+                        {item.notes || item.categories?.[0] || "Maintenance"}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {item.bikes?.name} • {new Date(item.date).toLocaleDateString()}
@@ -122,11 +117,48 @@ function Dashboard() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className={cn(
-                      "num font-bold",
-                      item.type === 'maintenance' ? "text-primary" : "text-amber-500"
-                    )}>
-                      {money(Number(item.total_cost || item.amount), "USD", display, rate)}
+                    <p className="num font-bold text-primary">
+                      {money(Number(item.total_cost), "USD", display, rate)}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-10 text-center">
+                <p className="text-sm text-muted-foreground">No maintenance records found.</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Fuel History */}
+        <div className="panel overflow-hidden">
+          <div className="flex items-center justify-between border-b border-border p-5">
+            <h2 className="flex items-center gap-2 font-bold uppercase tracking-tight">
+              <Fuel className="size-4 text-amber-500" />
+              Fuel History
+            </h2>
+          </div>
+          <div className="divide-y divide-border">
+            {history?.fuel && history.fuel.length > 0 ? (
+              history.fuel.slice(0, 5).map((item: any) => (
+                <div key={item.id} className="flex items-center justify-between p-5 hover:bg-secondary/30 transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="size-9 rounded-lg flex items-center justify-center bg-amber-500/10 text-amber-500">
+                      <Fuel className="size-4" />
+                    </div>
+                    <div>
+                      <p className="font-bold leading-tight">
+                        {item.gas_station || "Refuel"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.bikes?.name} • {new Date(item.date).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="num font-bold text-amber-500">
+                      {money(Number(item.amount), "USD", display, rate)}
                     </p>
                     {item.liters && <p className="text-[10px] text-muted-foreground">{item.liters} L</p>}
                   </div>
@@ -134,13 +166,15 @@ function Dashboard() {
               ))
             ) : (
               <div className="p-10 text-center">
-                <p className="text-sm text-muted-foreground">No records found for this period.</p>
+                <p className="text-sm text-muted-foreground">No fuel records found.</p>
               </div>
             )}
           </div>
         </div>
+      </div>
 
-        <div className="space-y-6">
+      <div className="mt-8 grid gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-1">
           {/* Service Alerts */}
           <div className="panel overflow-hidden">
             <div className="flex items-center justify-between border-b border-border p-5">
@@ -150,12 +184,16 @@ function Dashboard() {
               </h2>
             </div>
             <div className="divide-y divide-border">
-              {reminders && reminders.length > 0 ? (
-                reminders.map((reminder) => (
-                  <div key={reminder.id} className="p-4 hover:bg-secondary/30 transition-colors">
-                    <p className="font-bold text-sm">{reminder.title}</p>
+              {/* Combine computed schedule alerts and manual reminders */}
+              {bikes?.some(b => b.status !== 'good') ? (
+                bikes.filter(b => b.status !== 'good').map(bike => (
+                  <div key={bike.id} className="p-4 hover:bg-secondary/30 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <p className="font-bold text-sm">{bike.name}</p>
+                      <StatusPill status={bike.status} />
+                    </div>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      {(reminder.bikes as any)?.name} • {reminder.due_date ? new Date(reminder.due_date).toLocaleDateString() : `${km(reminder.due_odometer)}`}
+                      {bike.dueItemsCount} maintenance tasks are {bike.status === 'overdue' ? 'overdue' : 'due soon'}.
                     </p>
                   </div>
                 ))

@@ -95,12 +95,10 @@ export function useDashboardHistory(userId: string | undefined, filter: TimeFilt
 
       const [maint, fuel] = await Promise.all([maintenanceQuery, fuelQuery]);
 
-      const history = [
-        ...(maint.data || []).map(m => ({ ...m, type: 'maintenance' as const, date: m.service_date })),
-        ...(fuel.data || []).map(f => ({ ...f, type: 'fuel' as const, date: f.fill_date }))
-      ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-      return history.slice(0, 10);
+      return {
+        maintenance: (maint.data || []).map(m => ({ ...m, type: 'maintenance' as const, date: m.service_date })),
+        fuel: (fuel.data || []).map(f => ({ ...f, type: 'fuel' as const, date: f.fill_date }))
+      };
     }
   });
 }
