@@ -215,7 +215,7 @@ function Dashboard() {
           </div>
           <div className="divide-y divide-border">
             {upcomingMaint && upcomingMaint.length > 0 ? (
-              upcomingMaint.map((item, idx) => (
+              upcomingMaint.slice(0, 5).map((item, idx) => (
                 <div key={`${item.bikeId}-${item.item}-${idx}`} className="p-4 hover:bg-secondary/30 transition-colors">
                   <div className="flex items-center justify-between mb-2">
                     <div>
