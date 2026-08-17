@@ -234,8 +234,22 @@ export function LogMaintenanceDialog({
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="brand_model"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Part Brand / Model</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. Motul 7100, NGK Iridium" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="grid grid-cols-2 gap-4">
+
               <FormField
                 control={form.control}
                 name="service_date"
