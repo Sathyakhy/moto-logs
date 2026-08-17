@@ -1,17 +1,17 @@
 export const SERVICE_CATEGORIES = [
-  "Engine oil change",
-  "Oil filter",
-  "Gear oil change",
-  "Air filter replacement",
-  "Spark plug replacement",
-  "Brake pad replacement",
-  "Brake fluid replacement",
-  "Coolant replacement",
-  "Battery replacement",
-  "CVT / Belt replacement",
-  "Tire replacement",
-  "Chain & sprocket service",
-  "General inspection",
+  "Engine Oil",
+  "Gear Oil",
+  "CVT Cleaning",
+  "Drive Belt",
+  "Rollers",
+  "Coolant",
+  "Brake Fluid",
+  "Brake Pads",
+  "Air Filter",
+  "Battery",
+  "Spark Plug",
+  "Tire Replacement",
+  "General Inspection",
 ] as const;
 
 export const EXPENSE_CATEGORIES = [
@@ -32,13 +32,17 @@ export const ATTACHMENT_KINDS = ["invoice", "receipt", "warranty", "part photo",
 /** Sensible starter intervals (km) for small-displacement scooters/bikes. */
 export const DEFAULT_SCHEDULE_ITEMS: { item: string; interval_km: number; interval_days?: number }[] =
   [
-    { item: "Engine oil change", interval_km: 2000, interval_days: 180 },
-    { item: "Gear oil change", interval_km: 6000 },
-    { item: "Air filter replacement", interval_km: 6000 },
-    { item: "Spark plug replacement", interval_km: 8000 },
-    { item: "CVT / Belt replacement", interval_km: 20000 },
-    { item: "Brake pad replacement", interval_km: 12000 },
-    { item: "Tire replacement", interval_km: 15000 },
+    { item: "Engine Oil", interval_km: 2000, interval_days: 180 },
+    { item: "Gear Oil", interval_km: 6000, interval_days: 365 },
+    { item: "CVT Cleaning", interval_km: 6000, interval_days: 180 },
+    { item: "Drive Belt", interval_km: 20000, interval_days: 730 },
+    { item: "Rollers", interval_km: 12000, interval_days: 365 },
+    { item: "Coolant", interval_km: 12000, interval_days: 365 },
+    { item: "Brake Fluid", interval_km: 12000, interval_days: 365 },
+    { item: "Brake Pads", interval_km: 10000 },
+    { item: "Air Filter", interval_km: 6000 },
+    { item: "Battery", interval_km: 0, interval_days: 730 },
+    { item: "Spark Plug", interval_km: 8000 },
   ];
 
 export type ScheduleStatus = "good" | "due-soon" | "overdue";

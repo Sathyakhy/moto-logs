@@ -6,6 +6,10 @@ import { AddBikeDialog } from "@/components/AddBikeDialog";
 import { useBikes } from "@/hooks/useBikes";
 import { km } from "@/lib/moto";
 import { EditBikeDialog } from "@/components/EditBikeDialog";
+import { LogMaintenanceDialog } from "@/components/LogMaintenanceDialog";
+import { Wrench } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useSignedUrl } from "@/hooks/useBikes";
 
 export const Route = createFileRoute("/_authenticated/bikes")({
   component: Bikes,
@@ -51,9 +55,7 @@ function Bikes() {
               >
                 <div className="aspect-video w-full bg-secondary relative overflow-hidden">
                   {bike.photo_path ? (
-                     <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-xs uppercase font-semibold">
-                       Photo Uploaded
-                     </div>
+                    <BikeImage path={bike.photo_path} />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/20">
                       <BikeIcon className="size-16" />
@@ -83,7 +85,18 @@ function Bikes() {
                         {bike.plate_number}
                       </div>
                     )}
-                    <EditBikeDialog bike={bike} />
+                    <div className="flex gap-2">
+                      <LogMaintenanceDialog 
+                        bikeId={bike.id} 
+                        currentOdometer={bike.current_odometer}
+                        trigger={
+                          <Button variant="outline" size="icon" className="size-8">
+                            <Wrench className="size-4" />
+                          </Button>
+                        }
+                      />
+                      <EditBikeDialog bike={bike} />
+                    </div>
                   </div>
                 </div>
                 
@@ -109,5 +122,25 @@ function Bikes() {
         </div>
       )}
     </AppShell>
+  );
+}
+
+function BikeImage({ path }: { path: string }) {
+  const { data: url } = useSignedUrl(path);
+  
+  if (!url) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/20">
+        <BikeIcon className="size-16" />
+      </div>
+    );
+  }
+
+  return (
+    <img 
+      src={url} 
+      alt="Motorcycle" 
+      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" 
+    />
   );
 }
