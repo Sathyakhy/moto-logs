@@ -52,8 +52,10 @@ function Bikes() {
               <Link
                 to="/bikes/$bikeId" 
                 params={{ bikeId: bike.id }}
+                search={{ tab: undefined }}
                 className="block"
               >
+
                 <div className="aspect-video w-full bg-secondary relative overflow-hidden">
                   {bike.photo_path ? (
                     <BikeImage path={bike.photo_path} />
