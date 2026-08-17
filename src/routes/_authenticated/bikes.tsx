@@ -1,10 +1,12 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Bike as BikeIcon, Calendar, Gauge, MapPin } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Bike as BikeIcon, Calendar, Edit2, Gauge, Trash2 } from "lucide-react";
 
 import { AppShell, StatusPill } from "@/components/AppShell";
 import { AddBikeDialog } from "@/components/AddBikeDialog";
 import { useBikes } from "@/hooks/useBikes";
 import { km } from "@/lib/moto";
+import { Button } from "@/components/ui/button";
+import { EditBikeDialog } from "@/components/EditBikeDialog";
 
 export const Route = createFileRoute("/_authenticated/bikes")({
   component: Bikes,
@@ -39,12 +41,15 @@ function Bikes() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {bikes?.map((bike) => (
-            <Link 
+            <div 
               key={bike.id} 
-              to="/bikes/$bikeId" 
-              params={{ bikeId: bike.id }}
-              className="panel group block overflow-hidden transition-all hover:border-primary hover:shadow-glow"
+              className="panel group block overflow-hidden transition-all border-border"
             >
+              <Link
+                to="/bikes/$bikeId" 
+                params={{ bikeId: bike.id }}
+                className="block group-hover:border-primary transition-all"
+              >
               <div className="aspect-video w-full bg-secondary relative overflow-hidden">
                 {bike.photo_path ? (
                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-xs uppercase font-semibold">
@@ -61,17 +66,24 @@ function Bikes() {
               </div>
               <div className="p-5">
                 <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <h3 className="text-xl font-bold leading-tight">{bike.name}</h3>
+                  <Link
+                    to="/bikes/$bikeId" 
+                    params={{ bikeId: bike.id }}
+                    className="flex-1"
+                  >
+                    <h3 className="text-xl font-bold leading-tight group-hover:text-primary transition-colors">{bike.name}</h3>
                     <p className="text-sm text-muted-foreground">
                       {bike.year} {bike.model}
                     </p>
+                  </Link>
+                  <div className="flex flex-col items-end gap-2">
+                    {bike.plate_number && (
+                      <div className="rounded bg-secondary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground border border-border">
+                        {bike.plate_number}
+                      </div>
+                    )}
+                    <EditBikeDialog bike={bike} />
                   </div>
-                  {bike.plate_number && (
-                    <div className="rounded bg-secondary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground border border-border">
-                      {bike.plate_number}
-                    </div>
-                  )}
                 </div>
                 
                 <div className="mt-6 grid grid-cols-2 gap-4 border-t border-border pt-4">
@@ -91,7 +103,7 @@ function Bikes() {
                   </div>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}
