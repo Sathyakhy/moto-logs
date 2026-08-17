@@ -19,7 +19,9 @@ import { km } from "@/lib/moto";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogMaintenanceDialog } from "@/components/LogMaintenanceDialog";
+import { LogFuelDialog } from "@/components/LogFuelDialog";
 import { EditBikeDialog } from "@/components/EditBikeDialog";
+import { useFuelLogs } from "@/hooks/useMaintenance";
 
 export const Route = createFileRoute("/_authenticated/bikes/$bikeId")({
   component: BikeDetail,
@@ -29,6 +31,7 @@ function BikeDetail() {
   const { bikeId } = useParams({ from: "/_authenticated/bikes/$bikeId" });
   const { data: bike, isLoading } = useBike(bikeId);
   const { data: history } = useMaintenanceRecords(bikeId);
+  const { data: fuelLogs } = useFuelLogs(bikeId);
 
   if (isLoading) return <div className="p-8 text-center">Loading bike details...</div>;
   if (!bike) return <div className="p-8 text-center text-destructive">Bike not found</div>;
@@ -157,15 +160,65 @@ function BikeDetail() {
           </TabsContent>
 
           <TabsContent value="fuel" className="mt-6">
-            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border p-12 text-center">
-              <Fuel className="size-12 text-muted-foreground/50 mb-4" />
-              <h3 className="text-lg font-semibold">No fuel logs</h3>
-              <p className="text-muted-foreground mb-6">Track your fuel consumption and economy.</p>
-              <Button className="gap-2">
-                <Plus className="size-4" />
-                Add Fuel Log
-              </Button>
-            </div>
+            {fuelLogs && fuelLogs.length > 0 ? (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold uppercase tracking-tight">Fuel History</h2>
+                  <LogFuelDialog 
+                    bikeId={bikeId} 
+                    currentOdometer={bike.current_odometer || 0} 
+                    trigger={
+                      <Button size="sm" className="gap-2">
+                        <Plus className="size-4" />
+                        Log Fuel
+                      </Button>
+                    }
+                  />
+                </div>
+                <div className="grid gap-4">
+                  {fuelLogs.map((log) => (
+                    <div key={log.id} className="panel p-5">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="font-bold">{log.gas_station || "Fuel Fill"}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {new Date(log.fill_date).toLocaleDateString()} • {km(log.odometer)}
+                          </p>
+                          <div className="mt-2 flex gap-4 text-xs font-medium">
+                            <span className="bg-secondary/50 px-2 py-1 rounded">{log.liters} L</span>
+                            {log.fuel_type && <span className="bg-secondary/50 px-2 py-1 rounded">{log.fuel_type}</span>}
+                            {log.price_per_liter && (
+                              <span className="text-muted-foreground flex items-center">
+                                ${Number(log.price_per_liter).toFixed(3)}/L
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="num font-bold text-amber-500">${Number(log.amount).toFixed(2)}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border p-12 text-center">
+                <Fuel className="size-12 text-muted-foreground/50 mb-4" />
+                <h3 className="text-lg font-semibold">No fuel logs</h3>
+                <p className="text-muted-foreground mb-6">Track your fuel consumption and economy.</p>
+                <LogFuelDialog 
+                  bikeId={bikeId} 
+                  currentOdometer={bike.current_odometer || 0}
+                  trigger={
+                    <Button className="gap-2">
+                      <Plus className="size-4" />
+                      Add Fuel Log
+                    </Button>
+                  }
+                />
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </div>
