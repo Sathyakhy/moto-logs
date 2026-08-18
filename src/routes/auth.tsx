@@ -111,8 +111,9 @@ function AuthPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
+    <div className="fixed inset-0 flex flex-col overflow-hidden bg-background">
+      <div className="flex-1 overflow-y-auto px-4 py-12 pt-[env(safe-area-inset-top)] -webkit-overflow-scrolling-touch">
+        <div className="mx-auto w-full max-w-md">
         <Link to="/" className="mb-6 flex items-center justify-center gap-2">
           <Wrench className="size-5 text-primary" aria-hidden />
           <span className="text-display text-3xl">MotoLog</span>
@@ -170,6 +171,7 @@ function AuthPage() {
           <Button variant="secondary" className="w-full" disabled={busy} onClick={google}>
             Continue with Google
           </Button>
+        </div>
         </div>
       </div>
     </div>
