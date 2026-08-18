@@ -255,7 +255,7 @@ function Overview() {
         {/* Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.
                                         
                                             
-                                            double the font size on overview tab in mobile view */}
+                                            too big reduce to 70% of current size */}
       </div>
 
       <div className="flex flex-col items-center mb-6 overflow-hidden">
