@@ -68,16 +68,27 @@ function Overview() {
   const dailyUsage = calculateDailyUsage(fuelLogs || []);
 
   const getStatusInfo = (itemNames: string[]) => {
-    const s = schedules?.find(s => itemNames.some(name => s.item.toLowerCase().includes(name.toLowerCase())));
-    if (!s || !bike) return { text: "N/A", status: "good" as const };
+    // Find the schedule for any of the item names
+    const s = schedules?.find(s => 
+      itemNames.some(name => s.item.toLowerCase().includes(name.toLowerCase()))
+    );
+
+    if (!bike) return { text: "N/A", status: "good" as const };
+    
+    // If no specific schedule found, we display a message
+    if (!s) return { text: "No schedule set", status: "good" as const };
     
     const computed = computeSchedule(s as any, bike.current_odometer || 0, dailyUsage);
+    
     const dateText = computed.estimatedDate 
       ? `(Est ${format(new Date(computed.estimatedDate), "dd-MMM-yy")})`
       : "";
     
+    // The user specifically wants: "Need change in 500KM (Est 30-Sep-26)"
     return {
-      text: `Need change in ${computed.remainingKm}KM ${dateText}`,
+      text: computed.status === "overdue" 
+        ? `Overdue by ${Math.abs(computed.remainingKm)}KM ${dateText}`
+        : `Need change in ${computed.remainingKm}KM ${dateText}`,
       status: computed.status,
       item: s.item
     };
