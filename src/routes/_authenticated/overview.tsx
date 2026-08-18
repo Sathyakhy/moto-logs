@@ -326,8 +326,8 @@ function Overview() {
 
         {/* Vehicle Status Section */}
         <section className="space-y-4">
-          <div className="grid grid-cols-2 gap-3 sm:gap-6">
-            {/* Oil Status */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6">
+            {/* Engine Oil Status */}
             <div className={`panel p-3 sm:p-5 flex flex-col justify-between min-h-[100px] sm:min-h-[140px] border-l-4 ${
               oilStatus.status === 'overdue' ? 'border-l-destructive' :
               oilStatus.status === 'due-soon' ? 'border-l-amber-500' :
@@ -335,7 +335,7 @@ function Overview() {
             }`}>
               <div className="flex items-center gap-2 text-primary/80 mb-1 sm:mb-3">
                 <Droplets className="size-3.5 sm:size-5" />
-                <span className="text-[9px] sm:text-xs font-black uppercase tracking-wider">OIL STATUS</span>
+                <span className="text-[9px] sm:text-xs font-black uppercase tracking-wider">ENGINE OIL</span>
               </div>
               <div className="flex flex-col">
                 <p className="text-[10px] sm:text-sm font-black leading-tight">
@@ -343,6 +343,26 @@ function Overview() {
                 </p>
                 <p className="text-[8px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
                   {oilStatus.dateText}
+                </p>
+              </div>
+            </div>
+
+            {/* Gear Oil Status */}
+            <div className={`panel p-3 sm:p-5 flex flex-col justify-between min-h-[100px] sm:min-h-[140px] border-l-4 ${
+              gearOilStatus.status === 'overdue' ? 'border-l-destructive' :
+              gearOilStatus.status === 'due-soon' ? 'border-l-amber-500' :
+              'border-l-primary'
+            }`}>
+              <div className="flex items-center gap-2 text-primary/80 mb-1 sm:mb-3">
+                <Droplets className="size-3.5 sm:size-5" />
+                <span className="text-[9px] sm:text-xs font-black uppercase tracking-wider">GEAR OIL</span>
+              </div>
+              <div className="flex flex-col">
+                <p className="text-[10px] sm:text-sm font-black leading-tight">
+                  {gearOilStatus.kmDaysText}
+                </p>
+                <p className="text-[8px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
+                  {gearOilStatus.dateText}
                 </p>
               </div>
             </div>
@@ -368,7 +388,7 @@ function Overview() {
             </div>
 
             {/* Upcoming Maintenance */}
-            <div className="panel p-3 sm:p-5 col-span-2 flex flex-col justify-between min-h-[100px] sm:min-h-[140px] border-l-4 border-l-primary">
+            <div className="panel p-3 sm:p-5 col-span-2 sm:col-span-3 flex flex-col justify-between min-h-[100px] sm:min-h-[140px] border-l-4 border-l-primary">
               <div className="flex items-center gap-2 text-primary/80 mb-2 sm:mb-4">
                 <Clock className="size-3.5 sm:size-5" />
                 <span className="text-[9px] sm:text-xs font-black uppercase tracking-wider">UPCOMING MAINTENANCE</span>
