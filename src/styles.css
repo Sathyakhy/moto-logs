@@ -159,12 +159,12 @@
     height: 100%;
     width: 100%;
     overflow: hidden;
-    position: fixed;
+    position: relative;
     color-scheme: dark;
     -webkit-tap-highlight-color: transparent;
-    touch-action: none;
-    user-select: none;
-    -webkit-user-select: none;
+    touch-action: pan-x pan-y;
+    user-select: auto;
+    -webkit-user-select: auto;
     overscroll-behavior: none;
   }
 
