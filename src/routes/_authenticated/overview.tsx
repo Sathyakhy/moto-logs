@@ -284,7 +284,7 @@ function Overview() {
                 {!isUpdatingOdo ? (
                   <button 
                     onClick={() => setIsUpdatingOdo(true)}
-                    className="text-[9px] sm:text-xs font-black uppercase text-primary hover:underline"
+                    className="text-[18px] sm:text-xs font-black uppercase text-primary hover:underline"
                   >
                     Update
                   </button>
