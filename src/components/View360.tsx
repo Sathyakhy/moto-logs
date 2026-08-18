@@ -85,8 +85,8 @@ export function View360({ paths, className }: View360Props) {
       onMouseMove={(e) => handleMove(e.clientX)}
       onMouseUp={handleEnd}
       onMouseLeave={handleEnd}
-      onTouchStart={(e) => handleStart(e.touches[0].clientX)}
-      onTouchMove={(e) => handleMove(e.touches[0].clientX)}
+      onTouchStart={(e) => e.touches[0] && handleStart(e.touches[0].clientX)}
+      onTouchMove={(e) => e.touches[0] && handleMove(e.touches[0].clientX)}
       onTouchEnd={handleEnd}
     >
       {urls.map((url, i) => (
