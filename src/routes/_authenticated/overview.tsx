@@ -255,7 +255,7 @@ function Overview() {
         {/* Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.
                                         
                                             
-                                            double the font size on overview tab in mobile view */}
+                                            too big reduce to 70% of current size */}
       </div>
 
       <div className="flex flex-col items-center mb-6 overflow-hidden">
@@ -279,12 +279,12 @@ function Overview() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-primary/80">
                   <Gauge className="size-3.5 sm:size-5" />
-                  <span className="text-[18px] sm:text-xs font-black uppercase tracking-wider">Current Mileage</span>
+                  <span className="text-[12.6px] sm:text-xs font-black uppercase tracking-wider">Current Mileage</span>
                 </div>
                 {!isUpdatingOdo ? (
                   <button 
                     onClick={() => setIsUpdatingOdo(true)}
-                    className="text-[18px] sm:text-xs font-black uppercase text-primary hover:underline"
+                    className="text-[12.6px] sm:text-xs font-black uppercase text-primary hover:underline"
                   >
                     Update
                   </button>
@@ -300,10 +300,10 @@ function Overview() {
               
               {!isUpdatingOdo ? (
                 <div className="flex items-baseline gap-2">
-                  <span className="text-6xl sm:text-5xl font-bold tracking-tighter text-primary leading-none" style={{ fontFamily: 'Digital-7' }}>
+                  <span className="text-[42px] sm:text-5xl font-bold tracking-tighter text-primary leading-none" style={{ fontFamily: 'Digital-7' }}>
                     {bike.current_odometer?.toLocaleString()}
                   </span>
-                  <span className="text-[20px] sm:text-sm font-black text-muted-foreground uppercase tracking-widest">KM</span>
+                  <span className="text-[14px] sm:text-sm font-black text-muted-foreground uppercase tracking-widest">KM</span>
                 </div>
               ) : (
                 <form onSubmit={handleOdoSubmit} className="flex gap-2">
@@ -342,24 +342,24 @@ function Overview() {
             }`}>
               <div className="flex items-center gap-2 text-primary/80 mb-1 sm:mb-3">
                 <Droplets className="size-3.5 sm:size-5" />
-                <span className="text-[18px] sm:text-xs font-black uppercase tracking-wider">OIL STATUS</span>
+                <span className="text-[12.6px] sm:text-xs font-black uppercase tracking-wider">OIL STATUS</span>
               </div>
               <div className="space-y-2">
                 <div className="flex flex-col">
-                  <p className="text-[14px] sm:text-[9px] font-black text-muted-foreground uppercase leading-none mb-0.5">Engine</p>
-                  <p className="text-[20px] sm:text-sm font-black leading-tight">
+                  <p className="text-[9.8px] sm:text-[9px] font-black text-muted-foreground uppercase leading-none mb-0.5">Engine</p>
+                  <p className="text-[14px] sm:text-sm font-black leading-tight">
                     {oilStatus.kmDaysText}
                   </p>
-                  <p className="text-[16px] sm:text-[11px] font-bold text-muted-foreground">
+                  <p className="text-[11.2px] sm:text-[11px] font-bold text-muted-foreground">
                     {oilStatus.dateText}
                   </p>
                 </div>
                 <div className="flex flex-col border-t border-white/5 pt-1.5">
-                  <p className="text-[14px] sm:text-[9px] font-black text-muted-foreground uppercase leading-none mb-0.5">Gear</p>
-                  <p className="text-[20px] sm:text-sm font-black leading-tight">
+                  <p className="text-[9.8px] sm:text-[9px] font-black text-muted-foreground uppercase leading-none mb-0.5">Gear</p>
+                  <p className="text-[14px] sm:text-sm font-black leading-tight">
                     {gearOilStatus.kmDaysText}
                   </p>
-                  <p className="text-[16px] sm:text-[11px] font-bold text-muted-foreground">
+                  <p className="text-[11.2px] sm:text-[11px] font-bold text-muted-foreground">
                     {gearOilStatus.dateText}
                   </p>
                 </div>
@@ -374,15 +374,15 @@ function Overview() {
             }`}>
               <div className="flex items-center gap-2 text-primary/80 mb-1 sm:mb-3">
                 <Zap className="size-3.5 sm:size-5" />
-                <span className="text-[18px] sm:text-xs font-black uppercase tracking-wider">BATTERY</span>
+                <span className="text-[12.6px] sm:text-xs font-black uppercase tracking-wider">BATTERY</span>
               </div>
               <div className="space-y-2">
                 <div className="flex flex-col">
-                  <p className="text-[14px] sm:text-[9px] font-black text-muted-foreground uppercase leading-none mb-0.5">YT7Z-BS 12V 7Ah</p>
-                  <p className="text-[20px] sm:text-sm font-black leading-tight">
+                  <p className="text-[9.8px] sm:text-[9px] font-black text-muted-foreground uppercase leading-none mb-0.5">YT7Z-BS 12V 7Ah</p>
+                  <p className="text-[14px] sm:text-sm font-black leading-tight">
                     {batteryStatus.kmDaysText}
                   </p>
-                  <p className="text-[16px] sm:text-[11px] font-bold text-muted-foreground">
+                  <p className="text-[11.2px] sm:text-[11px] font-bold text-muted-foreground">
                     {batteryStatus.dateText}
                   </p>
                 </div>
@@ -398,22 +398,22 @@ function Overview() {
             <div className="panel p-3 sm:p-5 col-span-2 flex flex-col justify-between min-h-[100px] sm:min-h-[140px] border-l-4 border-l-primary w-full">
               <div className="flex items-center gap-2 text-primary/80 mb-2 sm:mb-4">
                 <Clock className="size-3.5 sm:size-5" />
-                <span className="text-[18px] sm:text-xs font-black uppercase tracking-wider">UPCOMING MAINTENANCE</span>
+                <span className="text-[12.6px] sm:text-xs font-black uppercase tracking-wider">UPCOMING MAINTENANCE</span>
               </div>
               {upcomingMaintenance && (upcomingMaintenance as any[]).length > 0 ? (
                 <div className="space-y-2.5 sm:space-y-4">
                   {(upcomingMaintenance as any[]).map((task, idx) => (
                     <div key={idx} className="flex justify-between items-center gap-2 pb-1.5 sm:pb-3 last:pb-0 border-b last:border-0 border-white/5">
                       <div className="space-y-0.5 sm:space-y-1">
-                        <p className="text-[20px] sm:text-sm font-black text-primary leading-tight uppercase">{task.item}</p>
-                        <p className="text-[16px] sm:text-[11px] font-bold leading-tight text-muted-foreground">
+                        <p className="text-[14px] sm:text-sm font-black text-primary leading-tight uppercase">{task.item}</p>
+                        <p className="text-[11.2px] sm:text-[11px] font-bold leading-tight text-muted-foreground">
                           {task.computed.status === "overdue" 
                             ? `Overdue by ${Math.abs(task.computed.remainingKm)}KM`
                             : `In ${task.computed.remainingKm}KM`}
                           {task.computed.estimatedDate && ` — Est ${format(new Date(task.computed.estimatedDate), "dd-MMM-yy")}`}
                         </p>
                       </div>
-                      <div className={`text-[14px] sm:text-[10px] px-1.5 sm:px-2.5 py-0.5 rounded-full uppercase font-black shrink-0 ${
+                      <div className={`text-[9.8px] sm:text-[10px] px-1.5 sm:px-2.5 py-0.5 rounded-full uppercase font-black shrink-0 ${
                         task.computed.status === 'overdue' ? 'bg-destructive/20 text-destructive' :
                         task.computed.status === 'due-soon' ? 'bg-amber-500/20 text-amber-500' :
                         'bg-primary/20 text-primary'
@@ -441,7 +441,7 @@ function Overview() {
                   <Button variant="outline" className="w-full h-16 sm:h-28 flex flex-col items-center justify-center border-primary/20 hover:border-primary/40 bg-primary/5 gap-1 sm:gap-3 transition-all">
                     <div className="flex items-center gap-2 text-primary">
                       <Wrench className="size-4 sm:size-7" />
-                      <span className="text-[18px] sm:text-sm font-black uppercase tracking-widest">Maintenance</span>
+                      <span className="text-[12.6px] sm:text-sm font-black uppercase tracking-widest">Maintenance</span>
                     </div>
                   </Button>
                 }
@@ -453,7 +453,7 @@ function Overview() {
                   <Button variant="outline" className="w-full h-16 sm:h-28 flex flex-col items-center justify-center border-amber-500/20 hover:border-amber-500/40 bg-amber-500/5 gap-1 sm:gap-3 transition-all">
                     <div className="flex items-center gap-2 text-amber-500">
                       <Fuel className="size-4 sm:size-7" />
-                      <span className="text-[18px] sm:text-sm font-black uppercase tracking-widest">Fuel Fill</span>
+                      <span className="text-[12.6px] sm:text-sm font-black uppercase tracking-widest">Fuel Fill</span>
                     </div>
                   </Button>
                 }
@@ -467,14 +467,14 @@ function Overview() {
           <div className="flex items-center justify-between">
             <h3 className="label-caps flex items-center gap-2">
               <History className="size-3.5 sm:size-5 text-primary" />
-              <span className="text-[20px] sm:text-sm">History</span>
+              <span className="text-[14px] sm:text-sm">History</span>
             </h3>
             {bike && (
               <Link 
                 to="/bikes/$bikeId" 
                 params={{ bikeId: bike.id }} 
                 search={{ tab: 'history' }}
-                className="text-[18px] sm:text-xs font-black uppercase tracking-widest text-primary hover:underline"
+                className="text-[12.6px] sm:text-xs font-black uppercase tracking-widest text-primary hover:underline"
               >
                 View All
               </Link>
@@ -486,7 +486,7 @@ function Overview() {
             <div className="space-y-2 sm:space-y-4 w-full">
               <div className="flex items-center gap-2 px-1 mb-1">
                 <Wrench className="size-3 sm:size-4 text-primary" />
-                <span className="text-[18px] sm:text-xs font-black uppercase tracking-wider text-muted-foreground">Maintenance</span>
+                <span className="text-[12.6px] sm:text-xs font-black uppercase tracking-wider text-muted-foreground">Maintenance</span>
               </div>
               {history?.maintenance && history.maintenance.length > 0 ? (
                 history.maintenance.slice(0, 3).map((item: any) => (
@@ -496,16 +496,16 @@ function Overview() {
                         <Wrench className="size-3.5 sm:size-5" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[20px] sm:text-sm font-black leading-tight group-hover:text-primary transition-colors truncate uppercase">
+                        <p className="text-[14px] sm:text-sm font-black leading-tight group-hover:text-primary transition-colors truncate uppercase">
                           {item.notes?.split('\n')[0] || item.categories?.[0] || "Maintenance"}
                         </p>
-                        <p className="text-[16px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
+                        <p className="text-[11.2px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
                           {format(new Date(item.date), "dd MMM")} • {km(item.odometer)}
                         </p>
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-[20px] sm:text-sm font-black text-primary">
+                      <p className="text-[14px] sm:text-sm font-black text-primary">
                         ${Number(item.total_cost).toFixed(2)}
                       </p>
                     </div>
@@ -522,7 +522,7 @@ function Overview() {
             <div className="space-y-2 sm:space-y-4 w-full">
               <div className="flex items-center gap-2 px-1 mb-1">
                 <Fuel className="size-3 sm:size-4 text-amber-500" />
-                <span className="text-[18px] sm:text-xs font-black uppercase tracking-wider text-muted-foreground">Fuel</span>
+                <span className="text-[12.6px] sm:text-xs font-black uppercase tracking-wider text-muted-foreground">Fuel</span>
               </div>
               {history?.fuel && history.fuel.length > 0 ? (
                 history.fuel.slice(0, 3).map((item: any) => (
@@ -532,16 +532,16 @@ function Overview() {
                         <Fuel className="size-3.5 sm:size-5" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[20px] sm:text-sm font-black leading-tight group-hover:text-amber-500 transition-colors truncate uppercase">
+                        <p className="text-[14px] sm:text-sm font-black leading-tight group-hover:text-amber-500 transition-colors truncate uppercase">
                           {item.gas_station || "Fuel Fill"}
                         </p>
-                        <p className="text-[16px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
+                        <p className="text-[11.2px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
                           {format(new Date(item.date), "dd MMM")} • {km(item.odometer)}
                         </p>
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-[20px] sm:text-sm font-black text-amber-500">
+                      <p className="text-[14px] sm:text-sm font-black text-amber-500">
                         ${Number(item.amount).toFixed(2)}
                       </p>
                     </div>
