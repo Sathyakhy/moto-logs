@@ -332,7 +332,7 @@ function Overview() {
         </div>
 
         {/* Recent History */}
-        <section className="space-y-3 pt-4">
+        <section className="space-y-4 pt-4">
           <div className="flex items-center justify-between px-1">
             <h3 className="label-caps flex items-center gap-2">
               <History className="size-3 text-primary" />
@@ -350,35 +350,78 @@ function Overview() {
             )}
           </div>
           
-          <div className="space-y-2">
-            {history?.maintenance && history.maintenance.length > 0 ? (
-              history.maintenance.slice(0, 3).map((item: any) => (
-                <div key={item.id} className="panel p-3 flex items-center justify-between hover:bg-secondary/20 transition-colors group">
-                  <div className="flex items-center gap-3">
-                    <div className="size-8 rounded bg-primary/10 flex items-center justify-center text-primary">
-                      <Wrench className="size-3.5" />
-                    </div>
-                    <div>
-                      <p className="text-[11px] font-bold leading-tight group-hover:text-primary transition-colors">
-                        {item.notes?.split('\n')[0] || item.categories?.[0] || "Maintenance"}
-                      </p>
-                      <p className="text-[9px] text-muted-foreground">
-                        {format(new Date(item.date), "dd MMM yyyy")} • {km(item.odometer)}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[11px] font-bold text-primary">
-                      ${Number(item.total_cost).toFixed(2)}
-                    </p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="panel p-6 text-center">
-                <p className="text-[10px] text-muted-foreground italic">No recent logs</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+            {/* Maintenance History */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 px-1 mb-1">
+                <Wrench className="size-3 text-primary" />
+                <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Maintenance</span>
               </div>
-            )}
+              {history?.maintenance && history.maintenance.length > 0 ? (
+                history.maintenance.slice(0, 3).map((item: any) => (
+                  <div key={item.id} className="panel p-3 flex items-center justify-between hover:bg-secondary/20 transition-colors group">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="size-7 rounded bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                        <Wrench className="size-3" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-bold leading-tight group-hover:text-primary transition-colors truncate">
+                          {item.notes?.split('\n')[0] || item.categories?.[0] || "Maintenance"}
+                        </p>
+                        <p className="text-[8px] text-muted-foreground mt-0.5">
+                          {format(new Date(item.date), "dd MMM")} • {km(item.odometer)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-[10px] font-bold text-primary">
+                        ${Number(item.total_cost).toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="panel p-4 text-center border-dashed">
+                  <p className="text-[9px] text-muted-foreground italic">No logs</p>
+                </div>
+              )}
+            </div>
+
+            {/* Fuel History */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 px-1 mb-1">
+                <Fuel className="size-3 text-amber-500" />
+                <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Fuel</span>
+              </div>
+              {history?.fuel && history.fuel.length > 0 ? (
+                history.fuel.slice(0, 3).map((item: any) => (
+                  <div key={item.id} className="panel p-3 flex items-center justify-between hover:bg-secondary/20 transition-colors group">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="size-7 rounded bg-amber-500/10 flex items-center justify-center text-amber-500 shrink-0">
+                        <Fuel className="size-3" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-bold leading-tight group-hover:text-amber-500 transition-colors truncate">
+                          {item.gas_station || "Fuel Fill"}
+                        </p>
+                        <p className="text-[8px] text-muted-foreground mt-0.5">
+                          {format(new Date(item.date), "dd MMM")} • {km(item.odometer)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-[10px] font-bold text-amber-500">
+                        ${Number(item.amount).toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="panel p-4 text-center border-dashed">
+                  <p className="text-[9px] text-muted-foreground italic">No logs</p>
+                </div>
+              )}
+            </div>
           </div>
         </section>
       </div>
