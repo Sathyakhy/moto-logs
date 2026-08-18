@@ -260,6 +260,16 @@ a[href*="lovable.app"] {
   }
 }
 
+@utility bike-bg-premium {
+  background: radial-gradient(circle at 50% 50%, var(--color-primary) / 15%, transparent 70%);
+  filter: drop-shadow(0 20px 30px oklch(0 0 0 / 0.4));
+}
+
+@utility bike-bg-premium-lg {
+  background: radial-gradient(circle at 50% 50%, var(--color-primary) / 20%, transparent 75%);
+  filter: drop-shadow(0 30px 60px oklch(0 0 0 / 0.5));
+}
+
 /* Allow input selection */
 input, textarea {
   user-select: text !important;
