@@ -163,8 +163,8 @@
     color-scheme: dark;
     -webkit-tap-highlight-color: transparent;
     touch-action: pan-x pan-y;
-    user-select: none;
-    -webkit-user-select: none;
+    user-select: auto;
+    -webkit-user-select: auto;
     overscroll-behavior: none;
   }
 
