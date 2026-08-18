@@ -15,6 +15,8 @@ export interface BikeWithStatus extends Bike {
 export function useBikes() {
   return useQuery({
     queryKey: ["bikes"],
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
     queryFn: async (): Promise<BikeWithStatus[]> => {
       const { data: bikes, error } = await supabase
         .from("bikes")
@@ -23,21 +25,25 @@ export function useBikes() {
       if (error) throw error;
       if (!bikes) return [];
 
-      // Fetch all service schedules for these bikes
-      const { data: schedules } = await supabase
-        .from("service_schedules")
-        .select("*")
-        .in("bike_id", bikes.map(b => b.id));
+      const bikeIds = bikes.map(b => b.id);
+      
+      const [schedulesRes, recordsRes] = await Promise.all([
+        supabase
+          .from("service_schedules")
+          .select("*")
+          .in("bike_id", bikeIds),
+        supabase
+          .from("maintenance_records")
+          .select("bike_id, service_date")
+          .in("bike_id", bikeIds)
+          .order("service_date", { ascending: false })
+      ]);
 
-      // Fetch latest maintenance records for these bikes
-      const { data: records } = await supabase
-        .from("maintenance_records")
-        .select("bike_id, service_date")
-        .in("bike_id", bikes.map(b => b.id))
-        .order("service_date", { ascending: false });
+      const schedules = schedulesRes.data || [];
+      const records = recordsRes.data || [];
 
       return bikes.map(bike => {
-        const bikeSchedules = schedules?.filter(s => s.bike_id === bike.id) || [];
+        const bikeSchedules = schedules.filter(s => s.bike_id === bike.id);
         const computed = bikeSchedules.map(s => computeSchedule(s as any, bike.current_odometer || 0));
         
         let status: ScheduleStatus = "good";
@@ -45,7 +51,7 @@ export function useBikes() {
         else if (computed.some(c => c.status === "due-soon")) status = "due-soon";
 
         const dueItemsCount = computed.filter(c => c.status !== "good").length;
-        const lastServiceDate = records?.find(r => r.bike_id === bike.id)?.service_date;
+        const lastServiceDate = records.find(r => r.bike_id === bike.id)?.service_date;
 
         return { ...bike, status, dueItemsCount, lastServiceDate };
       });
