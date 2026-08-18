@@ -200,6 +200,7 @@ function Overview() {
   };
 
   const oilStatus = getStatusInfo(["Engine Oil"]);
+  const gearOilStatus = getStatusInfo(["Gear Oil"]);
   const batteryStatus = getStatusInfo(["Battery"]);
   
   // Upcoming maintenance (excluding oil and battery)
