@@ -381,7 +381,9 @@ function Overview() {
                 </div>
                 {/* Spacer block to match Oil Status height without creating bottom gap */}
                 <div className="flex flex-col items-center justify-center border-t border-white/5 pt-1.5 opacity-20">
-                  <Zap className="size-6 sm:size-10 text-primary" strokeWidth={1} />
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="size-8 sm:size-12 text-primary">
+                    <path d="M4 6V4h4v2h8V4h4v2h1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h1zm11 7h-2v2h-2v-2H9v-2h2V9h2v2h2v2zM5 8v10h14V8H5z"/>
+                  </svg>
                 </div>
               </div>
             </div>
