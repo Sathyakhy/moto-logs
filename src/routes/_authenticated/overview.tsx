@@ -212,7 +212,10 @@ function Overview() {
   ]);
 
   const upcomingMaintenance = Array.from(allPossibleItems)
-    .filter(item => !item.toLowerCase().includes("oil") && !item.toLowerCase().includes("battery"))
+    .filter(item => {
+      const lower = item.toLowerCase();
+      return !lower.includes("engine oil") && !lower.includes("battery");
+    })
     .map(item => {
       // Reuse getStatusInfo logic but return the full computed object
       const info = getStatusInfo([item]);
