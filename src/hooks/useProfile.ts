@@ -14,6 +14,8 @@ export type Profile = {
 export function useProfile() {
   const query = useQuery({
     queryKey: ["profile"],
+    staleTime: 60 * 60 * 1000,
+    gcTime: 24 * 60 * 60 * 1000,
     queryFn: async (): Promise<Profile | null> => {
       const { data: auth } = await supabase.auth.getUser();
       if (!auth.user) return null;

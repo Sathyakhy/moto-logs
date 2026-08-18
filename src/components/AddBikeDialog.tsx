@@ -31,6 +31,7 @@ export function AddBikeDialog() {
   const [open, setOpen] = React.useState(false);
   const [isUploading, setIsUploading] = React.useState(false);
   const [photosPaths, setPhotosPaths] = React.useState<string[]>([]);
+  const [previews, setPreviews] = React.useState<string[]>([]);
   const { profile } = useProfile();
   const createBike = useCreateBike();
   
@@ -51,6 +52,11 @@ export function AddBikeDialog() {
 
     try {
       setIsUploading(true);
+      
+      // Create local previews for instant feedback
+      const localPreviews = Array.from(files).slice(0, 8).map(file => URL.createObjectURL(file));
+      setPreviews(localPreviews);
+
       const newPaths: string[] = [];
       for (const file of Array.from(files).slice(0, 8)) {
         const path = await uploadFile(profile.id, file, "bikes");
@@ -60,6 +66,7 @@ export function AddBikeDialog() {
       toast.success(`${newPaths.length} photos uploaded for 360 view`);
     } catch (error) {
       toast.error("Failed to upload photos");
+      setPreviews([]);
     } finally {
       setIsUploading(false);
     }
@@ -84,6 +91,7 @@ export function AddBikeDialog() {
       setOpen(false);
       form.reset();
       setPhotosPaths([]);
+      setPreviews([]);
     } catch (error) {
       toast.error("Failed to add bike");
     }
@@ -107,7 +115,11 @@ export function AddBikeDialog() {
               {isUploading ? (
                 <Loader2 className="size-8 animate-spin text-muted-foreground" />
               ) : photosPaths.length > 0 ? (
-                <div className="text-xs text-center p-2 text-muted-foreground">{photosPaths.length} Photos Ready</div>
+                <div className="size-full flex flex-wrap gap-1 p-1">
+                  {previews.map((src, i) => (
+                    <img key={i} src={src} alt="preview" className="size-[calc(50%-4px)] object-cover rounded-md" />
+                  ))}
+                </div>
               ) : (
                 <div className="flex flex-col items-center gap-2">
                   <Camera className="size-8 text-muted-foreground group-hover:text-primary transition-colors" />

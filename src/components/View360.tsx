@@ -1,9 +1,11 @@
 import * as React from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Loader2 } from "lucide-react";
 
 export function use360Photos(paths: string[] | null | undefined) {
   const [urls, setUrls] = React.useState<string[]>([]);
   const [loading, setLoading] = React.useState(false);
+  const [loadedCount, setLoadedCount] = React.useState(0);
 
   React.useEffect(() => {
     async function getUrls() {
@@ -13,10 +15,20 @@ export function use360Photos(paths: string[] | null | undefined) {
       }
 
       setLoading(true);
+      setLoadedCount(0);
       try {
-        const { data } = await supabase.storage.from("bike-files").createSignedUrls(paths, 60 * 60);
+        const { data } = await supabase.storage.from("bike-files").createSignedUrls(paths, 60 * 60 * 24);
         if (data) {
-          setUrls(data.map(d => d.signedUrl).filter(Boolean) as string[]);
+          const validUrls = data.map(d => d.signedUrl).filter(Boolean) as string[];
+          setUrls(validUrls);
+          
+          // Preload images to browser cache for smooth switching
+          validUrls.forEach((url) => {
+            const img = new Image();
+            img.src = url;
+            img.onload = () => setLoadedCount((prev) => prev + 1);
+            img.onerror = () => setLoadedCount((prev) => prev + 1);
+          });
         }
       } catch (error) {
         console.error("Error fetching 360 photos:", error);
@@ -28,7 +40,13 @@ export function use360Photos(paths: string[] | null | undefined) {
     getUrls();
   }, [paths]);
 
-  return { urls, loading };
+  const isFullyLoaded = urls.length > 0 && loadedCount >= urls.length;
+
+  return { 
+    urls, 
+    loading: loading || !isFullyLoaded, 
+    progress: urls.length > 0 ? (loadedCount / urls.length) * 100 : 0 
+  };
 }
 
 interface View360Props {
@@ -37,18 +55,28 @@ interface View360Props {
 }
 
 export function View360({ paths, className }: View360Props) {
-  const { urls, loading } = use360Photos(paths);
+  const { urls, loading, progress } = use360Photos(paths);
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [isDragging, setIsDragging] = React.useState(false);
   const startX = React.useRef(0);
-  const lastIndex = React.useRef(0);
+  const currentOffset = React.useRef(0);
 
   if (!paths || paths.length === 0) return null;
-  if (loading || urls.length === 0) {
-    return <div className={`animate-pulse bg-secondary rounded-2xl ${className}`} />;
+  
+  if (loading) {
+    return (
+      <div className={`flex flex-col items-center justify-center bg-secondary/20 rounded-2xl ${className}`}>
+        <Loader2 className="size-8 text-primary animate-spin mb-3 opacity-50" />
+        <div className="w-32 h-1 bg-white/5 rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-primary transition-all duration-500 ease-out" 
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+    );
   }
 
-  // If only one photo, just show it
   if (urls.length === 1) {
     return <img src={urls[0]} alt="Motorcycle" className={`object-contain ${className}`} />;
   }
@@ -56,21 +84,29 @@ export function View360({ paths, className }: View360Props) {
   const handleStart = (clientX: number) => {
     setIsDragging(true);
     startX.current = clientX;
-    lastIndex.current = currentIndex;
+    currentOffset.current = 0;
   };
 
   const handleMove = (clientX: number) => {
     if (!isDragging) return;
     
-    const diff = clientX - startX.current;
-    const sensitivity = 20; // pixels per image change
-    const indexChange = Math.floor(diff / sensitivity);
+    const deltaX = clientX - startX.current;
+    // Lower sensitivity = more frequent updates = smoother rotation
+    const sensitivity = 5; 
     
-    let nextIndex = (lastIndex.current + indexChange) % urls.length;
-    if (nextIndex < 0) nextIndex = urls.length + nextIndex;
+    currentOffset.current += deltaX;
+    startX.current = clientX;
+
+    const steps = Math.round(currentOffset.current / sensitivity);
     
-    if (nextIndex !== currentIndex) {
-      setCurrentIndex(nextIndex);
+    if (steps !== 0) {
+      setCurrentIndex((prev) => {
+        // Change direction: drag left (negative delta) moves to next images
+        let next = (prev - steps) % urls.length;
+        if (next < 0) next = urls.length + next;
+        return next;
+      });
+      currentOffset.current = 0;
     }
   };
 
@@ -80,7 +116,7 @@ export function View360({ paths, className }: View360Props) {
 
   return (
     <div 
-      className={`relative cursor-grab active:cursor-grabbing select-none touch-none ${className}`}
+      className={`relative cursor-grab active:cursor-grabbing select-none touch-none group ${className}`}
       onMouseDown={(e) => handleStart(e.clientX)}
       onMouseMove={(e) => handleMove(e.clientX)}
       onMouseUp={handleEnd}
@@ -94,18 +130,17 @@ export function View360({ paths, className }: View360Props) {
           key={url}
           src={url}
           alt={`Motorcycle view ${i}`}
-          className={`absolute inset-0 size-full object-contain transition-opacity duration-100 ${
-            i === currentIndex ? "opacity-100" : "opacity-0"
-          }`}
+          // Use display: block/none for zero latency switching (opacity can feel sluggish)
+          style={{ display: i === currentIndex ? 'block' : 'none' }}
+          className="absolute inset-0 size-full object-contain pointer-events-none"
           draggable={false}
         />
       ))}
       
-      {/* 360 indicator */}
-      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded-full flex items-center gap-1.5 opacity-50 group-hover:opacity-100 transition-opacity">
-        <div className="size-1 rounded-full bg-white/30" />
-        <span className="text-[8px] text-white uppercase font-bold tracking-widest">360° View</span>
-        <div className="size-1 rounded-full bg-white/30" />
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-2 opacity-40 group-hover:opacity-100 transition-all duration-300 scale-90 group-hover:scale-100 border border-white/10 pointer-events-none">
+        <div className="size-1 rounded-full bg-primary animate-pulse" />
+        <span className="text-[9px] text-white uppercase font-bold tracking-[0.2em]">360° Perspective</span>
+        <div className="size-1 rounded-full bg-primary animate-pulse" />
       </div>
     </div>
   );

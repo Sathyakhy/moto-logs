@@ -46,6 +46,7 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
   const [isUploading, setIsUploading] = React.useState(false);
   const [photoPath, setPhotoPath] = React.useState<string | null>(bike.photo_path);
   const [photosPaths, setPhotosPaths] = React.useState<string[]>(bike.photos_paths || []);
+  const [previews, setPreviews] = React.useState<string[]>([]);
   const { profile } = useProfile();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -99,6 +100,10 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
 
     try {
       setIsUploading(true);
+      
+      const localPreviews = Array.from(files).slice(0, 8).map(file => URL.createObjectURL(file));
+      setPreviews(localPreviews);
+
       const newPaths: string[] = [];
       for (const file of Array.from(files).slice(0, 8)) {
         const path = await uploadFile(profile.id, file, "bikes");
@@ -109,6 +114,7 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
       toast.success(`${newPaths.length} photos uploaded for 360 view`);
     } catch (error) {
       toast.error("Failed to upload photos");
+      setPreviews([]);
     } finally {
       setIsUploading(false);
     }
@@ -152,7 +158,15 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
               {isUploading ? (
                 <Loader2 className="size-8 animate-spin text-muted-foreground" />
               ) : photosPaths.length > 0 ? (
-                <div className="text-xs text-center p-2 text-muted-foreground">{photosPaths.length} Photos Ready</div>
+                <div className="size-full flex flex-wrap gap-1 p-1">
+                  {previews.length > 0 ? (
+                    previews.map((src, i) => (
+                      <img key={i} src={src} alt="preview" className="size-[calc(50%-4px)] object-cover rounded-md" />
+                    ))
+                  ) : (
+                    <div className="text-xs text-center p-2 text-muted-foreground">{photosPaths.length} Photos Saved</div>
+                  )}
+                </div>
               ) : (
                 <div className="flex flex-col items-center gap-2">
                   <Camera className="size-8 text-muted-foreground group-hover:text-primary transition-colors" />
