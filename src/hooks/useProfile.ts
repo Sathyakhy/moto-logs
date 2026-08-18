@@ -9,6 +9,8 @@ export type Profile = {
   display_currency: Currency;
   khr_per_usd: number;
   default_maintenance_schedule?: any;
+  app_name?: string | null;
+  app_logo_path?: string | null;
 };
 
 export function useProfile() {
