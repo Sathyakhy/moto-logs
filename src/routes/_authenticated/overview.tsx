@@ -355,11 +355,11 @@ function Overview() {
                   </p>
                 </div>
                 <div className="flex flex-col border-t border-white/5 pt-1.5">
-                  <p className="text-[7px] sm:text-[9px] font-black text-muted-foreground uppercase leading-none mb-0.5">Gear</p>
-                  <p className="text-[10px] sm:text-sm font-black leading-tight">
+                  <p className="text-[14px] sm:text-[9px] font-black text-muted-foreground uppercase leading-none mb-0.5">Gear</p>
+                  <p className="text-[20px] sm:text-sm font-black leading-tight">
                     {gearOilStatus.kmDaysText}
                   </p>
-                  <p className="text-[8px] sm:text-[11px] font-bold text-muted-foreground">
+                  <p className="text-[16px] sm:text-[11px] font-bold text-muted-foreground">
                     {gearOilStatus.dateText}
                   </p>
                 </div>
