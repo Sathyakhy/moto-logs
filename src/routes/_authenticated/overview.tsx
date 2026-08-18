@@ -169,7 +169,7 @@ function Overview() {
     );
     
     const dateText = computed.estimatedDate 
-      ? `(Est ${format(new Date(computed.estimatedDate), "dd-MMM-yy")})`
+      ? `Est ${format(new Date(computed.estimatedDate), "dd-MMM-yy")}`
       : "";
     
     const itemLower = primaryCategory.toLowerCase();
@@ -179,27 +179,21 @@ function Overview() {
         ? 'replacement' 
         : 'service';
 
-    let statusText = "";
+    let kmDaysText = "";
     if (scheduleRow.interval_km === 0) {
-      // Time based only display
       if (computed.remainingDays !== null) {
         const absDays = Math.abs(computed.remainingDays);
-        if (computed.remainingDays < 0) {
-          statusText = `${absDays} Days overdue ${dateText}`;
-        } else {
-          statusText = `${absDays} Days until next ${actionLabel} ${dateText}`;
-        }
+        kmDaysText = `${absDays} Days Until next ${actionLabel}`;
       } else {
-        statusText = "No schedule set";
+        kmDaysText = "No schedule set";
       }
     } else {
-      statusText = computed.status === "overdue" 
-        ? `${Math.abs(computed.remainingKm)}KM overdue ${dateText}`
-        : `${computed.remainingKm}KM until next ${actionLabel} ${dateText}`;
+      kmDaysText = `${Math.abs(computed.remainingKm)}KM Until next ${actionLabel}`;
     }
 
     return {
-      text: statusText,
+      kmDaysText,
+      dateText,
       status: computed.status,
       item: s!.item
     };
