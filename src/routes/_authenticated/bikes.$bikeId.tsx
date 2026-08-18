@@ -173,7 +173,7 @@ function BikeDetail() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-8 items-start">
                 {/* Maintenance Column */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 px-1">
