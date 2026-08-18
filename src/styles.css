@@ -162,7 +162,7 @@
     position: fixed;
     color-scheme: dark;
     -webkit-tap-highlight-color: transparent;
-    touch-action: none;
+    touch-action: pan-x pan-y;
     user-select: none;
     -webkit-user-select: none;
     overscroll-behavior: none;
