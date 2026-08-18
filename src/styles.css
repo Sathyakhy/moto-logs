@@ -158,16 +158,22 @@
   html, body {
     height: 100%;
     width: 100%;
-    overflow-x: hidden;
+    overflow: hidden;
+    position: fixed;
     color-scheme: dark;
     -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    overscroll-behavior: none;
   }
 
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     background-image:
       radial-gradient(ellipse 80% 50% at 50% -10%, var(--primary) / 8%, transparent),
       linear-gradient(var(--foreground) / 2% 1px, transparent 1px);
