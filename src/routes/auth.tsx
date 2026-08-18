@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
+import { AuthLoading } from "@/components/AuthLoading";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -40,10 +41,15 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
 
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => {
-      if (data.session) void navigate({ to: "/dashboard" });
+      if (data.session) {
+        void navigate({ to: "/dashboard" });
+      } else {
+        setCheckingSession(false);
+      }
     });
   }, [navigate]);
 
@@ -98,6 +104,10 @@ function AuthPage() {
     }
     if (result.redirected) return;
     void navigate({ to: "/dashboard" });
+  }
+
+  if (checkingSession) {
+    return <AuthLoading />;
   }
 
   return (
