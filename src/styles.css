@@ -254,6 +254,7 @@ a[href*="lovable.app"] {
 
 @utility label-caps {
   font-size: 0.7rem;
+  font-weight: 900;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-muted-foreground);

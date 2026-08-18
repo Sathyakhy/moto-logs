@@ -183,12 +183,12 @@ function Overview() {
     if (scheduleRow.interval_km === 0) {
       if (computed.remainingDays !== null) {
         const absDays = Math.abs(computed.remainingDays);
-        kmDaysText = `${absDays} Days Until next ${actionLabel}`;
+        kmDaysText = `${absDays} Days until next ${actionLabel}`;
       } else {
         kmDaysText = "No schedule set";
       }
     } else {
-      kmDaysText = `${Math.abs(computed.remainingKm)}KM Until next ${actionLabel}`;
+      kmDaysText = `${Math.abs(computed.remainingKm)}KM until next ${actionLabel}`;
     }
 
     return {
@@ -268,19 +268,19 @@ function Overview() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-primary/80">
                   <Gauge className="size-4" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider">Current Mileage</span>
+                  <span className="text-[10px] font-black uppercase tracking-wider">Current Mileage</span>
                 </div>
                 {!isUpdatingOdo ? (
                   <button 
                     onClick={() => setIsUpdatingOdo(true)}
-                    className="text-[10px] font-bold uppercase text-primary hover:underline"
+                    className="text-[10px] font-black uppercase text-primary hover:underline"
                   >
                     Update
                   </button>
                 ) : (
                   <button 
                     onClick={() => setIsUpdatingOdo(false)}
-                    className="text-[10px] font-bold uppercase text-muted-foreground hover:underline"
+                    className="text-[10px] font-black uppercase text-muted-foreground hover:underline"
                   >
                     Cancel
                   </button>
@@ -301,10 +301,10 @@ function Overview() {
                       type="number"
                       value={odometerValue}
                       onChange={(e) => setOdometerValue(e.target.value)}
-                      className="h-10 text-xl font-mono font-bold pr-10"
+                      className="h-10 text-xl font-mono font-black pr-10"
                       autoFocus
                     />
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">KM</div>
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-muted-foreground">KM</div>
                   </div>
                   <Button 
                     type="submit" 
@@ -331,13 +331,13 @@ function Overview() {
             }`}>
               <div className="flex items-center gap-2 text-primary/80 mb-2">
                 <Droplets className="size-4" />
-                <span className="text-[10px] font-black uppercase tracking-wider">Oil Status</span>
+                <span className="text-[10px] font-black uppercase tracking-wider">OIL STATUS</span>
               </div>
               <div className="flex flex-col">
-                <p className="text-[10px] font-bold leading-tight">
+                <p className="text-[10px] font-black leading-tight">
                   {oilStatus.kmDaysText}
                 </p>
-                <p className="text-[9px] font-medium text-muted-foreground mt-0.5">
+                <p className="text-[9px] font-bold text-muted-foreground mt-0.5">
                   {oilStatus.dateText}
                 </p>
               </div>
@@ -351,13 +351,13 @@ function Overview() {
             }`}>
               <div className="flex items-center gap-2 text-primary/80 mb-2">
                 <Zap className="size-4" />
-                <span className="text-[10px] font-black uppercase tracking-wider">Battery</span>
+                <span className="text-[10px] font-black uppercase tracking-wider">BATTERY</span>
               </div>
               <div className="flex flex-col">
-                <p className="text-[10px] font-bold leading-tight">
+                <p className="text-[10px] font-black leading-tight">
                   {batteryStatus.kmDaysText}
                 </p>
-                <p className="text-[9px] font-medium text-muted-foreground mt-0.5">
+                <p className="text-[9px] font-bold text-muted-foreground mt-0.5">
                   {batteryStatus.dateText}
                 </p>
               </div>
@@ -367,15 +367,15 @@ function Overview() {
             <div className="panel p-4 col-span-2 flex flex-col justify-between min-h-[110px] border-l-4 border-l-primary">
               <div className="flex items-center gap-2 text-primary/80 mb-3">
                 <Clock className="size-4" />
-                <span className="text-[10px] font-black uppercase tracking-wider">Upcoming Maintenance</span>
+                <span className="text-[10px] font-black uppercase tracking-wider">UPCOMING MAINTENANCE</span>
               </div>
               {upcomingMaintenance && (upcomingMaintenance as any[]).length > 0 ? (
                 <div className="space-y-3">
                   {(upcomingMaintenance as any[]).map((task, idx) => (
                     <div key={idx} className="flex justify-between items-center gap-2 pb-1.5 last:pb-0 border-b last:border-0 border-white/5">
                       <div className="space-y-0.5">
-                        <p className="text-[10px] font-bold text-primary leading-tight uppercase">{task.item}</p>
-                        <p className="text-[9px] font-medium leading-tight text-muted-foreground">
+                        <p className="text-[10px] font-black text-primary leading-tight uppercase">{task.item}</p>
+                        <p className="text-[9px] font-bold leading-tight text-muted-foreground">
                           {task.computed.status === "overdue" 
                             ? `Overdue by ${Math.abs(task.computed.remainingKm)}KM`
                             : `In ${task.computed.remainingKm}KM`}
@@ -443,7 +443,7 @@ function Overview() {
                 to="/bikes/$bikeId" 
                 params={{ bikeId: bike.id }} 
                 search={{ tab: 'history' }}
-                className="text-[10px] font-bold uppercase tracking-widest text-primary hover:underline"
+                className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline"
               >
                 View All
               </Link>
@@ -455,7 +455,7 @@ function Overview() {
             <div className="space-y-2">
               <div className="flex items-center gap-2 px-1 mb-1">
                 <Wrench className="size-3 text-primary" />
-                <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Maintenance</span>
+                <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground">Maintenance</span>
               </div>
               {history?.maintenance && history.maintenance.length > 0 ? (
                 history.maintenance.slice(0, 3).map((item: any) => (
@@ -465,16 +465,16 @@ function Overview() {
                         <Wrench className="size-3" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[10px] font-bold leading-tight group-hover:text-primary transition-colors truncate">
+                        <p className="text-[10px] font-black leading-tight group-hover:text-primary transition-colors truncate">
                           {item.notes?.split('\n')[0] || item.categories?.[0] || "Maintenance"}
                         </p>
-                        <p className="text-[8px] text-muted-foreground mt-0.5">
+                        <p className="text-[8px] font-bold text-muted-foreground mt-0.5">
                           {format(new Date(item.date), "dd MMM")} • {km(item.odometer)}
                         </p>
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-[10px] font-bold text-primary">
+                      <p className="text-[10px] font-black text-primary">
                         ${Number(item.total_cost).toFixed(2)}
                       </p>
                     </div>
@@ -491,7 +491,7 @@ function Overview() {
             <div className="space-y-2">
               <div className="flex items-center gap-2 px-1 mb-1">
                 <Fuel className="size-3 text-amber-500" />
-                <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Fuel</span>
+                <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground">Fuel</span>
               </div>
               {history?.fuel && history.fuel.length > 0 ? (
                 history.fuel.slice(0, 3).map((item: any) => (
@@ -501,16 +501,16 @@ function Overview() {
                         <Fuel className="size-3" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[10px] font-bold leading-tight group-hover:text-amber-500 transition-colors truncate">
+                        <p className="text-[10px] font-black leading-tight group-hover:text-amber-500 transition-colors truncate">
                           {item.gas_station || "Fuel Fill"}
                         </p>
-                        <p className="text-[8px] text-muted-foreground mt-0.5">
+                        <p className="text-[8px] font-bold text-muted-foreground mt-0.5">
                           {format(new Date(item.date), "dd MMM")} • {km(item.odometer)}
                         </p>
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-[10px] font-bold text-amber-500">
+                      <p className="text-[10px] font-black text-amber-500">
                         ${Number(item.amount).toFixed(2)}
                       </p>
                     </div>
