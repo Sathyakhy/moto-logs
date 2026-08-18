@@ -155,9 +155,16 @@
     border-color: var(--color-border);
   }
 
-  html {
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: fixed;
     color-scheme: dark;
     -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
   }
 
   body {
@@ -230,4 +237,20 @@ a[href*="lovable.app"] {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-muted-foreground);
+}
+
+@layer utilities {
+  .active-press {
+    transition: transform 0.1s ease, opacity 0.1s ease;
+  }
+  .active-press:active {
+    transform: scale(0.97);
+    opacity: 0.8;
+  }
+}
+
+/* Allow input selection */
+input, textarea {
+  user-select: text !important;
+  -webkit-user-select: text !important;
 }
