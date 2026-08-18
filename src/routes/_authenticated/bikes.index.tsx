@@ -60,7 +60,7 @@ function Bikes() {
                 className="block"
               >
 
-                <div className="aspect-video w-full bg-secondary relative overflow-hidden">
+                <div className="aspect-video w-full bg-secondary relative overflow-hidden bike-bg-premium">
                   {bike.photos_paths && bike.photos_paths.length > 1 ? (
                     <View360 paths={bike.photos_paths} className="size-full" />
                   ) : bike.photo_path ? (
@@ -206,7 +206,7 @@ function BikeImage({ path }: { path: string }) {
     <img 
       src={url} 
       alt="Motorcycle" 
-      className="h-full w-full object-contain bg-white transition-transform duration-500 group-hover:scale-105" 
+      className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105" 
     />
   );
 }
