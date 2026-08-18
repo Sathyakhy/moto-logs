@@ -43,6 +43,8 @@ export function AppShell({
 }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { profile } = useProfile();
+  const { data: logoUrl } = useSignedUrl(profile?.app_logo_path || "");
 
   async function signOut() {
     await supabase.auth.signOut();
