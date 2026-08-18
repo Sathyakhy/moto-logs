@@ -337,7 +337,7 @@ function Overview() {
                 <p className="text-[10px] font-black leading-tight">
                   {oilStatus.kmDaysText}
                 </p>
-                <p className="text-[9px] font-medium text-muted-foreground mt-0.5">
+                <p className="text-[9px] font-bold text-muted-foreground mt-0.5">
                   {oilStatus.dateText}
                 </p>
               </div>
