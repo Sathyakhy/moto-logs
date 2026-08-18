@@ -300,10 +300,10 @@ function Overview() {
               
               {!isUpdatingOdo ? (
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl sm:text-5xl font-bold tracking-tighter text-primary leading-none" style={{ fontFamily: 'Digital-7' }}>
+                  <span className="text-6xl sm:text-5xl font-bold tracking-tighter text-primary leading-none" style={{ fontFamily: 'Digital-7' }}>
                     {bike.current_odometer?.toLocaleString()}
                   </span>
-                  <span className="text-[10px] sm:text-sm font-black text-muted-foreground uppercase tracking-widest">KM</span>
+                  <span className="text-[20px] sm:text-sm font-black text-muted-foreground uppercase tracking-widest">KM</span>
                 </div>
               ) : (
                 <form onSubmit={handleOdoSubmit} className="flex gap-2">
