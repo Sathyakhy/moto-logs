@@ -474,7 +474,7 @@ function Overview() {
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-[10px] font-bold text-primary">
+                      <p className="text-[10px] font-black text-primary">
                         ${Number(item.total_cost).toFixed(2)}
                       </p>
                     </div>
