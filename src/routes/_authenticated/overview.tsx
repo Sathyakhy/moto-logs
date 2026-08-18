@@ -413,7 +413,7 @@ function Overview() {
                           {task.computed.estimatedDate && ` — Est ${format(new Date(task.computed.estimatedDate), "dd-MMM-yy")}`}
                         </p>
                       </div>
-                      <div className={`text-[7px] sm:text-[10px] px-1.5 sm:px-2.5 py-0.5 rounded-full uppercase font-black shrink-0 ${
+                      <div className={`text-[14px] sm:text-[10px] px-1.5 sm:px-2.5 py-0.5 rounded-full uppercase font-black shrink-0 ${
                         task.computed.status === 'overdue' ? 'bg-destructive/20 text-destructive' :
                         task.computed.status === 'due-soon' ? 'bg-amber-500/20 text-amber-500' :
                         'bg-primary/20 text-primary'
