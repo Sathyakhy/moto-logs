@@ -91,6 +91,7 @@ export function AddBikeDialog() {
       setOpen(false);
       form.reset();
       setPhotosPaths([]);
+      setPreviews([]);
     } catch (error) {
       toast.error("Failed to add bike");
     }
