@@ -157,7 +157,14 @@ function Overview() {
     ?.filter(s => !s.item.toLowerCase().includes("oil") && !s.item.toLowerCase().includes("battery"))
     .map(s => ({
       ...s,
-      computed: computeSchedule(s as any, bike?.current_odometer || 0, dailyUsage)
+      computed: computeSchedule({
+        id: s.id,
+        item: s.item,
+        interval_km: Number(s.interval_km),
+        interval_days: s.interval_days ? Number(s.interval_days) : null,
+        last_service_odometer: Number(s.last_service_odometer || 0),
+        last_service_date: s.last_service_date || null
+      } as any, bike?.current_odometer || 0, dailyUsage)
     }))
     .sort((a, b) => a.computed.remainingKm - b.computed.remainingKm)[0];
 
