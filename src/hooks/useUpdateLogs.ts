@@ -14,31 +14,49 @@ async function updateScheduleFromMaintenance(
   odometer: number,
   date: string
 ) {
-  // Find schedules matching these categories
+  // 1. Fetch current bike schedules
   const { data: schedules } = await supabase
     .from("service_schedules")
     .select("id, item")
     .eq("bike_id", bikeId);
 
-  if (!schedules) return;
+  // 2. Fetch user's default intervals from profile
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("default_maintenance_schedule")
+    .eq("id", userId)
+    .single();
 
-  const updates = schedules
-    .filter(s => categories.includes(s.item))
-    .map(s => ({
-      id: s.id,
-      last_service_odometer: odometer,
-      last_service_date: date,
-    }));
+  const defaultSchedule = (profile?.default_maintenance_schedule as any[]) || [];
 
-  if (updates.length > 0) {
-    for (const update of updates) {
+  for (const category of categories) {
+    const existing = schedules?.find(s => s.item === category);
+    
+    if (existing) {
+      // Update existing schedule
       await supabase
         .from("service_schedules")
         .update({
-          last_service_odometer: update.last_service_odometer,
-          last_service_date: update.last_service_date,
+          last_service_odometer: odometer,
+          last_service_date: date,
         })
-        .eq("id", update.id);
+        .eq("id", existing.id);
+    } else {
+      // Find default interval for this category
+      const def = defaultSchedule.find(d => d.item === category);
+      if (def) {
+        // Create new schedule entry automatically
+        await supabase
+          .from("service_schedules")
+          .insert({
+            bike_id: bikeId,
+            item: category,
+            interval_km: def.interval_km,
+            interval_days: def.interval_days || null,
+            last_service_odometer: odometer,
+            last_service_date: date,
+          });
+      }
     }
   }
 }
