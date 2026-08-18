@@ -46,7 +46,7 @@ function AuthPage() {
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => {
       if (data.session) {
-        void navigate({ to: "/dashboard" });
+        void navigate({ to: "/bikes" });
       } else {
         setCheckingSession(false);
       }
@@ -66,7 +66,7 @@ function AuthPage() {
       toast.error(error.message);
       return;
     }
-    void navigate({ to: "/dashboard" });
+    void navigate({ to: "/bikes" });
   }
 
   async function signUp() {
@@ -79,7 +79,7 @@ function AuthPage() {
     const { error } = await supabase.auth.signUp({
       ...parsed.data,
       options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+        emailRedirectTo: `${window.location.origin}/bikes`,
         data: { display_name: name.trim().slice(0, 80) || null },
       },
     });
@@ -89,7 +89,7 @@ function AuthPage() {
       return;
     }
     toast.success("Account created — you're in.");
-    void navigate({ to: "/dashboard" });
+    void navigate({ to: "/bikes" });
   }
 
   async function google() {
@@ -103,7 +103,7 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
-    void navigate({ to: "/dashboard" });
+    void navigate({ to: "/bikes" });
   }
 
   if (checkingSession) {
