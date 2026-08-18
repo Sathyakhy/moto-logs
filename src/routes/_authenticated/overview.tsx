@@ -256,7 +256,7 @@ function Overview() {
         {/* Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.
                                         
                                             
-                                            Lost the 360 Perspective */}
+                                            it is right on top of the bike now */}
       </div>
 
       <div className="flex flex-col items-center mb-6 overflow-hidden">
