@@ -200,6 +200,10 @@ a[href*="lovable.app"] {
   visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
+  z-index: -9999 !important;
+  max-width: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
 }
 
 @utility text-display {
