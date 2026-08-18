@@ -252,7 +252,7 @@ function Overview() {
   return (
     <AppShell title="Vehicle Care" subtitle={bike ? `${bike.model || ''} ${bike.year || ''}`.trim() : "Welcome to your garage"}>
       <div className="flex flex-col items-center mb-6 overflow-hidden">
-        <div className="relative w-[115%] -mx-[7.5%] aspect-video sm:aspect-[4/3] sm:w-full sm:max-w-md flex items-center justify-center mb-6 group bike-bg-premium-lg z-0">
+        <div className="relative w-[115%] -mx-[7.5%] aspect-video sm:aspect-video md:aspect-[21/9] sm:w-full sm:max-w-4xl flex items-center justify-center mb-6 group bike-bg-premium-lg z-0">
           {bike?.photos_paths && bike.photos_paths.length > 0 ? (
             <View360 paths={bike.photos_paths} className="size-full" />
           ) : bike?.photo_path ? (
@@ -326,7 +326,7 @@ function Overview() {
 
         {/* Vehicle Status Section */}
         <section className="space-y-4">
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
             {/* Engine & Gear Oil Status Combined */}
             <div className={`panel p-3 sm:p-5 flex flex-col justify-between min-h-[100px] sm:min-h-[140px] border-l-4 ${
               oilStatus.status === 'overdue' || gearOilStatus.status === 'overdue' ? 'border-l-destructive' :
@@ -380,15 +380,15 @@ function Overview() {
                   </p>
                 </div>
                 {/* Spacer block to match Oil Status height without creating bottom gap */}
-                <div className="flex flex-col items-center justify-center border-t border-white/5 pt-1.5 opacity-100">
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="size-8 sm:size-12 text-primary">
+                <div className="flex flex-col items-center justify-center border-t border-white/5 pt-1.5 opacity-100 flex-1 min-h-[40px]">
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="size-8 sm:size-10 lg:size-12 text-primary">
                     <path d="M4 6V4h4v2h8V4h4v2h1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h1zm11 7h-2v2h-2v-2H9v-2h2V9h2v2h2v2zM5 8v10h14V8H5z"/>
                   </svg>
                 </div>
               </div>
             </div>
 
-            <div className="panel p-3 sm:p-5 col-span-2 flex flex-col justify-between min-h-[100px] sm:min-h-[140px] border-l-4 border-l-primary">
+            <div className="panel p-3 sm:p-5 col-span-2 flex flex-col justify-between min-h-[100px] sm:min-h-[140px] border-l-4 border-l-primary w-full">
               <div className="flex items-center gap-2 text-primary/80 mb-2 sm:mb-4">
                 <Clock className="size-3.5 sm:size-5" />
                 <span className="text-[9px] sm:text-xs font-black uppercase tracking-wider">UPCOMING MAINTENANCE</span>
@@ -424,7 +424,7 @@ function Overview() {
         </section>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-6 pt-2">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 lg:gap-8 pt-2">
           {bike && (
             <>
               <LogMaintenanceDialog 
