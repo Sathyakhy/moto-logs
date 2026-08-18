@@ -331,11 +331,16 @@ function Overview() {
             }`}>
               <div className="flex items-center gap-2 text-primary/80 mb-2">
                 <Droplets className="size-4" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Oil Status</span>
+                <span className="text-[10px] font-black uppercase tracking-wider">Oil Status</span>
               </div>
-              <p className="text-[11px] font-medium leading-relaxed">
-                {oilStatus.text}
-              </p>
+              <div className="flex flex-col">
+                <p className="text-[11px] font-bold leading-tight">
+                  {oilStatus.kmDaysText}
+                </p>
+                <p className="text-[10px] font-medium text-muted-foreground mt-0.5">
+                  {oilStatus.dateText}
+                </p>
+              </div>
             </div>
 
             {/* Battery Status */}
@@ -346,11 +351,16 @@ function Overview() {
             }`}>
               <div className="flex items-center gap-2 text-primary/80 mb-2">
                 <Zap className="size-4" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Battery</span>
+                <span className="text-[10px] font-black uppercase tracking-wider">Battery</span>
               </div>
-              <p className="text-[11px] font-medium leading-relaxed">
-                {batteryStatus.text}
-              </p>
+              <div className="flex flex-col">
+                <p className="text-[11px] font-bold leading-tight">
+                  {batteryStatus.kmDaysText}
+                </p>
+                <p className="text-[10px] font-medium text-muted-foreground mt-0.5">
+                  {batteryStatus.dateText}
+                </p>
+              </div>
             </div>
 
             {/* Upcoming Maintenance */}
