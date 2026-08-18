@@ -168,6 +168,65 @@ function Overview() {
       </div>
 
       <div className="space-y-4">
+        {/* Odometer Tracker Section */}
+        {bike && (
+          <section className="px-1">
+            <div className="panel p-4 border-l-4 border-l-primary flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-primary/80">
+                  <Gauge className="size-4" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider">Current Mileage</span>
+                </div>
+                {!isUpdatingOdo ? (
+                  <button 
+                    onClick={() => setIsUpdatingOdo(true)}
+                    className="text-[10px] font-bold uppercase text-primary hover:underline"
+                  >
+                    Update
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => setIsUpdatingOdo(false)}
+                    className="text-[10px] font-bold uppercase text-muted-foreground hover:underline"
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
+              
+              {!isUpdatingOdo ? (
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-mono font-bold tracking-tighter text-primary">
+                    {bike.current_odometer?.toLocaleString()}
+                  </span>
+                  <span className="text-sm font-bold text-muted-foreground uppercase">KM</span>
+                </div>
+              ) : (
+                <form onSubmit={handleOdoSubmit} className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Input
+                      type="number"
+                      value={odometerValue}
+                      onChange={(e) => setOdometerValue(e.target.value)}
+                      className="h-10 text-xl font-mono font-bold pr-10"
+                      autoFocus
+                    />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">KM</div>
+                  </div>
+                  <Button 
+                    type="submit" 
+                    size="icon" 
+                    className="h-10 w-10 shrink-0 shadow-lg shadow-primary/20"
+                    disabled={updateOdometerMutation.isPending}
+                  >
+                    <Check className="size-4" />
+                  </Button>
+                </form>
+              )}
+            </div>
+          </section>
+        )}
+
         {/* Vehicle Status Section */}
         <section className="space-y-3">
           
