@@ -100,6 +100,10 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
 
     try {
       setIsUploading(true);
+      
+      const localPreviews = Array.from(files).slice(0, 8).map(file => URL.createObjectURL(file));
+      setPreviews(localPreviews);
+
       const newPaths: string[] = [];
       for (const file of Array.from(files).slice(0, 8)) {
         const path = await uploadFile(profile.id, file, "bikes");
@@ -110,6 +114,7 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
       toast.success(`${newPaths.length} photos uploaded for 360 view`);
     } catch (error) {
       toast.error("Failed to upload photos");
+      setPreviews([]);
     } finally {
       setIsUploading(false);
     }
