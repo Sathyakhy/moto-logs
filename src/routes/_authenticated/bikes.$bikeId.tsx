@@ -126,10 +126,6 @@ function BikeDetail() {
               <History className="size-4" />
               History
             </TabsTrigger>
-            <TabsTrigger value="fuel" className="gap-2">
-              <Fuel className="size-4" />
-              Fuel Logs
-            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="schedule" className="mt-6 space-y-4">
@@ -164,122 +160,107 @@ function BikeDetail() {
           </TabsContent>
 
           <TabsContent value="history" className="mt-6">
-            {history && history.length > 0 ? (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-display text-2xl">Service History</h2>
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-display text-2xl">History</h2>
+                <div className="flex gap-2">
                   <LogMaintenanceDialog bikeId={bikeId} currentOdometer={bike.current_odometer || 0} />
-                </div>
-                <div className="grid gap-4">
-                  {history.map((record) => (
-                    <LogMaintenanceDialog 
-                      key={record.id}
-                      bikeId={bikeId} 
-                      editRecord={record}
-                      trigger={
-                        <div className="panel p-5 cursor-pointer hover:bg-secondary/20 transition-colors group">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <h3 className="font-bold group-hover:text-primary transition-colors">
-                                {record.notes?.split('\n')[0] || record.categories?.[0] || "Service Record"}
-                              </h3>
-                              <p className="text-sm text-muted-foreground">
-                                {new Date(record.service_date).toLocaleDateString()} • {km(record.odometer)}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="num font-bold text-primary">${Number(record.total_cost).toFixed(2)}</p>
-                              {record.workshop && <p className="text-xs text-muted-foreground">{record.workshop}</p>}
-                            </div>
-                          </div>
-                        </div>
-                      }
-                    />
-                  ))}
-
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border p-12 text-center">
-                <Wrench className="size-12 text-muted-foreground/50 mb-4" />
-                <h3 className="text-lg font-semibold">No history logs</h3>
-                <p className="text-muted-foreground mb-6">Start logging maintenance records to see them here.</p>
-                <LogMaintenanceDialog bikeId={bikeId} currentOdometer={bike.current_odometer || 0} />
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="fuel" className="mt-6">
-            {fuelLogs && fuelLogs.length > 0 ? (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-display text-2xl">Fuel History</h2>
                   <LogFuelDialog 
                     bikeId={bikeId} 
-                    currentOdometer={bike.current_odometer || 0} 
-                    trigger={
-                      <Button size="sm" className="gap-2">
-                        <Plus className="size-4" />
-                        Log Fuel
-                      </Button>
-                    }
+                    currentOdometer={bike.current_odometer || 0}
+                    trigger={<Button size="sm" variant="outline" className="gap-2 h-10 border-amber-500/20 text-amber-500 hover:bg-amber-500/10"><Plus className="size-4" />Log Fuel</Button>}
                   />
                 </div>
-                <div className="grid gap-4">
-                  {fuelLogs.map((log) => (
-                    <LogFuelDialog 
-                      key={log.id}
-                      bikeId={bikeId} 
-                      editLog={log}
-                      trigger={
-                        <div className="panel p-5 cursor-pointer hover:bg-secondary/20 transition-colors group">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <h3 className="font-bold group-hover:text-amber-500 transition-colors">
-                                {log.gas_station || "Fuel Fill"}
-                              </h3>
-                              <p className="text-sm text-muted-foreground">
-                                {new Date(log.fill_date).toLocaleDateString()} • {km(log.odometer)}
-                              </p>
-                              <div className="mt-2 flex gap-4 text-xs font-medium">
-                                <span className="bg-secondary/50 px-2 py-1 rounded">{log.liters} L</span>
-                                {log.fuel_type && <span className="bg-secondary/50 px-2 py-1 rounded">{log.fuel_type}</span>}
-                                {log.price_per_liter && (
-                                  <span className="text-muted-foreground flex items-center">
-                                    ${Number(log.price_per_liter).toFixed(3)}/L
-                                  </span>
-                                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                {/* Maintenance Column */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 px-1">
+                    <Wrench className="size-4 text-primary" />
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Maintenance Logs</h3>
+                  </div>
+                  {history && history.length > 0 ? (
+                    <div className="grid gap-3">
+                      {history.map((record) => (
+                        <LogMaintenanceDialog 
+                          key={record.id}
+                          bikeId={bikeId} 
+                          editRecord={record}
+                          trigger={
+                            <div className="panel p-4 cursor-pointer hover:bg-secondary/20 transition-colors group">
+                              <div className="flex items-start justify-between gap-3">
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-bold text-[13px] truncate group-hover:text-primary transition-colors">
+                                    {record.notes?.split('\n')[0] || record.categories?.[0] || "Service Record"}
+                                  </h4>
+                                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                                    {new Date(record.service_date).toLocaleDateString()} • {km(record.odometer)}
+                                  </p>
+                                </div>
+                                <div className="text-right shrink-0">
+                                  <p className="font-mono font-bold text-primary text-[13px]">${Number(record.total_cost).toFixed(2)}</p>
+                                </div>
                               </div>
                             </div>
-                            <div className="text-right">
-                              <p className="num font-bold text-amber-500">${Number(log.amount).toFixed(2)}</p>
-                            </div>
-                          </div>
-                        </div>
-                      }
-                    />
-                  ))}
+                          }
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="panel p-8 text-center border-dashed">
+                      <p className="text-xs text-muted-foreground italic">No maintenance logs</p>
+                    </div>
+                  )}
+                </div>
 
+                {/* Fuel Column */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 px-1">
+                    <Fuel className="size-4 text-amber-500" />
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Fuel Logs</h3>
+                  </div>
+                  {fuelLogs && fuelLogs.length > 0 ? (
+                    <div className="grid gap-3">
+                      {fuelLogs.map((log) => (
+                        <LogFuelDialog 
+                          key={log.id}
+                          bikeId={bikeId} 
+                          editLog={log}
+                          trigger={
+                            <div className="panel p-4 cursor-pointer hover:bg-secondary/20 transition-colors group">
+                              <div className="flex items-start justify-between gap-3">
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-bold text-[13px] truncate group-hover:text-amber-500 transition-colors">
+                                    {log.gas_station || "Fuel Fill"}
+                                  </h4>
+                                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                                    {new Date(log.fill_date).toLocaleDateString()} • {km(log.odometer)}
+                                  </p>
+                                  <div className="mt-1.5 flex flex-wrap gap-2">
+                                    <span className="text-[10px] font-bold bg-secondary/50 px-1.5 py-0.5 rounded uppercase">{log.liters}L</span>
+                                    {log.fuel_type && <span className="text-[10px] font-bold bg-secondary/50 px-1.5 py-0.5 rounded uppercase">{log.fuel_type}</span>}
+                                  </div>
+                                </div>
+                                <div className="text-right shrink-0">
+                                  <p className="font-mono font-bold text-amber-500 text-[13px]">${Number(log.amount).toFixed(2)}</p>
+                                </div>
+                              </div>
+                            </div>
+                          }
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="panel p-8 text-center border-dashed">
+                      <p className="text-xs text-muted-foreground italic">No fuel logs</p>
+                    </div>
+                  )}
                 </div>
               </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border p-12 text-center">
-                <Fuel className="size-12 text-muted-foreground/50 mb-4" />
-                <h3 className="text-lg font-semibold">No fuel logs</h3>
-                <p className="text-muted-foreground mb-6">Track your fuel consumption and economy.</p>
-                <LogFuelDialog 
-                  bikeId={bikeId} 
-                  currentOdometer={bike.current_odometer || 0}
-                  trigger={
-                    <Button className="gap-2">
-                      <Plus className="size-4" />
-                      Add Fuel Log
-                    </Button>
-                  }
-                />
-              </div>
-            )}
+            </div>
           </TabsContent>
+
         </Tabs>
       </div>
     </AppShell>
