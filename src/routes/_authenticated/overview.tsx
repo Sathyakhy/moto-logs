@@ -255,7 +255,7 @@ function Overview() {
         {/* Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.
                                         
                                             
-                                            arrange to just under the motobike */}
+                                            make it in between current mileage and moto pic */}
       </div>
 
       <div className="flex flex-col items-center mb-6 overflow-hidden">
