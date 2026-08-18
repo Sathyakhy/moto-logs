@@ -11,7 +11,9 @@ import {
   Wrench,
   Droplets,
   Zap,
-  Clock
+  Clock,
+  Gauge,
+  Check
 } from "lucide-react";
 import { useBikes } from "@/hooks/useBikes";
 import { useDashboardHistory } from "@/hooks/useDashboard";
@@ -20,12 +22,15 @@ import { AppShell } from "@/components/AppShell";
 import { LogMaintenanceDialog } from "@/components/LogMaintenanceDialog";
 import { LogFuelDialog } from "@/components/LogFuelDialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useSignedUrl } from "@/hooks/useBikes";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { computeSchedule, calculateDailyUsage, km } from "@/lib/moto";
 import { View360 } from "@/components/View360";
 import { format, addDays } from "date-fns";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/overview")({
   component: Overview,
