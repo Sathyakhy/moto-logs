@@ -109,20 +109,13 @@ function Overview() {
         </div>
         
         <div className="flex flex-col items-center">
-          <div className="size-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-3">
-             <Wrench className="size-8 text-primary" />
-          </div>
-          <h2 className="text-display text-3xl tracking-[0.1em]">Moto Care</h2>
+          {/* Spacing removed */}
         </div>
       </div>
 
       <div className="space-y-4">
         {/* Vehicle Status Section */}
         <section className="space-y-3">
-          <h3 className="label-caps flex items-center gap-2 px-1">
-            <Zap className="size-3 text-primary" />
-            Vehicle Status
-          </h3>
           
           <div className="grid grid-cols-2 grid-rows-2 gap-3">
             {/* Oil Status */}
