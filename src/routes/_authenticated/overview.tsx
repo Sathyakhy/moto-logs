@@ -367,7 +367,7 @@ function Overview() {
             <div className="panel p-4 col-span-2 flex flex-col justify-between min-h-[110px] border-l-4 border-l-primary">
               <div className="flex items-center gap-2 text-primary/80 mb-3">
                 <Clock className="size-4" />
-                <span className="text-[10px] font-black uppercase tracking-wider">Upcoming Maintenance</span>
+                <span className="text-[10px] font-black uppercase tracking-wider">UPCOMING MAINTENANCE</span>
               </div>
               {upcomingMaintenance && (upcomingMaintenance as any[]).length > 0 ? (
                 <div className="space-y-3">
