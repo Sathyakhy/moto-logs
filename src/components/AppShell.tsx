@@ -91,7 +91,7 @@ export function AppShell({
 
       {/* Bottom navigation for mobile */}
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/80 bg-background/95 backdrop-blur md:hidden">
-        <div className="flex items-center justify-around px-2 py-3 pb-[calc(env(safe-area-inset-bottom)+8px)]">
+        <div className="flex items-center justify-around px-2 py-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
           {NAV.map(({ to, label, icon: Icon }) => (
             <Link
               key={to}
