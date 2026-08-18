@@ -351,7 +351,7 @@ function Overview() {
             }`}>
               <div className="flex items-center gap-2 text-primary/80 mb-2">
                 <Zap className="size-4" />
-                <span className="text-[10px] font-black uppercase tracking-wider">Battery</span>
+                <span className="text-[10px] font-black uppercase tracking-wider">BATTERY</span>
               </div>
               <div className="flex flex-col">
                 <p className="text-[10px] font-black leading-tight">
