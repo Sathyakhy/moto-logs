@@ -39,10 +39,51 @@ export const Route = createFileRoute("/_authenticated/overview")({
 function Overview() {
   const { profile } = useProfile();
   const { data: bikes } = useBikes();
+  const queryClient = useQueryClient();
   const { data: history } = useDashboardHistory(profile?.id || undefined);
   
   // Use the default bike, or the first one if none is set
   const bike = bikes?.find(b => b.is_default) || bikes?.[0];
+
+  const [odometerValue, setOdometerValue] = useState<string>("");
+  const [isUpdatingOdo, setIsUpdatingOdo] = useState(false);
+
+  useEffect(() => {
+    if (bike?.current_odometer !== undefined) {
+      setOdometerValue(bike.current_odometer.toString());
+    }
+  }, [bike?.current_odometer]);
+
+  const updateOdometerMutation = useMutation({
+    mutationFn: async (newOdo: number) => {
+      if (!bike?.id) return;
+      const { error } = await supabase
+        .from("bikes")
+        .update({ current_odometer: newOdo })
+        .eq("id", bike.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["bikes"] });
+      queryClient.invalidateQueries({ queryKey: ["service-schedules", bike?.id] });
+      toast.success("Odometer updated");
+      setIsUpdatingOdo(false);
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Failed to update odometer");
+    }
+  });
+
+  const handleOdoSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const val = parseInt(odometerValue);
+    if (isNaN(val)) return;
+    if (bike?.current_odometer !== undefined && val < bike.current_odometer) {
+      toast.error("Odometer cannot be less than current value");
+      return;
+    }
+    updateOdometerMutation.mutate(val);
+  };
 
   const { data: schedules } = useQuery({
     queryKey: ["service-schedules", bike?.id],
