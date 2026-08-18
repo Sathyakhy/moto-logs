@@ -310,7 +310,6 @@ function Overview() {
                       <Wrench className="size-4" />
                       <span className="text-[10px] font-bold uppercase tracking-widest">Maintenance</span>
                     </div>
-                    <span className="text-[8px] opacity-50 font-bold uppercase">Log Task</span>
                   </Button>
                 }
               />
@@ -323,7 +322,6 @@ function Overview() {
                       <Fuel className="size-4" />
                       <span className="text-[10px] font-bold uppercase tracking-widest">Fuel Fill</span>
                     </div>
-                    <span className="text-[8px] opacity-50 font-bold uppercase">Add Entry</span>
                   </Button>
                 }
               />
