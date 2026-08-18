@@ -161,7 +161,7 @@ export function LogMaintenanceDialog({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
         <DialogHeader className="flex flex-row items-center justify-between pr-8">
           <DialogTitle>{isEditing ? "Edit Maintenance" : "Log Maintenance"}</DialogTitle>
           {isEditing && (
