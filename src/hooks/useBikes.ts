@@ -10,6 +10,7 @@ export interface BikeWithStatus extends Bike {
   status: ScheduleStatus;
   dueItemsCount: number;
   lastServiceDate?: string | null | undefined;
+  photos_paths?: string[] | null;
 }
 
 export function useBikes() {
