@@ -19,6 +19,7 @@ import { useSignedUrl } from "@/hooks/useBikes";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { computeSchedule } from "@/lib/moto";
+import { View360 } from "@/components/View360";
 
 export const Route = createFileRoute("/_authenticated/overview")({
   component: Overview,
@@ -60,8 +61,10 @@ function Overview() {
   return (
     <AppShell title="Scooter Care" subtitle={bike ? `${bike.year} ${bike.name}` : "Welcome to your garage"}>
       <div className="flex flex-col items-center mb-10">
-        <div className="relative w-full max-w-md aspect-[4/3] flex items-center justify-center mb-6">
-          {bike?.photo_path ? (
+        <div className="relative w-full max-w-md aspect-[4/3] flex items-center justify-center mb-6 group">
+          {bike?.photos_paths && bike.photos_paths.length > 0 ? (
+            <View360 paths={bike.photos_paths} className="size-full" />
+          ) : bike?.photo_path ? (
             <HeroImage path={bike.photo_path} />
           ) : (
             <BikeIcon className="size-32 text-muted-foreground/20" />

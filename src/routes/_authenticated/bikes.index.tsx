@@ -9,6 +9,7 @@ import { EditBikeDialog } from "@/components/EditBikeDialog";
 import { LogMaintenanceDialog } from "@/components/LogMaintenanceDialog";
 import { LogFuelDialog } from "@/components/LogFuelDialog";
 import { Wrench, Fuel, History, Settings } from "lucide-react";
+import { View360 } from "@/components/View360";
 import { Button } from "@/components/ui/button";
 import { useSignedUrl } from "@/hooks/useBikes";
 import { Star } from "lucide-react";
@@ -60,7 +61,9 @@ function Bikes() {
               >
 
                 <div className="aspect-video w-full bg-secondary relative overflow-hidden">
-                  {bike.photo_path ? (
+                  {bike.photos_paths && bike.photos_paths.length > 1 ? (
+                    <View360 paths={bike.photos_paths} className="size-full" />
+                  ) : bike.photo_path ? (
                     <BikeImage path={bike.photo_path} />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/20">

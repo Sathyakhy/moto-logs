@@ -71,6 +71,7 @@ export type Database = {
           model: string | null
           name: string
           photo_path: string | null
+          photos_paths: string[] | null
           plate_number: string | null
           purchase_currency: string
           purchase_date: string | null
@@ -88,6 +89,7 @@ export type Database = {
           model?: string | null
           name: string
           photo_path?: string | null
+          photos_paths?: string[] | null
           plate_number?: string | null
           purchase_currency?: string
           purchase_date?: string | null
@@ -105,6 +107,7 @@ export type Database = {
           model?: string | null
           name?: string
           photo_path?: string | null
+          photos_paths?: string[] | null
           plate_number?: string | null
           purchase_currency?: string
           purchase_date?: string | null

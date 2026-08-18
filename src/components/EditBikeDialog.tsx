@@ -45,6 +45,7 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
   const [open, setOpen] = React.useState(false);
   const [isUploading, setIsUploading] = React.useState(false);
   const [photoPath, setPhotoPath] = React.useState<string | null>(bike.photo_path);
+  const [photosPaths, setPhotosPaths] = React.useState<string[]>(bike.photos_paths || []);
   const { profile } = useProfile();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -92,17 +93,22 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
     },
   });
 
-  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !profile?.id) return;
+  const handlePhotosUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || !profile?.id) return;
 
     try {
       setIsUploading(true);
-      const path = await uploadFile(profile.id, file, "bikes");
-      setPhotoPath(path);
-      toast.success("Photo updated");
+      const newPaths: string[] = [];
+      for (const file of Array.from(files).slice(0, 8)) {
+        const path = await uploadFile(profile.id, file, "bikes");
+        newPaths.push(path);
+      }
+      setPhotosPaths(newPaths);
+      if (newPaths.length > 0) setPhotoPath(newPaths[0] || null);
+      toast.success(`${newPaths.length} photos uploaded for 360 view`);
     } catch (error) {
-      toast.error("Failed to upload photo");
+      toast.error("Failed to upload photos");
     } finally {
       setIsUploading(false);
     }
@@ -112,6 +118,7 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
     try {
       await updateBike.mutateAsync({
         photo_path: photoPath,
+        photos_paths: photosPaths,
         name: values.name,
         model: values.model ?? null,
         year: values.year ?? null,
@@ -144,19 +151,20 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
             <div className="relative group size-32 rounded-xl bg-secondary flex items-center justify-center overflow-hidden border-2 border-dashed border-border hover:border-primary transition-colors cursor-pointer">
               {isUploading ? (
                 <Loader2 className="size-8 animate-spin text-muted-foreground" />
-              ) : photoPath ? (
-                <div className="text-xs text-center p-2 text-muted-foreground">Photo Ready</div>
+              ) : photosPaths.length > 0 ? (
+                <div className="text-xs text-center p-2 text-muted-foreground">{photosPaths.length} Photos Ready</div>
               ) : (
                 <div className="flex flex-col items-center gap-2">
                   <Camera className="size-8 text-muted-foreground group-hover:text-primary transition-colors" />
-                  <span className="text-[10px] uppercase font-semibold text-muted-foreground">Change Photo</span>
+                  <span className="text-[10px] uppercase font-semibold text-muted-foreground text-center">Change 360 Photos<br/>(Up to 8)</span>
                 </div>
               )}
               <input
                 type="file"
                 accept="image/*"
+                multiple
                 className="absolute inset-0 opacity-0 cursor-pointer"
-                onChange={handlePhotoUpload}
+                onChange={handlePhotosUpload}
                 disabled={isUploading}
               />
             </div>
