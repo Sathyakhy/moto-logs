@@ -189,7 +189,7 @@ function SettingsPage() {
             <h2 className="text-xl font-display uppercase tracking-tight">Default Maintenance Intervals</h2>
           </div>
           <p className="text-sm text-muted-foreground">
-            Configure how often you should be alerted for maintenance. These values will be applied to all new bikes you add.
+            Configure how often you should be alerted for maintenance. These values are used to calculate upcoming maintenance based on your history.
           </p>
 
           <div className="panel overflow-hidden border-none bg-secondary/30">
