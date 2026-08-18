@@ -364,37 +364,36 @@ function Overview() {
             </div>
 
             {/* Upcoming Maintenance */}
-            <div className={`panel p-4 col-span-2 flex flex-col justify-between min-h-[110px] border-l-4 ${
-              upcomingMaintenance?.computed.status === 'overdue' ? 'border-l-destructive' :
-              upcomingMaintenance?.computed.status === 'due-soon' ? 'border-l-amber-500' :
-              'border-l-primary'
-            }`}>
-              <div className="flex items-center gap-2 text-primary/80 mb-2">
+            <div className="panel p-4 col-span-2 flex flex-col justify-between min-h-[110px] border-l-4 border-l-primary">
+              <div className="flex items-center gap-2 text-primary/80 mb-3">
                 <Clock className="size-4" />
                 <span className="text-[10px] font-black uppercase tracking-wider">Upcoming Maintenance</span>
               </div>
-              {upcomingMaintenance ? (
-                <div className="flex justify-between items-end gap-2">
-                  <div className="space-y-1">
-                    <p className="text-[12px] font-bold text-primary leading-tight">{upcomingMaintenance.item}</p>
-                    <p className="text-[11px] font-medium leading-tight">
-                      {upcomingMaintenance.computed.status === "overdue" 
-                        ? `Overdue by ${Math.abs(upcomingMaintenance.computed.remainingKm)}KM`
-                        : `In ${upcomingMaintenance.computed.remainingKm}KM`}
-                      {upcomingMaintenance.computed.estimatedDate && <br />}
-                      {upcomingMaintenance.computed.estimatedDate && `(Est ${format(new Date(upcomingMaintenance.computed.estimatedDate), "dd-MMM-yy")})`}
-                    </p>
-                  </div>
-                  <div className={`text-[9px] px-2 py-0.5 rounded-full uppercase font-bold shrink-0 ${
-                    upcomingMaintenance.computed.status === 'overdue' ? 'bg-destructive/20 text-destructive' :
-                    upcomingMaintenance.computed.status === 'due-soon' ? 'bg-amber-500/20 text-amber-500' :
-                    'bg-primary/20 text-primary'
-                  }`}>
-                    {upcomingMaintenance.computed.status}
-                  </div>
+              {upcomingMaintenance && (upcomingMaintenance as any[]).length > 0 ? (
+                <div className="space-y-3">
+                  {(upcomingMaintenance as any[]).map((task, idx) => (
+                    <div key={idx} className="flex justify-between items-center gap-2 pb-2 last:pb-0 border-b last:border-0 border-white/5">
+                      <div className="space-y-0.5">
+                        <p className="text-[11px] font-bold text-primary leading-tight uppercase">{task.item}</p>
+                        <p className="text-[10px] font-medium leading-tight text-muted-foreground">
+                          {task.computed.status === "overdue" 
+                            ? `Overdue by ${Math.abs(task.computed.remainingKm)}KM`
+                            : `In ${task.computed.remainingKm}KM`}
+                          {task.computed.estimatedDate && ` — Est ${format(new Date(task.computed.estimatedDate), "dd-MMM-yy")}`}
+                        </p>
+                      </div>
+                      <div className={`text-[8px] px-2 py-0.5 rounded-full uppercase font-black shrink-0 ${
+                        task.computed.status === 'overdue' ? 'bg-destructive/20 text-destructive' :
+                        task.computed.status === 'due-soon' ? 'bg-amber-500/20 text-amber-500' :
+                        'bg-primary/20 text-primary'
+                      }`}>
+                        {task.computed.status}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ) : (
-                <p className="text-[11px] text-muted-foreground italic">No upcoming tasks</p>
+                <p className="text-[10px] text-muted-foreground italic">No upcoming tasks</p>
               )}
             </div>
           </div>
