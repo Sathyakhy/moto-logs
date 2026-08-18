@@ -188,7 +188,7 @@ function Overview() {
         kmDaysText = "No schedule set";
       }
     } else {
-      kmDaysText = `${Math.abs(computed.remainingKm)}KM Until next ${actionLabel}`;
+      kmDaysText = `${Math.abs(computed.remainingKm)}KM until next ${actionLabel}`;
     }
 
     return {
