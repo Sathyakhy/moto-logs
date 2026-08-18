@@ -11,7 +11,9 @@ import {
   Wrench,
   Droplets,
   Zap,
-  Clock
+  Clock,
+  Gauge,
+  Check
 } from "lucide-react";
 import { useBikes } from "@/hooks/useBikes";
 import { useDashboardHistory } from "@/hooks/useDashboard";
@@ -20,12 +22,15 @@ import { AppShell } from "@/components/AppShell";
 import { LogMaintenanceDialog } from "@/components/LogMaintenanceDialog";
 import { LogFuelDialog } from "@/components/LogFuelDialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useSignedUrl } from "@/hooks/useBikes";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { computeSchedule, calculateDailyUsage, km } from "@/lib/moto";
 import { View360 } from "@/components/View360";
 import { format, addDays } from "date-fns";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/overview")({
   component: Overview,
@@ -34,10 +39,51 @@ export const Route = createFileRoute("/_authenticated/overview")({
 function Overview() {
   const { profile } = useProfile();
   const { data: bikes } = useBikes();
+  const queryClient = useQueryClient();
   const { data: history } = useDashboardHistory(profile?.id || undefined);
   
   // Use the default bike, or the first one if none is set
   const bike = bikes?.find(b => b.is_default) || bikes?.[0];
+
+  const [odometerValue, setOdometerValue] = useState<string>("");
+  const [isUpdatingOdo, setIsUpdatingOdo] = useState(false);
+
+  useEffect(() => {
+    if (bike?.current_odometer !== undefined) {
+      setOdometerValue(bike.current_odometer.toString());
+    }
+  }, [bike?.current_odometer]);
+
+  const updateOdometerMutation = useMutation({
+    mutationFn: async (newOdo: number) => {
+      if (!bike?.id) return;
+      const { error } = await supabase
+        .from("bikes")
+        .update({ current_odometer: newOdo })
+        .eq("id", bike.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["bikes"] });
+      queryClient.invalidateQueries({ queryKey: ["service-schedules", bike?.id] });
+      toast.success("Odometer updated");
+      setIsUpdatingOdo(false);
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Failed to update odometer");
+    }
+  });
+
+  const handleOdoSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const val = parseInt(odometerValue);
+    if (isNaN(val)) return;
+    if (bike?.current_odometer !== undefined && val < bike.current_odometer) {
+      toast.error("Odometer cannot be less than current value");
+      return;
+    }
+    updateOdometerMutation.mutate(val);
+  };
 
   const { data: schedules } = useQuery({
     queryKey: ["service-schedules", bike?.id],
@@ -122,6 +168,65 @@ function Overview() {
       </div>
 
       <div className="space-y-4">
+        {/* Odometer Tracker Section */}
+        {bike && (
+          <section className="px-1">
+            <div className="panel p-4 border-l-4 border-l-primary flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-primary/80">
+                  <Gauge className="size-4" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider">Current Mileage</span>
+                </div>
+                {!isUpdatingOdo ? (
+                  <button 
+                    onClick={() => setIsUpdatingOdo(true)}
+                    className="text-[10px] font-bold uppercase text-primary hover:underline"
+                  >
+                    Update
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => setIsUpdatingOdo(false)}
+                    className="text-[10px] font-bold uppercase text-muted-foreground hover:underline"
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
+              
+              {!isUpdatingOdo ? (
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-mono font-bold tracking-tighter text-primary">
+                    {bike.current_odometer?.toLocaleString()}
+                  </span>
+                  <span className="text-sm font-bold text-muted-foreground uppercase">KM</span>
+                </div>
+              ) : (
+                <form onSubmit={handleOdoSubmit} className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Input
+                      type="number"
+                      value={odometerValue}
+                      onChange={(e) => setOdometerValue(e.target.value)}
+                      className="h-10 text-xl font-mono font-bold pr-10"
+                      autoFocus
+                    />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">KM</div>
+                  </div>
+                  <Button 
+                    type="submit" 
+                    size="icon" 
+                    className="h-10 w-10 shrink-0 shadow-lg shadow-primary/20"
+                    disabled={updateOdometerMutation.isPending}
+                  >
+                    <Check className="size-4" />
+                  </Button>
+                </form>
+              )}
+            </div>
+          </section>
+        )}
+
         {/* Vehicle Status Section */}
         <section className="space-y-3">
           
