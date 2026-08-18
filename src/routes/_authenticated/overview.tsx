@@ -372,7 +372,7 @@ function Overview() {
               {upcomingMaintenance && (upcomingMaintenance as any[]).length > 0 ? (
                 <div className="space-y-3">
                   {(upcomingMaintenance as any[]).map((task, idx) => (
-                    <div key={idx} className="flex justify-between items-center gap-2 pb-2 last:pb-0 border-b last:border-0 border-white/5">
+                    <div key={idx} className="flex justify-between items-center gap-2 pb-1.5 last:pb-0 border-b last:border-0 border-white/5">
                       <div className="space-y-0.5">
                         <p className="text-[10px] font-bold text-primary leading-tight uppercase">{task.item}</p>
                         <p className="text-[9px] font-medium leading-tight text-muted-foreground">
