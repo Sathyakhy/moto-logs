@@ -304,7 +304,7 @@ function Overview() {
                       className="h-10 text-xl font-mono font-black pr-10"
                       autoFocus
                     />
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">KM</div>
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-muted-foreground">KM</div>
                   </div>
                   <Button 
                     type="submit" 
