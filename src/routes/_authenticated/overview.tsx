@@ -243,7 +243,7 @@ function Overview() {
       };
     })
     .filter((x): x is { item: string; computed: any } => x !== null)
-    .sort((a, b) => a.computed.remainingKm - b.computed.remainingKm)[0];
+    .sort((a, b) => a.computed.remainingKm - b.computed.remainingKm).slice(0, 3);
 
   return (
     <AppShell title="Vehicle Care" subtitle={bike ? `${bike.model || ''} ${bike.year || ''}`.trim() : "Welcome to your garage"}>
