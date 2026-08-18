@@ -68,16 +68,27 @@ function Overview() {
   const dailyUsage = calculateDailyUsage(fuelLogs || []);
 
   const getStatusInfo = (itemNames: string[]) => {
-    const s = schedules?.find(s => itemNames.some(name => s.item.toLowerCase().includes(name.toLowerCase())));
-    if (!s || !bike) return { text: "N/A", status: "good" as const };
+    // Find the schedule for any of the item names
+    const s = schedules?.find(s => 
+      itemNames.some(name => s.item.toLowerCase().includes(name.toLowerCase()))
+    );
+
+    if (!bike) return { text: "N/A", status: "good" as const };
+    
+    // If no specific schedule found, we display a message
+    if (!s) return { text: "No schedule set", status: "good" as const };
     
     const computed = computeSchedule(s as any, bike.current_odometer || 0, dailyUsage);
+    
     const dateText = computed.estimatedDate 
       ? `(Est ${format(new Date(computed.estimatedDate), "dd-MMM-yy")})`
       : "";
     
+    // The user specifically wants: "Need change in 500KM (Est 30-Sep-26)"
     return {
-      text: `Need change in ${computed.remainingKm}KM ${dateText}`,
+      text: computed.status === "overdue" 
+        ? `Overdue by ${Math.abs(computed.remainingKm)}KM ${dateText}`
+        : `Need change in ${computed.remainingKm}KM ${dateText}`,
       status: computed.status,
       item: s.item
     };
@@ -116,7 +127,11 @@ function Overview() {
           
           <div className="grid grid-cols-2 grid-rows-2 gap-3">
             {/* Oil Status */}
-            <div className="panel p-4 flex flex-col justify-between min-h-[110px]">
+            <div className={`panel p-4 flex flex-col justify-between min-h-[110px] border-l-4 ${
+              oilStatus.status === 'overdue' ? 'border-l-destructive' :
+              oilStatus.status === 'due-soon' ? 'border-l-amber-500' :
+              'border-l-primary'
+            }`}>
               <div className="flex items-center gap-2 text-primary/80 mb-2">
                 <Droplets className="size-4" />
                 <span className="text-[10px] font-bold uppercase tracking-wider">Oil Status</span>
@@ -127,7 +142,11 @@ function Overview() {
             </div>
 
             {/* Battery Status */}
-            <div className="panel p-4 flex flex-col justify-between min-h-[110px]">
+            <div className={`panel p-4 flex flex-col justify-between min-h-[110px] border-l-4 ${
+              batteryStatus.status === 'overdue' ? 'border-l-destructive' :
+              batteryStatus.status === 'due-soon' ? 'border-l-amber-500' :
+              'border-l-primary'
+            }`}>
               <div className="flex items-center gap-2 text-primary/80 mb-2">
                 <Zap className="size-4" />
                 <span className="text-[10px] font-bold uppercase tracking-wider">Battery</span>
@@ -138,7 +157,11 @@ function Overview() {
             </div>
 
             {/* Upcoming Maintenance */}
-            <div className="panel p-4 col-span-2 flex flex-col justify-between min-h-[110px]">
+            <div className={`panel p-4 col-span-2 flex flex-col justify-between min-h-[110px] border-l-4 ${
+              upcomingMaintenance?.computed.status === 'overdue' ? 'border-l-destructive' :
+              upcomingMaintenance?.computed.status === 'due-soon' ? 'border-l-amber-500' :
+              'border-l-primary'
+            }`}>
               <div className="flex items-center gap-2 text-primary/80 mb-2">
                 <Clock className="size-4" />
                 <span className="text-[10px] font-bold uppercase tracking-wider">Upcoming Maintenance</span>
@@ -148,7 +171,9 @@ function Overview() {
                   <div className="space-y-1">
                     <p className="text-[12px] font-bold text-primary">{upcomingMaintenance.item}</p>
                     <p className="text-[11px] font-medium">
-                      In {upcomingMaintenance.computed.remainingKm}KM
+                      {upcomingMaintenance.computed.status === "overdue" 
+                        ? `Overdue by ${Math.abs(upcomingMaintenance.computed.remainingKm)}KM`
+                        : `In ${upcomingMaintenance.computed.remainingKm}KM`}
                       {upcomingMaintenance.computed.estimatedDate && ` (Est ${format(new Date(upcomingMaintenance.computed.estimatedDate), "dd-MMM-yy")})`}
                     </p>
                   </div>
