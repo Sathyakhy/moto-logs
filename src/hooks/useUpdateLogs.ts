@@ -50,9 +50,10 @@ async function updateScheduleFromMaintenance(
           .from("service_schedules")
           .insert({
             bike_id: bikeId,
+            user_id: userId,
             item: category,
-            interval_km: def.interval_km,
-            interval_days: def.interval_days || null,
+            interval_km: Number(def.interval_km || 0),
+            interval_days: def.interval_days ? Number(def.interval_days) : null,
             last_service_odometer: odometer,
             last_service_date: date,
           });
