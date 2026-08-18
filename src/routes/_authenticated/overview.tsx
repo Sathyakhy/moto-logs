@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import { useSignedUrl } from "@/hooks/useBikes";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { computeSchedule, calculateDailyUsage } from "@/lib/moto";
+import { computeSchedule, calculateDailyUsage, km } from "@/lib/moto";
 import { View360 } from "@/components/View360";
 import { format, addDays } from "date-fns";
 
