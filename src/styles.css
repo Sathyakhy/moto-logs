@@ -158,12 +158,9 @@
   html, body {
     height: 100%;
     width: 100%;
-    overflow: hidden;
-    position: fixed;
+    overflow-x: hidden;
     color-scheme: dark;
     -webkit-tap-highlight-color: transparent;
-    user-select: none;
-    -webkit-user-select: none;
     touch-action: manipulation;
   }
 
