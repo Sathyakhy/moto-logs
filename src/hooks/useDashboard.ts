@@ -138,7 +138,7 @@ export function useDashboardHistory(userId: string | undefined, filter: TimeFilt
 
       let fuelQuery = supabase
         .from("fuel_logs")
-        .select("id, fill_date, amount, gas_station, liters, bikes(name)")
+        .select("id, fill_date, amount, gas_station, liters, odometer, bikes(name)")
         .eq("user_id", userId)
         .order("fill_date", { ascending: false });
 
