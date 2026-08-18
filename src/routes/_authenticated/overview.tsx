@@ -214,9 +214,6 @@ function Overview() {
     </AppShell>
   );
 }
-    </AppShell>
-  );
-}
 
 function HeroImage({ path }: { path: string }) {
   const { data: url } = useSignedUrl(path);
