@@ -6,12 +6,12 @@ import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
-import { Home } from "lucide-react";
+import { Home, Star } from "lucide-react";
 
 const NAV = [
   { to: "/overview", label: "Overview", icon: Home },
-  { to: "/bikes", label: "Garage", icon: Bike },
   { to: "/dashboard", label: "Dashboard", icon: Gauge },
+  { to: "/bikes", label: "Garage", icon: Bike },
   { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
 

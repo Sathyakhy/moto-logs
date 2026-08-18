@@ -11,6 +11,9 @@ import { LogFuelDialog } from "@/components/LogFuelDialog";
 import { Wrench, Fuel, History, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSignedUrl } from "@/hooks/useBikes";
+import { Star } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/bikes/")({
   component: Bikes,
@@ -90,7 +93,35 @@ function Bikes() {
                         {bike.plate_number}
                       </div>
                     )}
-                    <div className="flex gap-1.5 sm:gap-2">
+                    <div className="flex flex-wrap justify-end gap-1.5 sm:gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="icon" 
+                        className={cn("size-8 sm:size-9", bike.is_default && "text-primary border-primary bg-primary/10")} 
+                        title={bike.is_default ? "Default Bike" : "Set as Default"}
+                        onClick={async () => {
+                          if (bike.is_default) return;
+                          
+                          // First, unset any existing default
+                          await supabase
+                            .from('bikes')
+                            .update({ is_default: false })
+                            .eq('user_id', bike.user_id)
+                            .eq('is_default', true);
+                            
+                          // Then set this one as default
+                          await supabase
+                            .from('bikes')
+                            .update({ is_default: true })
+                            .eq('id', bike.id);
+                            
+                          // Refresh data
+                          window.location.reload();
+                        }}
+                      >
+                        <Star className={cn("size-4", bike.is_default && "fill-primary")} />
+                      </Button>
+
                       <Button variant="outline" size="icon" className="size-8 sm:size-9" title="History" asChild>
                         <Link to="/bikes/$bikeId" params={{ bikeId: bike.id }} search={{ tab: 'history' }}>
                           <History className="size-4" />
