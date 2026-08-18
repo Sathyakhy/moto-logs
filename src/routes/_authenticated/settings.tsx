@@ -73,39 +73,6 @@ function SettingsPage() {
   return (
     <AppShell title="Settings" subtitle="Configure your profile and maintenance preferences.">
       <div className="max-w-4xl space-y-8 pb-20">
-        {/* Notifications Section */}
-        <section className="space-y-4">
-          <div className="flex items-center gap-2 text-primary">
-            <BellRing className="size-5" />
-            <h2 className="text-xl font-display uppercase tracking-tight">Notifications</h2>
-          </div>
-          
-          <div className="panel p-6 flex items-center justify-between">
-            <div className="space-y-1">
-              <Label className="text-base">Push Notifications</Label>
-              <p className="text-sm text-muted-foreground">
-                Get alerts when maintenance is due. (Requires Safari 16.4+ on iOS Home Screen)
-              </p>
-            </div>
-            <Button 
-              variant="outline" 
-              onClick={async () => {
-                if (!('Notification' in window)) {
-                  toast.error("This browser does not support notifications");
-                  return;
-                }
-                const permission = await Notification.requestPermission();
-                if (permission === 'granted') {
-                  toast.success("Notifications enabled!");
-                } else {
-                  toast.error("Notification permission denied");
-                }
-              }}
-            >
-              Enable Alerts
-            </Button>
-          </div>
-        </section>
 
         {/* Profile Section */}
         <section className="space-y-4">
