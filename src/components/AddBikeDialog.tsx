@@ -30,7 +30,7 @@ type BikeForm = {
 export function AddBikeDialog() {
   const [open, setOpen] = React.useState(false);
   const [isUploading, setIsUploading] = React.useState(false);
-  const [photoPath, setPhotoPath] = React.useState<string | null>(null);
+  const [photosPaths, setPhotosPaths] = React.useState<string[]>([]);
   const { profile } = useProfile();
   const createBike = useCreateBike();
   
