@@ -356,7 +356,7 @@ function Overview() {
           <div className="flex items-center justify-between px-1">
             <h3 className="label-caps flex items-center gap-2">
               <History className="size-3 text-primary" />
-              Recent History
+              History
             </h3>
             {bike && (
               <Link 
