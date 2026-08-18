@@ -168,19 +168,19 @@ function Overview() {
         </section>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-1 gap-3 pt-2">
+        <div className="grid grid-cols-2 gap-3 pt-2">
           {bike && (
             <>
               <LogMaintenanceDialog 
                 bikeId={bike.id}
                 currentOdometer={bike.current_odometer}
                 trigger={
-                  <Button variant="outline" className="w-full h-14 flex items-center justify-between px-6 border-primary/20 hover:border-primary/40 bg-primary/5">
-                    <div className="flex items-center gap-3 text-primary">
-                      <Wrench className="size-5" />
-                      <span className="text-sm font-bold uppercase tracking-widest">Maintenance</span>
+                  <Button variant="outline" className="w-full h-14 flex flex-col items-center justify-center border-primary/20 hover:border-primary/40 bg-primary/5 gap-1">
+                    <div className="flex items-center gap-2 text-primary">
+                      <Wrench className="size-4" />
+                      <span className="text-[10px] font-bold uppercase tracking-widest">Maintenance</span>
                     </div>
-                    <span className="text-[10px] opacity-50 font-bold uppercase">Log Task</span>
+                    <span className="text-[8px] opacity-50 font-bold uppercase">Log Task</span>
                   </Button>
                 }
               />
@@ -188,12 +188,12 @@ function Overview() {
                 bikeId={bike.id}
                 currentOdometer={bike.current_odometer}
                 trigger={
-                  <Button variant="outline" className="w-full h-14 flex items-center justify-between px-6 border-amber-500/20 hover:border-amber-500/40 bg-amber-500/5">
-                    <div className="flex items-center gap-3 text-amber-500">
-                      <Fuel className="size-5" />
-                      <span className="text-sm font-bold uppercase tracking-widest">Fuel Fill</span>
+                  <Button variant="outline" className="w-full h-14 flex flex-col items-center justify-center border-amber-500/20 hover:border-amber-500/40 bg-amber-500/5 gap-1">
+                    <div className="flex items-center gap-2 text-amber-500">
+                      <Fuel className="size-4" />
+                      <span className="text-[10px] font-bold uppercase tracking-widest">Fuel Fill</span>
                     </div>
-                    <span className="text-[10px] opacity-50 font-bold uppercase">Add Entry</span>
+                    <span className="text-[8px] opacity-50 font-bold uppercase">Add Entry</span>
                   </Button>
                 }
               />
