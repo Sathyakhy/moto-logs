@@ -155,8 +155,8 @@ function Overview() {
     };
   };
 
-  const oilStatus = getStatusInfo(["oil"]);
-  const batteryStatus = getStatusInfo(["battery"]);
+  const oilStatus = getStatusInfo(["Engine Oil"]);
+  const batteryStatus = getStatusInfo(["Battery"]);
   
   // Upcoming maintenance (excluding oil and battery)
   const upcomingMaintenance = schedules
