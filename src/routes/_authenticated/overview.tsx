@@ -13,7 +13,12 @@ import {
   Zap,
   Clock,
   Gauge,
-  Check
+  Check,
+  Disc,
+  Wind,
+  Settings,
+  CircleCheck,
+  ZapOff
 } from "lucide-react";
 import { useBikes } from "@/hooks/useBikes";
 import { useDashboardHistory } from "@/hooks/useDashboard";
@@ -48,6 +53,18 @@ function Overview() {
   const [odometerValue, setOdometerValue] = useState<string>("");
   const [isUpdatingOdo, setIsUpdatingOdo] = useState(false);
   const [activeHistoryTab, setActiveHistoryTab] = useState<'maintenance' | 'fuel'>('maintenance');
+
+  const getMaintenanceIcon = (item: string) => {
+    const lower = item.toLowerCase();
+    if (lower.includes('oil')) return <Droplets className="size-3.5 sm:size-5" />;
+    if (lower.includes('battery')) return <Zap className="size-3.5 sm:size-5" />;
+    if (lower.includes('brake')) return <Disc className="size-3.5 sm:size-5" />;
+    if (lower.includes('filter')) return <Wind className="size-3.5 sm:size-5" />;
+    if (lower.includes('belt') || lower.includes('roller')) return <Settings className="size-3.5 sm:size-5" />;
+    if (lower.includes('inspection')) return <CircleCheck className="size-3.5 sm:size-5" />;
+    if (lower.includes('spark')) return <ZapOff className="size-3.5 sm:size-5" />;
+    return <Wrench className="size-3.5 sm:size-5" />;
+  };
 
   useEffect(() => {
     if (bike?.current_odometer !== undefined) {
@@ -516,7 +533,7 @@ function Overview() {
                       <div key={item.id} className="flex items-center justify-between hover:bg-secondary/20 p-2 -mx-2 rounded-lg transition-colors group">
                         <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
                           <div className="size-7 sm:size-10 rounded bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                            <Wrench className="size-3.5 sm:size-5" />
+                            {getMaintenanceIcon(item.categories?.[0] || item.notes || "")}
                           </div>
                           <div className="min-w-0">
                             <p className="text-[14px] sm:text-sm font-black leading-tight group-hover:text-primary transition-colors truncate uppercase">
