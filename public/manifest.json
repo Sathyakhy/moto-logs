@@ -9,20 +9,15 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/favicon.ico",
-      "sizes": "32x32",
-      "type": "image/x-icon"
+      "src": "/favicon.png",
+      "sizes": "64x64",
+      "type": "image/png"
     },
     {
-      "src": "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=192&h=192&auto=format&fit=crop",
-      "sizes": "192x192",
+      "src": "/__l5e/assets-v1/317d6196-ec60-4206-a800-0bc607a101dc/app-icon.png",
+      "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any maskable"
-    },
-    {
-      "src": "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=512&h=512&auto=format&fit=crop",
-      "sizes": "512x512",
-      "type": "image/png"
     }
   ]
 }
