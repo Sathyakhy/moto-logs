@@ -158,7 +158,15 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
               {isUploading ? (
                 <Loader2 className="size-8 animate-spin text-muted-foreground" />
               ) : photosPaths.length > 0 ? (
-                <div className="text-xs text-center p-2 text-muted-foreground">{photosPaths.length} Photos Ready</div>
+                <div className="size-full flex flex-wrap gap-1 p-1">
+                  {previews.length > 0 ? (
+                    previews.map((src, i) => (
+                      <img key={i} src={src} alt="preview" className="size-[calc(50%-4px)] object-cover rounded-md" />
+                    ))
+                  ) : (
+                    <div className="text-xs text-center p-2 text-muted-foreground">{photosPaths.length} Photos Saved</div>
+                  )}
+                </div>
               ) : (
                 <div className="flex flex-col items-center gap-2">
                   <Camera className="size-8 text-muted-foreground group-hover:text-primary transition-colors" />
