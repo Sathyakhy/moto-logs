@@ -86,19 +86,34 @@ export function addDays(date: Date, days: number) {
 export function computeSchedule(
   row: ScheduleRow,
   currentOdometer: number,
-  dailyUsage?: number | null
+  dailyUsage?: number | null,
+  purchaseDate?: string | null
 ): ScheduleComputed {
   const lastOdo = Number(row.last_service_odometer || 0);
   const interval = Number(row.interval_km || 0);
   
   // Usage since last service
   const usageSinceLast = currentOdometer - lastOdo;
-  const remainingKm = interval - usageSinceLast;
+  let remainingKm = interval - usageSinceLast;
   const dueAtKm = lastOdo + interval;
 
   let dueOnDate: string | null = null;
   let remainingDays: number | null = null;
-  if (row.interval_days && row.last_service_date) {
+
+  // Handle case where interval_km is 0 (Time-based only)
+  if (interval === 0 && row.interval_days) {
+    const startDate = row.last_service_date 
+      ? new Date(row.last_service_date) 
+      : (purchaseDate ? new Date(purchaseDate) : null);
+    
+    if (startDate) {
+      const due = addDays(startDate, row.interval_days);
+      dueOnDate = due.toISOString().slice(0, 10);
+      remainingDays = daysBetween(new Date(), due);
+      // For time-only, we treat remainingKm as infinite or just don't use it for overdue checks
+      remainingKm = 999999; 
+    }
+  } else if (row.interval_days && row.last_service_date) {
     const lastDate = new Date(row.last_service_date);
     const due = addDays(lastDate, row.interval_days);
     dueOnDate = due.toISOString().slice(0, 10);
@@ -107,11 +122,10 @@ export function computeSchedule(
 
   // Predictive estimation
   let estimatedDate: string | null = dueOnDate;
-  if (dailyUsage && dailyUsage > 0) {
+  if (interval > 0 && dailyUsage && dailyUsage > 0) {
     const daysToKm = Math.ceil(remainingKm / dailyUsage);
     const estimated = addDays(new Date(), daysToKm);
     
-    // If we have a time-based due date, use the sooner of the two
     if (dueOnDate) {
       const timeDue = new Date(dueOnDate);
       if (estimated < timeDue) {

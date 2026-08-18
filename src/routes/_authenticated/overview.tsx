@@ -161,7 +161,12 @@ function Overview() {
       last_service_date: s!.last_service_date || null
     };
 
-    const computed = computeSchedule(scheduleRow as any, bike.current_odometer || 0, dailyUsage);
+    const computed = computeSchedule(
+      scheduleRow as any, 
+      bike.current_odometer || 0, 
+      dailyUsage,
+      bike.purchase_date
+    );
     
     const dateText = computed.estimatedDate 
       ? `(Est ${format(new Date(computed.estimatedDate), "dd-MMM-yy")})`
@@ -174,10 +179,27 @@ function Overview() {
         ? 'replacement' 
         : 'service';
 
-    return {
-      text: computed.status === "overdue" 
+    let statusText = "";
+    if (computed.interval_km === 0 || scheduleRow.interval_km === 0) {
+      // Time based only display
+      if (computed.remainingDays !== null) {
+        const absDays = Math.abs(computed.remainingDays);
+        if (computed.remainingDays < 0) {
+          statusText = `${absDays} Days overdue ${dateText}`;
+        } else {
+          statusText = `${absDays} Days until next ${actionLabel} ${dateText}`;
+        }
+      } else {
+        statusText = "No schedule set";
+      }
+    } else {
+      statusText = computed.status === "overdue" 
         ? `${Math.abs(computed.remainingKm)}KM overdue ${dateText}`
-        : `${computed.remainingKm}KM until next ${actionLabel} ${dateText}`,
+        : `${computed.remainingKm}KM until next ${actionLabel} ${dateText}`;
+    }
+
+    return {
+      text: statusText,
       status: computed.status,
       item: s!.item
     };
@@ -223,7 +245,7 @@ function Overview() {
 
       return {
         item,
-        computed: computeSchedule(scheduleRow as any, bike?.current_odometer || 0, dailyUsage)
+        computed: computeSchedule(scheduleRow as any, bike?.current_odometer || 0, dailyUsage, bike?.purchase_date)
       };
     })
     .filter((x): x is { item: string; computed: any } => x !== null)
