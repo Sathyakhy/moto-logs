@@ -501,7 +501,7 @@ function Overview() {
                         <Fuel className="size-3" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[10px] font-bold leading-tight group-hover:text-amber-500 transition-colors truncate">
+                        <p className="text-[10px] font-black leading-tight group-hover:text-amber-500 transition-colors truncate">
                           {item.gas_station || "Fuel Fill"}
                         </p>
                         <p className="text-[8px] text-muted-foreground mt-0.5">
