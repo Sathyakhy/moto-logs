@@ -371,7 +371,7 @@ function Overview() {
             }`}>
               <div className="flex items-center gap-2 text-primary/80 mb-2">
                 <Clock className="size-4" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Upcoming Maintenance</span>
+                <span className="text-[10px] font-black uppercase tracking-wider">Upcoming Maintenance</span>
               </div>
               {upcomingMaintenance ? (
                 <div className="flex justify-between items-end gap-2">
