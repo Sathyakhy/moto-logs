@@ -197,6 +197,13 @@
   text-transform: uppercase;
 }
 
+@media (display-mode: standalone) {
+  #lovable-badge,
+  .lovable-badge {
+    display: none !important;
+  }
+}
+
 @utility num {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;

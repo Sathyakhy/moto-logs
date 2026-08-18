@@ -47,7 +47,7 @@ export function AppShell({
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-30 border-b border-border/80 bg-background/85 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-border/80 bg-background/85 backdrop-blur pt-[env(safe-area-inset-top)]">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
           <Link to="/dashboard" className="flex items-center gap-2">
             <Wrench className="size-5 text-primary" aria-hidden />
