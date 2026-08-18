@@ -85,7 +85,7 @@ function Overview() {
     updateOdometerMutation.mutate(val);
   };
 
-  const { data: schedules } = useQuery({
+  const { data: schedules, isLoading: isSchedulesLoading } = useQuery({
     queryKey: ["service-schedules", bike?.id],
     enabled: !!bike?.id,
     queryFn: async () => {
@@ -94,6 +94,10 @@ function Overview() {
         .from("service_schedules")
         .select("*")
         .eq("bike_id", bike.id);
+      
+      // If no schedules exist yet for this bike, we should return the defaults
+      // to allow the UI to show potential status even before user customizes.
+      // However, schedules table is where we track last_service_odometer/date.
       return data || [];
     }
   });
