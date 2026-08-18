@@ -329,7 +329,7 @@ function Overview() {
         {/* Vehicle Status Section */}
         <section className="space-y-3">
           
-          <div className="grid grid-cols-2 grid-rows-2 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             {/* Oil Status */}
             <div className={`panel p-4 flex flex-col justify-between min-h-[110px] border-l-4 ${
               oilStatus.status === 'overdue' ? 'border-l-destructive' :
@@ -371,17 +371,18 @@ function Overview() {
                 <span className="text-[10px] font-bold uppercase tracking-wider">Upcoming Maintenance</span>
               </div>
               {upcomingMaintenance ? (
-                <div className="flex justify-between items-end">
+                <div className="flex justify-between items-end gap-2">
                   <div className="space-y-1">
-                    <p className="text-[12px] font-bold text-primary">{upcomingMaintenance.item}</p>
-                    <p className="text-[11px] font-medium">
+                    <p className="text-[12px] font-bold text-primary leading-tight">{upcomingMaintenance.item}</p>
+                    <p className="text-[11px] font-medium leading-tight">
                       {upcomingMaintenance.computed.status === "overdue" 
                         ? `Overdue by ${Math.abs(upcomingMaintenance.computed.remainingKm)}KM`
                         : `In ${upcomingMaintenance.computed.remainingKm}KM`}
-                      {upcomingMaintenance.computed.estimatedDate && ` (Est ${format(new Date(upcomingMaintenance.computed.estimatedDate), "dd-MMM-yy")})`}
+                      {upcomingMaintenance.computed.estimatedDate && <br />}
+                      {upcomingMaintenance.computed.estimatedDate && `(Est ${format(new Date(upcomingMaintenance.computed.estimatedDate), "dd-MMM-yy")})`}
                     </p>
                   </div>
-                  <div className={`text-[10px] px-2 py-0.5 rounded-full uppercase font-bold ${
+                  <div className={`text-[9px] px-2 py-0.5 rounded-full uppercase font-bold shrink-0 ${
                     upcomingMaintenance.computed.status === 'overdue' ? 'bg-destructive/20 text-destructive' :
                     upcomingMaintenance.computed.status === 'due-soon' ? 'bg-amber-500/20 text-amber-500' :
                     'bg-primary/20 text-primary'
