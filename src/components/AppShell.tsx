@@ -58,8 +58,12 @@ export function AppShell({
         <div className="mx-auto max-w-6xl">
           <div className="flex items-center gap-4 px-4 py-3">
             <Link to="/bikes" className="flex items-center gap-2">
-              <Wrench className="size-5 text-primary" aria-hidden />
-              <span className="text-display text-2xl">MotoLog</span>
+              {logoUrl ? (
+                <img src={logoUrl} alt="Logo" className="size-6 object-contain" />
+              ) : (
+                <Wrench className="size-5 text-primary" aria-hidden />
+              )}
+              <span className="text-display text-2xl">{profile?.app_name || "MotoLog"}</span>
             </Link>
             <nav className="ml-auto flex items-center gap-1 md:gap-2">
               <div className="hidden md:flex items-center gap-1">
