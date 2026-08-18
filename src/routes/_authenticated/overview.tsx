@@ -271,10 +271,10 @@ function Overview() {
         {/* Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.
                                         
                                             
-                                            moved the 360° Perspective label to the top of the bike instead */}
+                                            Move 360 perspective higher */}
       </div>
 
-      <div className="flex flex-col items-center mb-6 overflow-hidden">
+      <div className="flex flex-col items-center mt-6 mb-6 overflow-visible">
         <div className="relative w-[115%] -mx-[7.5%] aspect-video sm:aspect-video md:aspect-[21/9] sm:w-full sm:max-w-4xl flex items-center justify-center mb-6 group bike-bg-premium-lg z-0">
           {bike?.photos_paths && bike.photos_paths.length > 0 ? (
             <View360 paths={bike.photos_paths} className="size-full" />

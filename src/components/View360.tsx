@@ -125,7 +125,7 @@ export function View360({ paths, className }: View360Props) {
       onTouchMove={(e) => e.touches[0] && handleMove(e.touches[0].clientX)}
       onTouchEnd={handleEnd}
     >
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-2 opacity-60 group-hover:opacity-100 transition-all duration-300 scale-90 group-hover:scale-100 border border-white/10 pointer-events-none">
+      <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-10 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-2 opacity-60 group-hover:opacity-100 transition-all duration-300 scale-90 group-hover:scale-100 border border-white/10 pointer-events-none">
         <div className="size-1 rounded-full bg-primary animate-pulse" />
         <span className="text-[9px] text-white uppercase font-bold tracking-[0.2em]">360° Perspective</span>
         <div className="size-1 rounded-full bg-primary animate-pulse" />
