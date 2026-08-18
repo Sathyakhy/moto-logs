@@ -1,7 +1,9 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Bike, Gauge, LogOut, Moon, Settings, Sun, Wrench } from "lucide-react";
-import type { ReactNode } from "react";
+import { Bike, Gauge, LogOut, Moon, Settings, Sun, Wrench, ImageIcon } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
+import { useProfile } from "@/hooks/useProfile";
+import { useSignedUrl } from "@/hooks/useBikes";
 
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
