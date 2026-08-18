@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import { useSignedUrl } from "@/hooks/useBikes";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { computeSchedule, calculateDailyUsage } from "@/lib/moto";
+import { computeSchedule, calculateDailyUsage, km } from "@/lib/moto";
 import { View360 } from "@/components/View360";
 import { format, addDays } from "date-fns";
 
@@ -200,6 +200,57 @@ function Overview() {
             </>
           )}
         </div>
+
+        {/* Recent History */}
+        <section className="space-y-3 pt-4">
+          <div className="flex items-center justify-between px-1">
+            <h3 className="label-caps flex items-center gap-2">
+              <History className="size-3 text-primary" />
+              Recent History
+            </h3>
+            {bike && (
+              <Link 
+                to="/bikes/$bikeId" 
+                params={{ bikeId: bike.id }} 
+                search={{ tab: 'history' }}
+                className="text-[10px] font-bold uppercase tracking-widest text-primary hover:underline"
+              >
+                View All
+              </Link>
+            )}
+          </div>
+          
+          <div className="space-y-2">
+            {history?.maintenance && history.maintenance.length > 0 ? (
+              history.maintenance.slice(0, 3).map((item: any) => (
+                <div key={item.id} className="panel p-3 flex items-center justify-between hover:bg-secondary/20 transition-colors group">
+                  <div className="flex items-center gap-3">
+                    <div className="size-8 rounded bg-primary/10 flex items-center justify-center text-primary">
+                      <Wrench className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-[11px] font-bold leading-tight group-hover:text-primary transition-colors">
+                        {item.notes?.split('\n')[0] || item.categories?.[0] || "Maintenance"}
+                      </p>
+                      <p className="text-[9px] text-muted-foreground">
+                        {format(new Date(item.date), "dd MMM yyyy")} • {km(item.odometer)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[11px] font-bold text-primary">
+                      ${Number(item.total_cost).toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="panel p-6 text-center">
+                <p className="text-[10px] text-muted-foreground italic">No recent logs</p>
+              </div>
+            )}
+          </div>
+        </section>
       </div>
     </AppShell>
   );
