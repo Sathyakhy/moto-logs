@@ -326,7 +326,7 @@ function Overview() {
 
         {/* Vehicle Status Section */}
         <section className="space-y-4">
-          <div className="grid grid-cols-2 gap-3 sm:gap-6">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
             {/* Engine & Gear Oil Status Combined */}
             <div className={`panel p-3 sm:p-5 flex flex-col justify-between min-h-[100px] sm:min-h-[140px] border-l-4 ${
               oilStatus.status === 'overdue' || gearOilStatus.status === 'overdue' ? 'border-l-destructive' :
@@ -388,8 +388,7 @@ function Overview() {
               </div>
             </div>
 
-            {/* Upcoming Maintenance */}
-            <div className="panel p-3 sm:p-5 col-span-2 sm:col-span-3 flex flex-col justify-between min-h-[100px] sm:min-h-[140px] border-l-4 border-l-primary">
+            <div className="panel p-3 sm:p-5 col-span-2 flex flex-col justify-between min-h-[100px] sm:min-h-[140px] border-l-4 border-l-primary">
               <div className="flex items-center gap-2 text-primary/80 mb-2 sm:mb-4">
                 <Clock className="size-3.5 sm:size-5" />
                 <span className="text-[9px] sm:text-xs font-black uppercase tracking-wider">UPCOMING MAINTENANCE</span>
