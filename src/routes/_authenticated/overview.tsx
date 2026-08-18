@@ -380,8 +380,8 @@ function Overview() {
                   </p>
                 </div>
                 {/* Spacer block to match Oil Status height without creating bottom gap */}
-                <div className="hidden sm:block border-t border-transparent pt-1.5 h-[40px] opacity-0 pointer-events-none select-none">
-                  {/* Empty space matching oil's secondary entry structure */}
+                <div className="flex flex-col items-center justify-center border-t border-white/5 pt-1.5 opacity-20">
+                  <Zap className="size-6 sm:size-10 text-primary" strokeWidth={1} />
                 </div>
               </div>
             </div>
