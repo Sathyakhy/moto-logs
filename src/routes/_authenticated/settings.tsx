@@ -45,6 +45,18 @@ function SettingsPage() {
     setSchedule(mergedSchedule);
   }, [profile]);
 
+  const getMaintenanceIcon = (item: string) => {
+    const lower = item.toLowerCase();
+    if (lower.includes('oil')) return <Droplets className="size-3.5" />;
+    if (lower.includes('battery')) return <Zap className="size-3.5" />;
+    if (lower.includes('brake')) return <Disc className="size-3.5" />;
+    if (lower.includes('filter')) return <Wind className="size-3.5" />;
+    if (lower.includes('belt') || lower.includes('roller')) return <Settings className="size-3.5" />;
+    if (lower.includes('inspection')) return <CircleCheck className="size-3.5" />;
+    if (lower.includes('spark')) return <ZapOff className="size-3.5" />;
+    return <Wrench className="size-3.5" />;
+  };
+
   const updateScheduleItem = (index: number, field: keyof DefaultScheduleItem, value: string | number) => {
     const newSchedule = [...schedule];
     newSchedule[index] = { ...newSchedule[index], [field]: value } as DefaultScheduleItem;
@@ -206,7 +218,7 @@ function SettingsPage() {
                   {schedule.map((item, idx) => (
                     <tr key={item.item} className="hover:bg-primary/5 transition-colors">
                       <td className="px-6 py-4 font-medium flex items-center gap-2">
-                        <Wrench className="size-3 text-primary/50" />
+                        <span className="text-primary/70">{getMaintenanceIcon(item.item)}</span>
                         {item.item}
                       </td>
                       <td className="px-6 py-4">
