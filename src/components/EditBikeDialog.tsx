@@ -46,6 +46,7 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
   const [isUploading, setIsUploading] = React.useState(false);
   const [photoPath, setPhotoPath] = React.useState<string | null>(bike.photo_path);
   const [photosPaths, setPhotosPaths] = React.useState<string[]>(bike.photos_paths || []);
+  const [previews, setPreviews] = React.useState<string[]>([]);
   const { profile } = useProfile();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
