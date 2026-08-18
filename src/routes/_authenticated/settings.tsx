@@ -21,9 +21,12 @@ function SettingsPage() {
   const { profile } = useProfile();
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
+  const [appName, setAppName] = useState("MotoLog");
+  const [appLogoPath, setAppLogoPath] = useState<string | null>(null);
   const [currency, setCurrency] = useState("USD");
   const [rate, setRate] = useState("4100");
   const [schedule, setSchedule] = useState<DefaultScheduleItem[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     if (!profile) return;
