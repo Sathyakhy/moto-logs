@@ -532,10 +532,10 @@ function Overview() {
                         <Fuel className="size-3.5 sm:size-5" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[10px] sm:text-sm font-black leading-tight group-hover:text-amber-500 transition-colors truncate uppercase">
+                        <p className="text-[20px] sm:text-sm font-black leading-tight group-hover:text-amber-500 transition-colors truncate uppercase">
                           {item.gas_station || "Fuel Fill"}
                         </p>
-                        <p className="text-[8px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
+                        <p className="text-[16px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
                           {format(new Date(item.date), "dd MMM")} • {km(item.odometer)}
                         </p>
                       </div>
