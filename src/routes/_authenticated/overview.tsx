@@ -29,8 +29,8 @@ function Overview() {
   const { data: bikes } = useBikes();
   const { data: history } = useDashboardHistory(profile?.id || undefined);
   
-  // Use the first bike as the "active" one for the overview
-  const bike = bikes?.[0];
+  // Use the default bike, or the first one if none is set
+  const bike = bikes?.find(b => b.is_default) || bikes?.[0];
 
   const { data: schedules } = useQuery({
     queryKey: ["service-schedules", bike?.id],
