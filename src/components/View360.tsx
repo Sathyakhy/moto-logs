@@ -116,7 +116,7 @@ export function View360({ paths, className }: View360Props) {
 
   return (
     <div 
-      className={`relative cursor-grab active:cursor-grabbing select-none touch-none group ${className}`}
+      className={`relative cursor-grab active:cursor-grabbing select-none touch-none group bike-bg-premium rounded-3xl ${className}`}
       onMouseDown={(e) => handleStart(e.clientX)}
       onMouseMove={(e) => handleMove(e.clientX)}
       onMouseUp={handleEnd}
