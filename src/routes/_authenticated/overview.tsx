@@ -441,7 +441,7 @@ function Overview() {
                   <Button variant="outline" className="w-full h-16 sm:h-28 flex flex-col items-center justify-center border-primary/20 hover:border-primary/40 bg-primary/5 gap-1 sm:gap-3 transition-all">
                     <div className="flex items-center gap-2 text-primary">
                       <Wrench className="size-4 sm:size-7" />
-                      <span className="text-[9px] sm:text-sm font-black uppercase tracking-widest">Maintenance</span>
+                      <span className="text-[18px] sm:text-sm font-black uppercase tracking-widest">Maintenance</span>
                     </div>
                   </Button>
                 }
