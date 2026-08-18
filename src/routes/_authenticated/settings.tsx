@@ -31,6 +31,8 @@ function SettingsPage() {
   useEffect(() => {
     if (!profile) return;
     setName(profile.display_name ?? "");
+    setAppName(profile.app_name || "MotoLog");
+    setAppLogoPath(profile.app_logo_path || null);
     setCurrency(profile.display_currency);
     setRate(String(profile.khr_per_usd));
     
@@ -59,6 +61,8 @@ function SettingsPage() {
         .from("profiles")
         .update({
           display_name: name.trim().slice(0, 80) || null,
+          app_name: appName.trim().slice(0, 50) || "MotoLog",
+          app_logo_path: appLogoPath,
           display_currency: currency,
           khr_per_usd: parsedRate,
           default_maintenance_schedule: schedule as any,
@@ -73,9 +77,69 @@ function SettingsPage() {
     onError: (error: Error) => toast.error(error.message),
   });
 
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !profile) return;
+
+    try {
+      setIsUploading(true);
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${profile.id}/branding/logo-${Math.random()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('bike-files')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+      setAppLogoPath(filePath);
+      toast.success("Logo uploaded. Remember to save all settings.");
+    } catch (error: any) {
+      toast.error("Error uploading logo: " + error.message);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
     <AppShell title="Settings" subtitle="Configure your profile and maintenance preferences.">
       <div className="max-w-4xl space-y-8 pb-20">
+
+        {/* Branding Section */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2 text-primary">
+            <Settings2 className="size-5" />
+            <h2 className="text-xl font-display uppercase tracking-tight">App Branding</h2>
+          </div>
+          <div className="panel space-y-5 p-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="appName">App Name (Header)</Label>
+                <Input 
+                  id="appName" 
+                  value={appName} 
+                  maxLength={50} 
+                  onChange={(e) => setAppName(e.target.value)} 
+                  placeholder="e.g. MotoLog"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="logo">App Logo</Label>
+                <div className="flex items-center gap-4">
+                  <Input
+                    id="logo"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    disabled={isUploading}
+                    className="cursor-pointer"
+                  />
+                  {isUploading && <span className="text-xs animate-pulse">Uploading...</span>}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Profile Section */}
         <section className="space-y-4">
