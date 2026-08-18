@@ -16,7 +16,7 @@ export function use360Photos(paths: string[] | null | undefined) {
       try {
         const { data } = await supabase.storage.from("bike-files").createSignedUrls(paths, 60 * 60);
         if (data) {
-          setUrls(data.map(d => d.signedUrl));
+          setUrls(data.map(d => d.signedUrl).filter(Boolean) as string[]);
         }
       } catch (error) {
         console.error("Error fetching 360 photos:", error);
