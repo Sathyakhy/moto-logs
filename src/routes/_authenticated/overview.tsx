@@ -120,24 +120,43 @@ function Overview() {
   const dailyUsage = calculateDailyUsage(fuelLogs || []);
 
   const getStatusInfo = (itemNames: string[]) => {
-    // Find the schedule for any of the item names
-    const s = schedules?.find(s => 
-      itemNames.some(name => s.item.toLowerCase().includes(name.toLowerCase()))
+    if (!bike) return { text: "N/A", status: "good" as const };
+
+    // 1. Try to find an existing schedule for this bike
+    let s = schedules?.find(s => 
+      itemNames.some(name => s.item.toLowerCase() === name.toLowerCase())
     );
 
-    if (!bike) return { text: "N/A", status: "good" as const };
-    
-    // If no specific schedule found, we display a message
-    if (!s) return { text: "No schedule set", status: "good" as const };
-    
-    // Ensure we are using correct types for computeSchedule
+    // 2. If no schedule, try to construct one from history + default intervals
+    if (!s) {
+      const category = itemNames[0]; // e.g., "Engine Oil"
+      const defaultSchedule = (profile?.default_maintenance_schedule as any[]) || [];
+      const def = defaultSchedule.find(d => d.item.toLowerCase() === category.toLowerCase());
+      
+      if (!def) return { text: "No schedule set", status: "good" as const };
+
+      // Find the latest maintenance record for this category to get the last service odometer
+      const latestRecord = history?.maintenance?.find((m: any) => 
+        m.categories?.some((c: string) => c.toLowerCase() === category.toLowerCase())
+      );
+
+      s = {
+        id: 'temp',
+        item: category,
+        interval_km: def.interval_km,
+        interval_days: def.interval_days || null,
+        last_service_odometer: latestRecord?.odometer || 0,
+        last_service_date: latestRecord?.date || null
+      } as any;
+    }
+
     const scheduleRow = {
-      id: s.id,
-      item: s.item,
-      interval_km: Number(s.interval_km),
-      interval_days: s.interval_days ? Number(s.interval_days) : null,
-      last_service_odometer: Number(s.last_service_odometer || 0),
-      last_service_date: s.last_service_date || null
+      id: s!.id,
+      item: s!.item,
+      interval_km: Number(s!.interval_km),
+      interval_days: s!.interval_days ? Number(s!.interval_days) : null,
+      last_service_odometer: Number(s!.last_service_odometer || 0),
+      last_service_date: s!.last_service_date || null
     };
 
     const computed = computeSchedule(scheduleRow as any, bike.current_odometer || 0, dailyUsage);
@@ -151,7 +170,7 @@ function Overview() {
         ? `Overdue by ${Math.abs(computed.remainingKm)}KM ${dateText}`
         : `Need change in ${computed.remainingKm}KM ${dateText}`,
       status: computed.status,
-      item: s.item
+      item: s!.item
     };
   };
 
