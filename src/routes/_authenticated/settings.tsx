@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Settings2, BellRing, Wrench, Save } from "lucide-react";
+import { Settings2, BellRing, Wrench, Save, Droplets, Zap, Disc, Wind, Settings, CircleCheck, ZapOff } from "lucide-react";
 
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
