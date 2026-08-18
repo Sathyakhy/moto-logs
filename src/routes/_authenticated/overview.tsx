@@ -289,10 +289,10 @@ function Overview() {
               
               {!isUpdatingOdo ? (
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-mono font-bold tracking-tighter text-primary">
+                  <span className="text-4xl font-bold tracking-tighter text-primary" style={{ fontFamily: 'var(--font-digital)' }}>
                     {bike.current_odometer?.toLocaleString()}
                   </span>
-                  <span className="text-sm font-bold text-muted-foreground uppercase">KM</span>
+                  <span className="text-xs font-black text-muted-foreground uppercase tracking-widest">KM</span>
                 </div>
               ) : (
                 <form onSubmit={handleOdoSubmit} className="flex gap-2">
@@ -334,10 +334,10 @@ function Overview() {
                 <span className="text-[10px] font-black uppercase tracking-wider">Oil Status</span>
               </div>
               <div className="flex flex-col">
-                <p className="text-[11px] font-bold leading-tight">
+                <p className="text-[10px] font-bold leading-tight">
                   {oilStatus.kmDaysText}
                 </p>
-                <p className="text-[10px] font-medium text-muted-foreground mt-0.5">
+                <p className="text-[9px] font-medium text-muted-foreground mt-0.5">
                   {oilStatus.dateText}
                 </p>
               </div>
@@ -354,10 +354,10 @@ function Overview() {
                 <span className="text-[10px] font-black uppercase tracking-wider">Battery</span>
               </div>
               <div className="flex flex-col">
-                <p className="text-[11px] font-bold leading-tight">
+                <p className="text-[10px] font-bold leading-tight">
                   {batteryStatus.kmDaysText}
                 </p>
-                <p className="text-[10px] font-medium text-muted-foreground mt-0.5">
+                <p className="text-[9px] font-medium text-muted-foreground mt-0.5">
                   {batteryStatus.dateText}
                 </p>
               </div>
