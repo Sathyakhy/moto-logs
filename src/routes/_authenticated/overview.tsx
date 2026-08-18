@@ -266,10 +266,10 @@ function Overview() {
         
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 px-4">
         {/* Odometer Tracker Section */}
         {bike && (
-          <section className="px-1">
+          <section>
             <div className="panel p-4 border-l-4 border-l-primary flex flex-col gap-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-primary/80">
@@ -328,7 +328,6 @@ function Overview() {
 
         {/* Vehicle Status Section */}
         <section className="space-y-3">
-          
           <div className="grid grid-cols-2 gap-3">
             {/* Oil Status */}
             <div className={`panel p-4 flex flex-col justify-between min-h-[110px] border-l-4 ${
