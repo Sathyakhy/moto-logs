@@ -129,7 +129,9 @@ function Overview() {
 
     // 2. If no schedule, try to construct one from history + default intervals
     if (!s) {
-      const category = itemNames[0]; // e.g., "Engine Oil"
+      const category = itemNames[0];
+      if (!category) return { text: "No schedule set", status: "good" as const };
+      
       const defaultSchedule = (profile?.default_maintenance_schedule as any[]) || [];
       const def = defaultSchedule.find(d => d.item.toLowerCase() === category.toLowerCase());
       
