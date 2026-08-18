@@ -378,11 +378,11 @@ function Overview() {
               </div>
               <div className="space-y-2">
                 <div className="flex flex-col">
-                  <p className="text-[7px] sm:text-[9px] font-black text-muted-foreground uppercase leading-none mb-0.5">YT7Z-BS 12V 7Ah</p>
-                  <p className="text-[10px] sm:text-sm font-black leading-tight">
+                  <p className="text-[14px] sm:text-[9px] font-black text-muted-foreground uppercase leading-none mb-0.5">YT7Z-BS 12V 7Ah</p>
+                  <p className="text-[20px] sm:text-sm font-black leading-tight">
                     {batteryStatus.kmDaysText}
                   </p>
-                  <p className="text-[8px] sm:text-[11px] font-bold text-muted-foreground">
+                  <p className="text-[16px] sm:text-[11px] font-bold text-muted-foreground">
                     {batteryStatus.dateText}
                   </p>
                 </div>
