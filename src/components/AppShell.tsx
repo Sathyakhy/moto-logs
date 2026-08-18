@@ -46,7 +46,7 @@ export function AppShell({
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="fixed inset-0 flex flex-col overflow-hidden bg-background">
       <header className="sticky top-0 z-30 border-b border-border/80 bg-background/85 backdrop-blur pt-[env(safe-area-inset-top)]">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
           <Link to="/dashboard" className="flex items-center gap-2">
@@ -76,15 +76,17 @@ export function AppShell({
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-6 pb-24 md:pb-8 md:py-8">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h1 className="text-display text-3xl md:text-4xl">{title}</h1>
-            {subtitle ? <p className="mt-1 text-xs md:text-sm text-muted-foreground line-clamp-1">{subtitle}</p> : null}
+      <main className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 pb-24 md:pb-8 md:py-8 -webkit-overflow-scrolling-touch">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h1 className="text-display text-3xl md:text-4xl">{title}</h1>
+              {subtitle ? <p className="mt-1 text-xs md:text-sm text-muted-foreground line-clamp-1">{subtitle}</p> : null}
+            </div>
+            {actions}
           </div>
-          {actions}
+          {children}
         </div>
-        {children}
       </main>
 
       {/* Bottom navigation for mobile */}
