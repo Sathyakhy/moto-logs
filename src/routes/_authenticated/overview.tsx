@@ -443,7 +443,7 @@ function Overview() {
                 to="/bikes/$bikeId" 
                 params={{ bikeId: bike.id }} 
                 search={{ tab: 'history' }}
-                className="text-[10px] font-bold uppercase tracking-widest text-primary hover:underline"
+                className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline"
               >
                 View All
               </Link>
