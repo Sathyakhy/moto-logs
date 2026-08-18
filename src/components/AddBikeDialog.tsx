@@ -31,6 +31,7 @@ export function AddBikeDialog() {
   const [open, setOpen] = React.useState(false);
   const [isUploading, setIsUploading] = React.useState(false);
   const [photosPaths, setPhotosPaths] = React.useState<string[]>([]);
+  const [previews, setPreviews] = React.useState<string[]>([]);
   const { profile } = useProfile();
   const createBike = useCreateBike();
   
