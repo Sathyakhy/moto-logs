@@ -280,7 +280,7 @@ function Overview() {
                 ) : (
                   <button 
                     onClick={() => setIsUpdatingOdo(false)}
-                    className="text-[10px] font-bold uppercase text-muted-foreground hover:underline"
+                    className="text-[10px] font-black uppercase text-muted-foreground hover:underline"
                   >
                     Cancel
                   </button>
