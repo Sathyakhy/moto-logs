@@ -268,22 +268,22 @@ a[href*="lovable.app"] {
 @utility bike-bg-premium-lg {
   position: relative;
   z-index: 0;
-}
-
-@utility bike-bg-premium-lg::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 140%;
-  height: 140%;
-  background: 
-    radial-gradient(circle at 50% 50%, var(--color-primary) / 35%, transparent 60%),
-    radial-gradient(circle at 50% 60%, var(--color-primary) / 15%, transparent 80%);
-  filter: blur(20px);
-  z-index: -1;
-  pointer-events: none;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 140%;
+    height: 140%;
+    background: 
+      radial-gradient(circle at 50% 50%, var(--color-primary) / 35%, transparent 60%),
+      radial-gradient(circle at 50% 60%, var(--color-primary) / 15%, transparent 80%);
+    filter: blur(20px);
+    z-index: -1;
+    pointer-events: none;
+  }
 }
 
 /* Allow input selection */
