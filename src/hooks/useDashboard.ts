@@ -126,6 +126,7 @@ export function useDashboardHistory(userId: string | undefined, filter: TimeFilt
   return useQuery({
     queryKey: ["dashboard-history", userId, filter],
     enabled: !!userId,
+    staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       if (!userId) return null;
 
