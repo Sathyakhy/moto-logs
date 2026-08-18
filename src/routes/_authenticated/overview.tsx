@@ -430,7 +430,7 @@ function Overview() {
 
         {/* Recent History */}
         <section className="space-y-4 pt-4">
-          <div className="flex items-center justify-between px-1">
+          <div className="flex items-center justify-between">
             <h3 className="label-caps flex items-center gap-2">
               <History className="size-3 text-primary" />
               History
