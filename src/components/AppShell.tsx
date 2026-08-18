@@ -46,7 +46,7 @@ export function AppShell({
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="fixed inset-0 flex flex-col bg-background overflow-hidden">
       <header className="sticky top-0 z-30 border-b border-border/80 bg-background/85 backdrop-blur pt-[env(safe-area-inset-top)]">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
           <Link to="/dashboard" className="flex items-center gap-2">
@@ -76,8 +76,8 @@ export function AppShell({
         </div>
       </header>
 
-      <main className="flex-1 px-4 py-6 pb-24 md:pb-8 md:py-8">
-        <div className="mx-auto max-w-6xl">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 pb-32 md:pb-8 md:py-8 -webkit-overflow-scrolling-touch">
+        <div className="mx-auto max-w-6xl pb-[env(safe-area-inset-bottom)]">
           <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
             <div>
               <h1 className="text-display text-3xl md:text-4xl">{title}</h1>
