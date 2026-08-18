@@ -96,7 +96,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { rel: "manifest", content: "/manifest.json" },
+      { name: "theme-color", content: "#0F172A" },
+      { rel: "manifest", href: "/manifest.json" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
