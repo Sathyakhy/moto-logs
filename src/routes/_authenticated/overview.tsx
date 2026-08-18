@@ -279,7 +279,7 @@ function Overview() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-primary/80">
                   <Gauge className="size-3.5 sm:size-5" />
-                  <span className="text-[9px] sm:text-xs font-black uppercase tracking-wider">Current Mileage</span>
+                  <span className="text-[18px] sm:text-xs font-black uppercase tracking-wider">Current Mileage</span>
                 </div>
                 {!isUpdatingOdo ? (
                   <button 
