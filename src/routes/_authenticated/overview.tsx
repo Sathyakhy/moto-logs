@@ -183,7 +183,7 @@ function Overview() {
     if (scheduleRow.interval_km === 0) {
       if (computed.remainingDays !== null) {
         const absDays = Math.abs(computed.remainingDays);
-        kmDaysText = `${absDays} Days Until next ${actionLabel}`;
+        kmDaysText = `${absDays} Days until next ${actionLabel}`;
       } else {
         kmDaysText = "No schedule set";
       }
