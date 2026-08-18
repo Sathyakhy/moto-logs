@@ -126,10 +126,6 @@ function BikeDetail() {
               <History className="size-4" />
               History
             </TabsTrigger>
-            <TabsTrigger value="fuel" className="gap-2">
-              <Fuel className="size-4" />
-              Fuel Logs
-            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="schedule" className="mt-6 space-y-4">
