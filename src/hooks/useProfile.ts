@@ -23,7 +23,7 @@ export function useProfile() {
       if (!auth.user) return null;
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, display_name, display_currency, khr_per_usd, default_maintenance_schedule")
+        .select("id, display_name, display_currency, khr_per_usd, default_maintenance_schedule, app_name, app_logo_path")
         .eq("id", auth.user.id)
         .maybeSingle();
       if (error) throw error;
