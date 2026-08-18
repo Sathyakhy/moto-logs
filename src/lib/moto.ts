@@ -49,7 +49,7 @@ export const DEFAULT_SCHEDULE_ITEMS: DefaultScheduleItem[] =
     { item: "Air Filter", interval_km: 6000 },
     { item: "Battery", interval_km: 0, interval_days: 730 },
     { item: "Spark Plug", interval_km: 8000 },
-    { item: "Gear Oil", interval_km: 10000, interval_days: 730 },
+    
   ];
 
 export type ScheduleStatus = "good" | "due-soon" | "overdue";
