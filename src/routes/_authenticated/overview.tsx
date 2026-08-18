@@ -541,7 +541,7 @@ function Overview() {
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-[10px] sm:text-sm font-black text-amber-500">
+                      <p className="text-[20px] sm:text-sm font-black text-amber-500">
                         ${Number(item.amount).toFixed(2)}
                       </p>
                     </div>
