@@ -375,7 +375,7 @@ function Overview() {
                     <div key={idx} className="flex justify-between items-center gap-2 pb-1.5 last:pb-0 border-b last:border-0 border-white/5">
                       <div className="space-y-0.5">
                         <p className="text-[10px] font-black text-primary leading-tight uppercase">{task.item}</p>
-                        <p className="text-[9px] font-medium leading-tight text-muted-foreground">
+                        <p className="text-[9px] font-bold leading-tight text-muted-foreground">
                           {task.computed.status === "overdue" 
                             ? `Overdue by ${Math.abs(task.computed.remainingKm)}KM`
                             : `In ${task.computed.remainingKm}KM`}
