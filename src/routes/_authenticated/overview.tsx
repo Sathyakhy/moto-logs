@@ -256,7 +256,7 @@ function Overview() {
         {/* Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.
                                         
                                             
-                                            History in overview make it into a card view that we can switch view between fuel and maintenance */}
+                                            there is a cutoff here on mobile view please check */}
       </div>
 
       <div className="flex flex-col items-center mb-6 overflow-hidden">
@@ -575,6 +575,7 @@ function Overview() {
             </div>
           </div>
         </section>
+        <div className="h-20 sm:hidden" /> {/* Extra padding for mobile navigation clearance */}
       </div>
     </AppShell>
   );
