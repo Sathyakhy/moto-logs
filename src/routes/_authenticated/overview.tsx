@@ -47,6 +47,7 @@ function Overview() {
 
   const [odometerValue, setOdometerValue] = useState<string>("");
   const [isUpdatingOdo, setIsUpdatingOdo] = useState(false);
+  const [activeHistoryTab, setActiveHistoryTab] = useState<'maintenance' | 'fuel'>('maintenance');
 
   useEffect(() => {
     if (bike?.current_odometer !== undefined) {
@@ -255,7 +256,7 @@ function Overview() {
         {/* Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.
                                         
                                             
-                                            make it in between current mileage and moto pic */}
+                                            History in overview make it into a card view that we can switch view between fuel and maintenance */}
       </div>
 
       <div className="flex flex-col items-center mb-6 overflow-hidden">
@@ -481,76 +482,95 @@ function Overview() {
             )}
           </div>
           
-          <div className="flex flex-col sm:grid sm:grid-cols-2 gap-x-4 gap-y-6 items-start">
-            {/* Maintenance History */}
-            <div className="space-y-2 sm:space-y-4 w-full">
-              <div className="flex items-center gap-2 px-1 mb-1">
-                <Wrench className="size-3 sm:size-4 text-primary" />
-                <span className="text-[12.6px] sm:text-xs font-black uppercase tracking-wider text-muted-foreground">Maintenance</span>
-              </div>
-              {history?.maintenance && history.maintenance.length > 0 ? (
-                history.maintenance.slice(0, 3).map((item: any) => (
-                  <div key={item.id} className="panel p-3 sm:p-5 flex items-center justify-between hover:bg-secondary/20 transition-colors group">
-                    <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
-                      <div className="size-7 sm:size-10 rounded bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                        <Wrench className="size-3.5 sm:size-5" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-[14px] sm:text-sm font-black leading-tight group-hover:text-primary transition-colors truncate uppercase">
-                          {item.notes?.split('\n')[0] || item.categories?.[0] || "Maintenance"}
-                        </p>
-                        <p className="text-[11.2px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
-                          {format(new Date(item.date), "dd MMM")} • {km(item.odometer)}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className="text-[14px] sm:text-sm font-black text-primary">
-                        ${Number(item.total_cost).toFixed(2)}
-                      </p>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="panel p-4 text-center border-dashed">
-                  <p className="text-[9px] sm:text-xs text-muted-foreground italic">No logs</p>
-                </div>
-              )}
+          <div className="panel p-0 overflow-hidden border-white/5">
+            <div className="flex border-b border-white/5 bg-secondary/10">
+              <button 
+                onClick={() => setActiveHistoryTab('maintenance')}
+                className={`flex-1 py-3 px-4 flex items-center justify-center gap-2 text-[12.6px] sm:text-xs font-black uppercase tracking-wider transition-all border-b-2 ${
+                  activeHistoryTab === 'maintenance' 
+                    ? 'border-primary text-primary bg-primary/5' 
+                    : 'border-transparent text-muted-foreground hover:text-primary/70'
+                }`}
+              >
+                <Wrench className="size-3 sm:size-4" />
+                Maintenance
+              </button>
+              <button 
+                onClick={() => setActiveHistoryTab('fuel')}
+                className={`flex-1 py-3 px-4 flex items-center justify-center gap-2 text-[12.6px] sm:text-xs font-black uppercase tracking-wider transition-all border-b-2 ${
+                  activeHistoryTab === 'fuel' 
+                    ? 'border-amber-500 text-amber-500 bg-amber-500/5' 
+                    : 'border-transparent text-muted-foreground hover:text-amber-500/70'
+                }`}
+              >
+                <Fuel className="size-3 sm:size-4" />
+                Fuel fill
+              </button>
             </div>
 
-            {/* Fuel History */}
-            <div className="space-y-2 sm:space-y-4 w-full">
-              <div className="flex items-center gap-2 px-1 mb-1">
-                <Fuel className="size-3 sm:size-4 text-amber-500" />
-                <span className="text-[12.6px] sm:text-xs font-black uppercase tracking-wider text-muted-foreground">Fuel</span>
-              </div>
-              {history?.fuel && history.fuel.length > 0 ? (
-                history.fuel.slice(0, 3).map((item: any) => (
-                  <div key={item.id} className="panel p-3 sm:p-5 flex items-center justify-between hover:bg-secondary/20 transition-colors group">
-                    <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
-                      <div className="size-7 sm:size-10 rounded bg-amber-500/10 flex items-center justify-center text-amber-500 shrink-0">
-                        <Fuel className="size-3.5 sm:size-5" />
+            <div className="p-3 sm:p-5 space-y-3">
+              {activeHistoryTab === 'maintenance' ? (
+                <>
+                  {history?.maintenance && history.maintenance.length > 0 ? (
+                    history.maintenance.slice(0, 5).map((item: any) => (
+                      <div key={item.id} className="flex items-center justify-between hover:bg-secondary/20 p-2 -mx-2 rounded-lg transition-colors group">
+                        <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
+                          <div className="size-7 sm:size-10 rounded bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                            <Wrench className="size-3.5 sm:size-5" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-[14px] sm:text-sm font-black leading-tight group-hover:text-primary transition-colors truncate uppercase">
+                              {item.notes?.split('\n')[0] || item.categories?.[0] || "Maintenance"}
+                            </p>
+                            <p className="text-[11.2px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
+                              {format(new Date(item.date), "dd MMM")} • {km(item.odometer)}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-[14px] sm:text-sm font-black text-primary">
+                            ${Number(item.total_cost).toFixed(2)}
+                          </p>
+                        </div>
                       </div>
-                      <div className="min-w-0">
-                        <p className="text-[14px] sm:text-sm font-black leading-tight group-hover:text-amber-500 transition-colors truncate uppercase">
-                          {item.gas_station || "Fuel Fill"}
-                        </p>
-                        <p className="text-[11.2px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
-                          {format(new Date(item.date), "dd MMM")} • {km(item.odometer)}
-                        </p>
-                      </div>
+                    ))
+                  ) : (
+                    <div className="py-8 text-center border-2 border-dashed border-white/5 rounded-xl">
+                      <p className="text-[9px] sm:text-xs text-muted-foreground italic">No maintenance logs found</p>
                     </div>
-                    <div className="text-right shrink-0">
-                      <p className="text-[14px] sm:text-sm font-black text-amber-500">
-                        ${Number(item.amount).toFixed(2)}
-                      </p>
-                    </div>
-                  </div>
-                ))
+                  )}
+                </>
               ) : (
-                <div className="panel p-4 text-center border-dashed">
-                  <p className="text-[9px] sm:text-xs text-muted-foreground italic">No logs</p>
-                </div>
+                <>
+                  {history?.fuel && history.fuel.length > 0 ? (
+                    history.fuel.slice(0, 5).map((item: any) => (
+                      <div key={item.id} className="flex items-center justify-between hover:bg-secondary/20 p-2 -mx-2 rounded-lg transition-colors group">
+                        <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
+                          <div className="size-7 sm:size-10 rounded bg-amber-500/10 flex items-center justify-center text-amber-500 shrink-0">
+                            <Fuel className="size-3.5 sm:size-5" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-[14px] sm:text-sm font-black leading-tight group-hover:text-amber-500 transition-colors truncate uppercase">
+                              {item.gas_station || "Fuel Fill"}
+                            </p>
+                            <p className="text-[11.2px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
+                              {format(new Date(item.date), "dd MMM")} • {km(item.odometer)}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-[14px] sm:text-sm font-black text-amber-500">
+                            ${Number(item.amount).toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="py-8 text-center border-2 border-dashed border-white/5 rounded-xl">
+                      <p className="text-[9px] sm:text-xs text-muted-foreground italic">No fuel fill logs found</p>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
