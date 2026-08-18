@@ -169,8 +169,8 @@ function Overview() {
     
     return {
       text: computed.status === "overdue" 
-        ? `Overdue by ${Math.abs(computed.remainingKm)}KM ${dateText}`
-        : `Need change in ${computed.remainingKm}KM ${dateText}`,
+        ? `${Math.abs(computed.remainingKm)}KM overdue ${dateText}`
+        : `${computed.remainingKm}KM until next ${category.toLowerCase() === 'engine oil' ? 'oil change' : category.toLowerCase() === 'battery' ? 'replacement' : 'service'} ${dateText}`,
       status: computed.status,
       item: s!.item
     };
