@@ -166,6 +166,7 @@
     user-select: auto;
     -webkit-user-select: auto;
     overscroll-behavior: none;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
