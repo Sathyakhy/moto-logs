@@ -169,7 +169,7 @@ function Overview() {
     );
     
     const dateText = computed.estimatedDate 
-      ? `(Est ${format(new Date(computed.estimatedDate), "dd-MMM-yy")})`
+      ? `Est ${format(new Date(computed.estimatedDate), "dd-MMM-yy")}`
       : "";
     
     const itemLower = primaryCategory.toLowerCase();
@@ -179,27 +179,21 @@ function Overview() {
         ? 'replacement' 
         : 'service';
 
-    let statusText = "";
+    let kmDaysText = "";
     if (scheduleRow.interval_km === 0) {
-      // Time based only display
       if (computed.remainingDays !== null) {
         const absDays = Math.abs(computed.remainingDays);
-        if (computed.remainingDays < 0) {
-          statusText = `${absDays} Days overdue ${dateText}`;
-        } else {
-          statusText = `${absDays} Days until next ${actionLabel} ${dateText}`;
-        }
+        kmDaysText = `${absDays} Days Until next ${actionLabel}`;
       } else {
-        statusText = "No schedule set";
+        kmDaysText = "No schedule set";
       }
     } else {
-      statusText = computed.status === "overdue" 
-        ? `${Math.abs(computed.remainingKm)}KM overdue ${dateText}`
-        : `${computed.remainingKm}KM until next ${actionLabel} ${dateText}`;
+      kmDaysText = `${Math.abs(computed.remainingKm)}KM Until next ${actionLabel}`;
     }
 
     return {
-      text: statusText,
+      kmDaysText,
+      dateText,
       status: computed.status,
       item: s!.item
     };
@@ -337,11 +331,16 @@ function Overview() {
             }`}>
               <div className="flex items-center gap-2 text-primary/80 mb-2">
                 <Droplets className="size-4" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Oil Status</span>
+                <span className="text-[10px] font-black uppercase tracking-wider">Oil Status</span>
               </div>
-              <p className="text-[11px] font-medium leading-relaxed">
-                {oilStatus.text}
-              </p>
+              <div className="flex flex-col">
+                <p className="text-[11px] font-bold leading-tight">
+                  {oilStatus.kmDaysText}
+                </p>
+                <p className="text-[10px] font-medium text-muted-foreground mt-0.5">
+                  {oilStatus.dateText}
+                </p>
+              </div>
             </div>
 
             {/* Battery Status */}
@@ -352,11 +351,16 @@ function Overview() {
             }`}>
               <div className="flex items-center gap-2 text-primary/80 mb-2">
                 <Zap className="size-4" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Battery</span>
+                <span className="text-[10px] font-black uppercase tracking-wider">Battery</span>
               </div>
-              <p className="text-[11px] font-medium leading-relaxed">
-                {batteryStatus.text}
-              </p>
+              <div className="flex flex-col">
+                <p className="text-[11px] font-bold leading-tight">
+                  {batteryStatus.kmDaysText}
+                </p>
+                <p className="text-[10px] font-medium text-muted-foreground mt-0.5">
+                  {batteryStatus.dateText}
+                </p>
+              </div>
             </div>
 
             {/* Upcoming Maintenance */}
@@ -367,7 +371,7 @@ function Overview() {
             }`}>
               <div className="flex items-center gap-2 text-primary/80 mb-2">
                 <Clock className="size-4" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Upcoming Maintenance</span>
+                <span className="text-[10px] font-black uppercase tracking-wider">Upcoming Maintenance</span>
               </div>
               {upcomingMaintenance ? (
                 <div className="flex justify-between items-end gap-2">
