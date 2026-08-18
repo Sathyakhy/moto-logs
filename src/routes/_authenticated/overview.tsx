@@ -263,27 +263,27 @@ function Overview() {
         
       </div>
 
-      <div className="space-y-4 px-4">
+      <div className="space-y-4 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
         {/* Odometer Tracker Section */}
         {bike && (
           <section>
-            <div className="panel p-4 border-l-4 border-l-primary flex flex-col gap-3">
+            <div className="panel p-3 sm:p-5 border-l-4 border-l-primary flex flex-col gap-2 sm:gap-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-primary/80">
-                  <Gauge className="size-4" />
-                  <span className="text-[10px] font-black uppercase tracking-wider">Current Mileage</span>
+                  <Gauge className="size-3.5 sm:size-5" />
+                  <span className="text-[9px] sm:text-xs font-black uppercase tracking-wider">Current Mileage</span>
                 </div>
                 {!isUpdatingOdo ? (
                   <button 
                     onClick={() => setIsUpdatingOdo(true)}
-                    className="text-[10px] font-black uppercase text-primary hover:underline"
+                    className="text-[9px] sm:text-xs font-black uppercase text-primary hover:underline"
                   >
                     Update
                   </button>
                 ) : (
                   <button 
                     onClick={() => setIsUpdatingOdo(false)}
-                    className="text-[10px] font-black uppercase text-muted-foreground hover:underline"
+                    className="text-[9px] sm:text-xs font-black uppercase text-muted-foreground hover:underline"
                   >
                     Cancel
                   </button>
@@ -292,10 +292,10 @@ function Overview() {
               
               {!isUpdatingOdo ? (
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold tracking-tighter text-primary" style={{ fontFamily: 'var(--font-digital)' }}>
+                  <span className="text-3xl sm:text-5xl font-bold tracking-tighter text-primary leading-none" style={{ fontFamily: 'Digital-7' }}>
                     {bike.current_odometer?.toLocaleString()}
                   </span>
-                  <span className="text-xs font-black text-muted-foreground uppercase tracking-widest">KM</span>
+                  <span className="text-[10px] sm:text-sm font-black text-muted-foreground uppercase tracking-widest">KM</span>
                 </div>
               ) : (
                 <form onSubmit={handleOdoSubmit} className="flex gap-2">
@@ -304,18 +304,18 @@ function Overview() {
                       type="number"
                       value={odometerValue}
                       onChange={(e) => setOdometerValue(e.target.value)}
-                      className="h-10 text-xl font-mono font-black pr-10"
+                      className="h-9 sm:h-12 text-lg sm:text-2xl font-mono font-black pr-10"
                       autoFocus
                     />
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-muted-foreground">KM</div>
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] sm:text-xs font-black text-muted-foreground">KM</div>
                   </div>
                   <Button 
                     type="submit" 
                     size="icon" 
-                    className="h-10 w-10 shrink-0 shadow-lg shadow-primary/20"
+                    className="h-9 w-9 sm:h-12 sm:w-12 shrink-0 shadow-lg shadow-primary/20"
                     disabled={updateOdometerMutation.isPending}
                   >
-                    <Check className="size-4" />
+                    <Check className="size-4 sm:size-6" />
                   </Button>
                 </form>
               )}
