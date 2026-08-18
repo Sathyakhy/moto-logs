@@ -124,13 +124,22 @@ function Overview() {
     // If no specific schedule found, we display a message
     if (!s) return { text: "No schedule set", status: "good" as const };
     
-    const computed = computeSchedule(s as any, bike.current_odometer || 0, dailyUsage);
+    // Ensure we are using correct types for computeSchedule
+    const scheduleRow = {
+      id: s.id,
+      item: s.item,
+      interval_km: Number(s.interval_km),
+      interval_days: s.interval_days ? Number(s.interval_days) : null,
+      last_service_odometer: Number(s.last_service_odometer || 0),
+      last_service_date: s.last_service_date || null
+    };
+
+    const computed = computeSchedule(scheduleRow as any, bike.current_odometer || 0, dailyUsage);
     
     const dateText = computed.estimatedDate 
       ? `(Est ${format(new Date(computed.estimatedDate), "dd-MMM-yy")})`
       : "";
     
-    // The user specifically wants: "Need change in 500KM (Est 30-Sep-26)"
     return {
       text: computed.status === "overdue" 
         ? `Overdue by ${Math.abs(computed.remainingKm)}KM ${dateText}`
