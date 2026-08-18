@@ -325,67 +325,67 @@ function Overview() {
 
         {/* Vehicle Status Section */}
         <section className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-6">
             {/* Oil Status */}
-            <div className={`panel p-4 flex flex-col justify-between min-h-[110px] border-l-4 ${
+            <div className={`panel p-3 sm:p-5 flex flex-col justify-between min-h-[100px] sm:min-h-[140px] border-l-4 ${
               oilStatus.status === 'overdue' ? 'border-l-destructive' :
               oilStatus.status === 'due-soon' ? 'border-l-amber-500' :
               'border-l-primary'
             }`}>
-              <div className="flex items-center gap-2 text-primary/80 mb-2">
-                <Droplets className="size-4" />
-                <span className="text-[10px] font-black uppercase tracking-wider">OIL STATUS</span>
+              <div className="flex items-center gap-2 text-primary/80 mb-1 sm:mb-3">
+                <Droplets className="size-3.5 sm:size-5" />
+                <span className="text-[9px] sm:text-xs font-black uppercase tracking-wider">OIL STATUS</span>
               </div>
               <div className="flex flex-col">
-                <p className="text-[10px] font-black leading-tight">
+                <p className="text-[10px] sm:text-sm font-black leading-tight">
                   {oilStatus.kmDaysText}
                 </p>
-                <p className="text-[9px] font-bold text-muted-foreground mt-0.5">
+                <p className="text-[8px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
                   {oilStatus.dateText}
                 </p>
               </div>
             </div>
 
             {/* Battery Status */}
-            <div className={`panel p-4 flex flex-col justify-between min-h-[110px] border-l-4 ${
+            <div className={`panel p-3 sm:p-5 flex flex-col justify-between min-h-[100px] sm:min-h-[140px] border-l-4 ${
               batteryStatus.status === 'overdue' ? 'border-l-destructive' :
               batteryStatus.status === 'due-soon' ? 'border-l-amber-500' :
               'border-l-primary'
             }`}>
-              <div className="flex items-center gap-2 text-primary/80 mb-2">
-                <Zap className="size-4" />
-                <span className="text-[10px] font-black uppercase tracking-wider">BATTERY</span>
+              <div className="flex items-center gap-2 text-primary/80 mb-1 sm:mb-3">
+                <Zap className="size-3.5 sm:size-5" />
+                <span className="text-[9px] sm:text-xs font-black uppercase tracking-wider">BATTERY</span>
               </div>
               <div className="flex flex-col">
-                <p className="text-[10px] font-black leading-tight">
+                <p className="text-[10px] sm:text-sm font-black leading-tight">
                   {batteryStatus.kmDaysText}
                 </p>
-                <p className="text-[9px] font-bold text-muted-foreground mt-0.5">
+                <p className="text-[8px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
                   {batteryStatus.dateText}
                 </p>
               </div>
             </div>
 
             {/* Upcoming Maintenance */}
-            <div className="panel p-4 col-span-2 flex flex-col justify-between min-h-[110px] border-l-4 border-l-primary">
-              <div className="flex items-center gap-2 text-primary/80 mb-3">
-                <Clock className="size-4" />
-                <span className="text-[10px] font-black uppercase tracking-wider">UPCOMING MAINTENANCE</span>
+            <div className="panel p-3 sm:p-5 col-span-2 flex flex-col justify-between min-h-[100px] sm:min-h-[140px] border-l-4 border-l-primary">
+              <div className="flex items-center gap-2 text-primary/80 mb-2 sm:mb-4">
+                <Clock className="size-3.5 sm:size-5" />
+                <span className="text-[9px] sm:text-xs font-black uppercase tracking-wider">UPCOMING MAINTENANCE</span>
               </div>
               {upcomingMaintenance && (upcomingMaintenance as any[]).length > 0 ? (
-                <div className="space-y-3">
+                <div className="space-y-2.5 sm:space-y-4">
                   {(upcomingMaintenance as any[]).map((task, idx) => (
-                    <div key={idx} className="flex justify-between items-center gap-2 pb-1.5 last:pb-0 border-b last:border-0 border-white/5">
-                      <div className="space-y-0.5">
-                        <p className="text-[10px] font-black text-primary leading-tight uppercase">{task.item}</p>
-                        <p className="text-[9px] font-bold leading-tight text-muted-foreground">
+                    <div key={idx} className="flex justify-between items-center gap-2 pb-1.5 sm:pb-3 last:pb-0 border-b last:border-0 border-white/5">
+                      <div className="space-y-0.5 sm:space-y-1">
+                        <p className="text-[10px] sm:text-sm font-black text-primary leading-tight uppercase">{task.item}</p>
+                        <p className="text-[8px] sm:text-[11px] font-bold leading-tight text-muted-foreground">
                           {task.computed.status === "overdue" 
                             ? `Overdue by ${Math.abs(task.computed.remainingKm)}KM`
                             : `In ${task.computed.remainingKm}KM`}
                           {task.computed.estimatedDate && ` — Est ${format(new Date(task.computed.estimatedDate), "dd-MMM-yy")}`}
                         </p>
                       </div>
-                      <div className={`text-[7px] px-2 py-0.5 rounded-full uppercase font-black shrink-0 ${
+                      <div className={`text-[7px] sm:text-[10px] px-1.5 sm:px-2.5 py-0.5 rounded-full uppercase font-black shrink-0 ${
                         task.computed.status === 'overdue' ? 'bg-destructive/20 text-destructive' :
                         task.computed.status === 'due-soon' ? 'bg-amber-500/20 text-amber-500' :
                         'bg-primary/20 text-primary'
@@ -396,7 +396,7 @@ function Overview() {
                   ))}
                 </div>
               ) : (
-                <p className="text-[10px] text-muted-foreground italic">No upcoming tasks</p>
+                <p className="text-[9px] sm:text-xs text-muted-foreground italic">No upcoming tasks</p>
               )}
             </div>
           </div>
