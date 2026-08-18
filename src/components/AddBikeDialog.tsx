@@ -52,6 +52,11 @@ export function AddBikeDialog() {
 
     try {
       setIsUploading(true);
+      
+      // Create local previews for instant feedback
+      const localPreviews = Array.from(files).slice(0, 8).map(file => URL.createObjectURL(file));
+      setPreviews(localPreviews);
+
       const newPaths: string[] = [];
       for (const file of Array.from(files).slice(0, 8)) {
         const path = await uploadFile(profile.id, file, "bikes");
@@ -61,6 +66,7 @@ export function AddBikeDialog() {
       toast.success(`${newPaths.length} photos uploaded for 360 view`);
     } catch (error) {
       toast.error("Failed to upload photos");
+      setPreviews([]);
     } finally {
       setIsUploading(false);
     }
