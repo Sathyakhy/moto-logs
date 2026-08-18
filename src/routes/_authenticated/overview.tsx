@@ -370,7 +370,7 @@ function Overview() {
             )}
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-6 items-start">
+          <div className="flex flex-col md:grid md:grid-cols-2 gap-x-3 gap-y-6 items-start">
             {/* Maintenance History */}
             <div className="space-y-2">
               <div className="flex items-center gap-2 px-1 mb-1">
