@@ -342,7 +342,7 @@ function Overview() {
             }`}>
               <div className="flex items-center gap-2 text-primary/80 mb-1 sm:mb-3">
                 <Droplets className="size-3.5 sm:size-5" />
-                <span className="text-[9px] sm:text-xs font-black uppercase tracking-wider">OIL STATUS</span>
+                <span className="text-[18px] sm:text-xs font-black uppercase tracking-wider">OIL STATUS</span>
               </div>
               <div className="space-y-2">
                 <div className="flex flex-col">
