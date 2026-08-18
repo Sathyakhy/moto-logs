@@ -334,7 +334,7 @@ function Overview() {
                 <span className="text-[10px] font-black uppercase tracking-wider">Oil Status</span>
               </div>
               <div className="flex flex-col">
-                <p className="text-[10px] font-bold leading-tight">
+                <p className="text-[10px] font-black leading-tight">
                   {oilStatus.kmDaysText}
                 </p>
                 <p className="text-[9px] font-medium text-muted-foreground mt-0.5">
