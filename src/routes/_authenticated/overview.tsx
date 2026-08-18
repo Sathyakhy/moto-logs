@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_authenticated/overview")({
 function Overview() {
   const { profile } = useProfile();
   const { data: bikes } = useBikes();
-  const { data: history } = useDashboardHistory(profile?.id);
+  const { data: history } = useDashboardHistory(profile?.id || undefined);
   
   // Use the first bike as the "active" one for the overview
   const bike = bikes?.[0];
