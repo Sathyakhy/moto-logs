@@ -180,7 +180,7 @@ function Overview() {
         : 'service';
 
     let statusText = "";
-    if (computed.interval_km === 0 || scheduleRow.interval_km === 0) {
+    if (scheduleRow.interval_km === 0) {
       // Time based only display
       if (computed.remainingDays !== null) {
         const absDays = Math.abs(computed.remainingDays);
