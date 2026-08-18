@@ -36,10 +36,11 @@ function Overview() {
     queryKey: ["service-schedules", bike?.id],
     enabled: !!bike?.id,
     queryFn: async () => {
+      if (!bike?.id) return [];
       const { data } = await supabase
         .from("service_schedules")
         .select("*")
-        .eq("bike_id", bike?.id);
+        .eq("bike_id", bike.id);
       return data || [];
     }
   });
