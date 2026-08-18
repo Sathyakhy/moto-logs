@@ -215,8 +215,11 @@ a[href*="lovable.app"] {
 
 @media (display-mode: standalone) {
   #lovable-badge,
-  .lovable-badge {
+  .lovable-badge,
+  a[href*="lovable.app"] {
     display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
   }
 }
 
