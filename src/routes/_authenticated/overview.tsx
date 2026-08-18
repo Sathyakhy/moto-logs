@@ -360,7 +360,7 @@ function Overview() {
             </div>
 
             {/* Battery Status */}
-            <div className={`panel p-3 sm:p-5 flex flex-col justify-between min-h-[100px] sm:min-h-[140px] border-l-4 ${
+            <div className={`panel p-3 sm:p-5 flex flex-col min-h-[100px] sm:min-h-[140px] border-l-4 ${
               batteryStatus.status === 'overdue' ? 'border-l-destructive' :
               batteryStatus.status === 'due-soon' ? 'border-l-amber-500' :
               'border-l-primary'
@@ -379,11 +379,9 @@ function Overview() {
                     {batteryStatus.dateText}
                   </p>
                 </div>
-                {/* Empty spacer to match Oil Status visual height/structure if needed, or just standardizing alignment */}
-                <div className="flex flex-col border-t border-transparent pt-1.5 opacity-0 pointer-events-none select-none">
-                  <p className="text-[7px] sm:text-[9px] font-black leading-none mb-0.5">spacer</p>
-                  <p className="text-[10px] sm:text-sm font-black leading-tight">spacer</p>
-                  <p className="text-[8px] sm:text-[11px] font-bold mt-0.5">spacer</p>
+                {/* Spacer block to match Oil Status height without creating bottom gap */}
+                <div className="hidden sm:block border-t border-transparent pt-1.5 h-[40px] opacity-0 pointer-events-none select-none">
+                  {/* Empty space matching oil's secondary entry structure */}
                 </div>
               </div>
             </div>
