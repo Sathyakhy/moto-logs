@@ -132,7 +132,7 @@ export function useDashboardHistory(userId: string | undefined, filter: TimeFilt
 
       let maintenanceQuery = supabase
         .from("maintenance_records")
-        .select("id, service_date, total_cost, notes, categories, bikes(name)")
+        .select("id, service_date, total_cost, notes, categories, odometer, bikes(name)")
         .eq("user_id", userId)
         .order("service_date", { ascending: false });
 
