@@ -405,8 +405,8 @@ function Overview() {
                   {(upcomingMaintenance as any[]).map((task, idx) => (
                     <div key={idx} className="flex justify-between items-center gap-2 pb-1.5 sm:pb-3 last:pb-0 border-b last:border-0 border-white/5">
                       <div className="space-y-0.5 sm:space-y-1">
-                        <p className="text-[10px] sm:text-sm font-black text-primary leading-tight uppercase">{task.item}</p>
-                        <p className="text-[8px] sm:text-[11px] font-bold leading-tight text-muted-foreground">
+                        <p className="text-[20px] sm:text-sm font-black text-primary leading-tight uppercase">{task.item}</p>
+                        <p className="text-[16px] sm:text-[11px] font-bold leading-tight text-muted-foreground">
                           {task.computed.status === "overdue" 
                             ? `Overdue by ${Math.abs(task.computed.remainingKm)}KM`
                             : `In ${task.computed.remainingKm}KM`}
