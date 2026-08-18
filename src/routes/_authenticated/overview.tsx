@@ -121,6 +121,7 @@ function Overview() {
 
   const getStatusInfo = (itemNames: string[]) => {
     if (!bike) return { text: "N/A", status: "good" as const };
+    const primaryCategory = itemNames[0] || "";
 
     // 1. Try to find an existing schedule for this bike
     let s = schedules?.find(s => 
@@ -129,22 +130,21 @@ function Overview() {
 
     // 2. If no schedule, try to construct one from history + default intervals
     if (!s) {
-      const category = itemNames[0];
-      if (!category) return { text: "No schedule set", status: "good" as const };
+      if (!primaryCategory) return { text: "No schedule set", status: "good" as const };
       
       const defaultSchedule = (profile?.default_maintenance_schedule as any[]) || [];
-      const def = defaultSchedule.find(d => d.item.toLowerCase() === category.toLowerCase());
+      const def = defaultSchedule.find(d => d.item.toLowerCase() === primaryCategory.toLowerCase());
       
       if (!def) return { text: "No schedule set", status: "good" as const };
 
       // Find the latest maintenance record for this category to get the last service odometer
       const latestRecord = history?.maintenance?.find((m: any) => 
-        m.categories?.some((c: string) => c.toLowerCase() === category.toLowerCase())
+        m.categories?.some((c: string) => c.toLowerCase() === primaryCategory.toLowerCase())
       );
 
       s = {
         id: 'temp',
-        item: category,
+        item: primaryCategory,
         interval_km: def.interval_km,
         interval_days: def.interval_days || null,
         last_service_odometer: latestRecord?.odometer || 0,
@@ -167,10 +167,17 @@ function Overview() {
       ? `(Est ${format(new Date(computed.estimatedDate), "dd-MMM-yy")})`
       : "";
     
+    const itemLower = primaryCategory.toLowerCase();
+    const actionLabel = itemLower.includes('oil') 
+      ? 'oil change' 
+      : itemLower.includes('battery') 
+        ? 'replacement' 
+        : 'service';
+
     return {
       text: computed.status === "overdue" 
-        ? `Overdue by ${Math.abs(computed.remainingKm)}KM ${dateText}`
-        : `Need change in ${computed.remainingKm}KM ${dateText}`,
+        ? `${Math.abs(computed.remainingKm)}KM overdue ${dateText}`
+        : `${computed.remainingKm}KM until next ${actionLabel} ${dateText}`,
       status: computed.status,
       item: s!.item
     };
