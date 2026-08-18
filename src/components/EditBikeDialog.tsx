@@ -105,7 +105,7 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
         newPaths.push(path);
       }
       setPhotosPaths(newPaths);
-      if (newPaths.length > 0) setPhotoPath(newPaths[0]);
+      if (newPaths.length > 0) setPhotoPath(newPaths[0] || null);
       toast.success(`${newPaths.length} photos uploaded for 360 view`);
     } catch (error) {
       toast.error("Failed to upload photos");
