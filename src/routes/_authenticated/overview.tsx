@@ -249,6 +249,7 @@ function Overview() {
             )}
           </div>
         </section>
+      </div>
     </AppShell>
   );
 }
