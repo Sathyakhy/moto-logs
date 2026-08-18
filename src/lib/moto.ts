@@ -89,7 +89,7 @@ export function computeSchedule(
   dailyUsage?: number | null
 ): ScheduleComputed {
   const dueAtKm = Number(row.last_service_odometer) + Number(row.interval_km);
-  const remainingKm = Math.max(0, dueAtKm - currentOdometer);
+  const remainingKm = dueAtKm - currentOdometer; // Can be negative for overdue
 
   let dueOnDate: string | null = null;
   let remainingDays: number | null = null;
@@ -101,7 +101,7 @@ export function computeSchedule(
 
   // Predictive estimation
   let estimatedDate: string | null = dueOnDate;
-  if (dailyUsage && dailyUsage > 0) {
+  if (dailyUsage && dailyUsage > 0 && remainingKm !== 0) {
     const daysToKm = Math.ceil(remainingKm / dailyUsage);
     const estimated = addDays(new Date(), daysToKm);
     
@@ -122,7 +122,7 @@ export function computeSchedule(
   else if (remainingKm <= kmWarn || (remainingDays !== null && remainingDays <= 14))
     status = "due-soon";
 
-  const used = Number(row.interval_km) - remainingKm;
+  const used = Number(row.interval_km) - Math.max(0, remainingKm);
   const progress = Math.max(0, Math.min(100, (used / Number(row.interval_km)) * 100));
 
   return { 
