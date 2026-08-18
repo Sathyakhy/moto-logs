@@ -474,7 +474,7 @@ function Overview() {
                 to="/bikes/$bikeId" 
                 params={{ bikeId: bike.id }} 
                 search={{ tab: 'history' }}
-                className="text-[9px] sm:text-xs font-black uppercase tracking-widest text-primary hover:underline"
+                className="text-[18px] sm:text-xs font-black uppercase tracking-widest text-primary hover:underline"
               >
                 View All
               </Link>
