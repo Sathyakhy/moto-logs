@@ -453,7 +453,7 @@ function Overview() {
                   <Button variant="outline" className="w-full h-16 sm:h-28 flex flex-col items-center justify-center border-amber-500/20 hover:border-amber-500/40 bg-amber-500/5 gap-1 sm:gap-3 transition-all">
                     <div className="flex items-center gap-2 text-amber-500">
                       <Fuel className="size-4 sm:size-7" />
-                      <span className="text-[9px] sm:text-sm font-black uppercase tracking-widest">Fuel Fill</span>
+                      <span className="text-[18px] sm:text-sm font-black uppercase tracking-widest">Fuel Fill</span>
                     </div>
                   </Button>
                 }
