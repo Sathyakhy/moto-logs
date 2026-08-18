@@ -180,19 +180,46 @@ function Overview() {
   const batteryStatus = getStatusInfo(["Battery"]);
   
   // Upcoming maintenance (excluding oil and battery)
-  const upcomingMaintenance = schedules
-    ?.filter(s => !s.item.toLowerCase().includes("oil") && !s.item.toLowerCase().includes("battery"))
-    .map(s => ({
-      ...s,
-      computed: computeSchedule({
-        id: s.id,
-        item: s.item,
-        interval_km: Number(s.interval_km),
-        interval_days: s.interval_days ? Number(s.interval_days) : null,
-        last_service_odometer: Number(s.last_service_odometer || 0),
-        last_service_date: s.last_service_date || null
-      } as any, bike?.current_odometer || 0, dailyUsage)
-    }))
+  const defaultSchedule = (profile?.default_maintenance_schedule as any[]) || [];
+  
+  // Combine actual schedules with default intervals for items not specifically scheduled
+  const allPossibleItems = new Set([
+    ...(schedules?.map(s => s.item) || []),
+    ...defaultSchedule.map(d => d.item)
+  ]);
+
+  const upcomingMaintenance = Array.from(allPossibleItems)
+    .filter(item => !item.toLowerCase().includes("oil") && !item.toLowerCase().includes("battery"))
+    .map(item => {
+      // Reuse getStatusInfo logic but return the full computed object
+      const info = getStatusInfo([item]);
+      
+      // We need a slightly different format for the upcoming sorting
+      // so we manually compute it here to get access to remainingKm
+      let s = schedules?.find(s => s.item.toLowerCase() === item.toLowerCase());
+      let defItem = defaultSchedule.find(d => d.item.toLowerCase() === item.toLowerCase());
+      
+      if (!s && !defItem) return null;
+
+      const latestRecord = history?.maintenance?.find((m: any) => 
+        m.categories?.some((c: string) => c.toLowerCase() === item.toLowerCase())
+      );
+
+      const scheduleRow = {
+        id: s?.id || 'temp',
+        item: item,
+        interval_km: Number(s?.interval_km || defItem?.interval_km || 0),
+        interval_days: s?.interval_days ? Number(s.interval_days) : (defItem?.interval_days ? Number(defItem.interval_days) : null),
+        last_service_odometer: Number(s?.last_service_odometer || latestRecord?.odometer || 0),
+        last_service_date: s?.last_service_date || latestRecord?.date || null
+      };
+
+      return {
+        item,
+        computed: computeSchedule(scheduleRow as any, bike?.current_odometer || 0, dailyUsage)
+      };
+    })
+    .filter((x): x is { item: string; computed: any } => x !== null)
     .sort((a, b) => a.computed.remainingKm - b.computed.remainingKm)[0];
 
   return (
