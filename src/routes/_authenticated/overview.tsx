@@ -504,7 +504,7 @@ function Overview() {
                         <p className="text-[10px] font-black leading-tight group-hover:text-amber-500 transition-colors truncate">
                           {item.gas_station || "Fuel Fill"}
                         </p>
-                        <p className="text-[8px] text-muted-foreground mt-0.5">
+                        <p className="text-[8px] font-bold text-muted-foreground mt-0.5">
                           {format(new Date(item.date), "dd MMM")} • {km(item.odometer)}
                         </p>
                       </div>
