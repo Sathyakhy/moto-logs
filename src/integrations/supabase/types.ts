@@ -67,6 +67,7 @@ export type Database = {
           created_at: string
           current_odometer: number
           id: string
+          is_default: boolean | null
           model: string | null
           name: string
           photo_path: string | null
@@ -83,6 +84,7 @@ export type Database = {
           created_at?: string
           current_odometer?: number
           id?: string
+          is_default?: boolean | null
           model?: string | null
           name: string
           photo_path?: string | null
@@ -99,6 +101,7 @@ export type Database = {
           created_at?: string
           current_odometer?: number
           id?: string
+          is_default?: boolean | null
           model?: string | null
           name?: string
           photo_path?: string | null
