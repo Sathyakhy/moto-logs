@@ -465,7 +465,7 @@ function Overview() {
                         <Wrench className="size-3" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[10px] font-bold leading-tight group-hover:text-primary transition-colors truncate">
+                        <p className="text-[10px] font-black leading-tight group-hover:text-primary transition-colors truncate">
                           {item.notes?.split('\n')[0] || item.categories?.[0] || "Maintenance"}
                         </p>
                         <p className="text-[8px] text-muted-foreground mt-0.5">
