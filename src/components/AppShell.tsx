@@ -1,7 +1,9 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Bike, Gauge, LogOut, Moon, Settings, Sun, Wrench } from "lucide-react";
-import type { ReactNode } from "react";
+import { Bike, Gauge, LogOut, Moon, Settings, Sun, Wrench, ImageIcon } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
+import { useProfile } from "@/hooks/useProfile";
+import { useSignedUrl } from "@/hooks/useBikes";
 
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,6 +43,8 @@ export function AppShell({
 }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { profile } = useProfile();
+  const { data: logoUrl } = useSignedUrl(profile?.app_logo_path || "");
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -54,8 +58,12 @@ export function AppShell({
         <div className="mx-auto max-w-6xl">
           <div className="flex items-center gap-4 px-4 py-3">
             <Link to="/bikes" className="flex items-center gap-2">
-              <Wrench className="size-5 text-primary" aria-hidden />
-              <span className="text-display text-2xl">MotoLog</span>
+              {logoUrl ? (
+                <img src={logoUrl} alt="Logo" className="size-6 object-contain" />
+              ) : (
+                <Wrench className="size-5 text-primary" aria-hidden />
+              )}
+              <span className="text-display text-2xl">{profile?.app_name || "MotoLog"}</span>
             </Link>
             <nav className="ml-auto flex items-center gap-1 md:gap-2">
               <div className="hidden md:flex items-center gap-1">

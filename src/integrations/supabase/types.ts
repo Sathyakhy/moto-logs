@@ -280,6 +280,8 @@ export type Database = {
       }
       profiles: {
         Row: {
+          app_logo_path: string | null
+          app_name: string | null
           created_at: string
           default_maintenance_schedule: Json | null
           display_currency: string
@@ -289,6 +291,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          app_logo_path?: string | null
+          app_name?: string | null
           created_at?: string
           default_maintenance_schedule?: Json | null
           display_currency?: string
@@ -298,6 +302,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          app_logo_path?: string | null
+          app_name?: string | null
           created_at?: string
           default_maintenance_schedule?: Json | null
           display_currency?: string

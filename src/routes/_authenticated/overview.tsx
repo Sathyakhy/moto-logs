@@ -59,9 +59,9 @@ function Overview() {
   const tireHealth = getHealth("tire");
 
   return (
-    <AppShell title="Scooter Care" subtitle={bike ? `${bike.year} ${bike.name}` : "Welcome to your garage"}>
-      <div className="flex flex-col items-center mb-6">
-        <div className="relative w-[110%] -mx-[5%] aspect-video sm:aspect-[4/3] sm:w-full sm:max-w-md flex items-center justify-center mb-6 group bike-bg-premium-lg">
+    <AppShell title="Vehicle Care" subtitle={bike ? `${bike.model || ''} ${bike.year || ''}`.trim() : "Welcome to your garage"}>
+      <div className="flex flex-col items-center mb-6 overflow-hidden">
+        <div className="relative w-[115%] -mx-[7.5%] aspect-video sm:aspect-[4/3] sm:w-full sm:max-w-md flex items-center justify-center mb-6 group bike-bg-premium-lg">
           {bike?.photos_paths && bike.photos_paths.length > 0 ? (
             <View360 paths={bike.photos_paths} className="size-full" />
           ) : bike?.photo_path ? (
