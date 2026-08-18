@@ -66,6 +66,8 @@ function Overview() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bikes"] });
       queryClient.invalidateQueries({ queryKey: ["service-schedules", bike?.id] });
+      queryClient.invalidateQueries({ queryKey: ["fuel-logs-usage", bike?.id] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard-history"] });
       toast.success("Odometer updated");
       setIsUpdatingOdo(false);
     },

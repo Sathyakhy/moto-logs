@@ -70,6 +70,8 @@ export function useCreateMaintenanceRecord() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["maintenance", variables.bike_id] });
       queryClient.invalidateQueries({ queryKey: ["bikes"] });
+      queryClient.invalidateQueries({ queryKey: ["service-schedules", variables.bike_id] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard-history"] });
       queryClient.invalidateQueries({ queryKey: ["upcoming-maintenance"] });
     },
   });
@@ -103,6 +105,8 @@ export function useUpdateMaintenanceRecord() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["maintenance", data.bike_id] });
       queryClient.invalidateQueries({ queryKey: ["bikes"] });
+      queryClient.invalidateQueries({ queryKey: ["service-schedules", data.bike_id] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard-history"] });
       queryClient.invalidateQueries({ queryKey: ["upcoming-maintenance"] });
     },
   });
@@ -142,7 +146,9 @@ export function useUpdateFuelLog() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["fuel-logs", data.bike_id] });
+      queryClient.invalidateQueries({ queryKey: ["fuel-logs-usage", data.bike_id] });
       queryClient.invalidateQueries({ queryKey: ["bikes"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard-history"] });
       queryClient.invalidateQueries({ queryKey: ["upcoming-maintenance"] });
     },
   });
