@@ -64,5 +64,7 @@ function normalize(row: {
     display_currency: row.display_currency === "KHR" ? "KHR" : "USD",
     khr_per_usd: Number(row.khr_per_usd) || 4100,
     default_maintenance_schedule: row.default_maintenance_schedule,
+    app_name: row.app_name,
+    app_logo_path: row.app_logo_path,
   };
 }
