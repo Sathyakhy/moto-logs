@@ -301,7 +301,7 @@ function Overview() {
                       type="number"
                       value={odometerValue}
                       onChange={(e) => setOdometerValue(e.target.value)}
-                      className="h-10 text-xl font-mono font-bold pr-10"
+                      className="h-10 text-xl font-mono font-black pr-10"
                       autoFocus
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">KM</div>
