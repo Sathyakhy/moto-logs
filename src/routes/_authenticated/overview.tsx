@@ -1,25 +1,31 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { 
   Bike as BikeIcon, 
-  BookOpen, 
+  Battery,
   Calendar, 
   CircleDot, 
+  Fuel,
   History, 
   Info, 
   LayoutDashboard, 
-  Wrench 
+  Wrench,
+  Droplets,
+  Zap,
+  Clock
 } from "lucide-react";
 import { useBikes } from "@/hooks/useBikes";
 import { useDashboardHistory } from "@/hooks/useDashboard";
 import { useProfile } from "@/hooks/useProfile";
 import { AppShell } from "@/components/AppShell";
 import { LogMaintenanceDialog } from "@/components/LogMaintenanceDialog";
+import { LogFuelDialog } from "@/components/LogFuelDialog";
 import { Button } from "@/components/ui/button";
 import { useSignedUrl } from "@/hooks/useBikes";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { computeSchedule } from "@/lib/moto";
+import { computeSchedule, calculateDailyUsage } from "@/lib/moto";
 import { View360 } from "@/components/View360";
+import { format, addDays } from "date-fns";
 
 export const Route = createFileRoute("/_authenticated/overview")({
   component: Overview,
@@ -46,17 +52,48 @@ function Overview() {
     }
   });
 
-  const getHealth = (item: string) => {
-    const s = schedules?.find(s => s.item.toLowerCase().includes(item.toLowerCase()));
-    if (!s) return null;
-    const computed = computeSchedule(s as any, bike?.current_odometer || 0);
-    // Inverse of progress (which is used/distance)
-    return Math.max(0, 100 - Math.round(computed.progress));
+  const { data: fuelLogs } = useQuery({
+    queryKey: ["fuel-logs-usage", bike?.id],
+    enabled: !!bike?.id,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("fuel_logs")
+        .select("fill_date, odometer")
+        .eq("bike_id", bike!.id)
+        .order("fill_date", { ascending: false });
+      return data || [];
+    }
+  });
+
+  const dailyUsage = calculateDailyUsage(fuelLogs || []);
+
+  const getStatusInfo = (itemNames: string[]) => {
+    const s = schedules?.find(s => itemNames.some(name => s.item.toLowerCase().includes(name.toLowerCase())));
+    if (!s || !bike) return { text: "N/A", status: "good" as const };
+    
+    const computed = computeSchedule(s as any, bike.current_odometer || 0, dailyUsage);
+    const dateText = computed.estimatedDate 
+      ? `(Est ${format(new Date(computed.estimatedDate), "dd-MMM-yy")})`
+      : "";
+    
+    return {
+      text: `Need change in ${computed.remainingKm}KM ${dateText}`,
+      status: computed.status,
+      item: s.item
+    };
   };
 
-  const oilHealth = getHealth("oil");
-  const batteryHealth = getHealth("battery");
-  const tireHealth = getHealth("tire");
+  const oilStatus = getStatusInfo(["oil"]);
+  const batteryStatus = getStatusInfo(["battery"]);
+  
+  // Upcoming maintenance (excluding oil and battery)
+  const upcomingMaintenance = schedules
+    ?.filter(s => !s.item.toLowerCase().includes("oil") && !s.item.toLowerCase().includes("battery"))
+    .map(s => ({
+      ...s,
+      computed: computeSchedule(s as any, bike?.current_odometer || 0, dailyUsage)
+    }))
+    .sort((a, b) => a.computed.remainingKm - b.computed.remainingKm)[0];
 
   return (
     <AppShell title="Vehicle Care" subtitle={bike ? `${bike.model || ''} ${bike.year || ''}`.trim() : "Welcome to your garage"}>
@@ -79,91 +116,104 @@ function Overview() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        {/* Bike Status */}
-        <div className="panel p-4 flex flex-col min-h-[160px]">
-          <h3 className="label-caps mb-3 flex items-center gap-2">
-            <BikeIcon className="size-3 text-primary" />
-            Bike Status
+      <div className="space-y-4">
+        {/* Vehicle Status Section */}
+        <section className="space-y-3">
+          <h3 className="label-caps flex items-center gap-2 px-1">
+            <Zap className="size-3 text-primary" />
+            Vehicle Status
           </h3>
-          <div className="flex-1 space-y-2">
-            <div className="flex items-center gap-3">
-              <BikeIcon className="size-8 text-muted-foreground/40 shrink-0" />
-              <div className="space-y-0.5">
-                <p className="text-[10px] text-muted-foreground">Oil Health: {oilHealth !== null ? `${oilHealth}%` : 'N/A'}</p>
-                <p className="text-[10px] text-muted-foreground">Tire Status: {tireHealth !== null ? (tireHealth > 20 ? 'Good' : 'Check') : 'N/A'}</p>
-                <p className="text-[10px] text-muted-foreground">Battery: {batteryHealth !== null ? `${batteryHealth}%` : 'N/A'}</p>
+          
+          <div className="grid grid-cols-2 grid-rows-2 gap-3">
+            {/* Oil Status */}
+            <div className="panel p-4 flex flex-col justify-between min-h-[110px]">
+              <div className="flex items-center gap-2 text-primary/80 mb-2">
+                <Droplets className="size-4" />
+                <span className="text-[10px] font-bold uppercase tracking-wider">Oil Status</span>
               </div>
+              <p className="text-[11px] font-medium leading-relaxed">
+                {oilStatus.text}
+              </p>
+            </div>
+
+            {/* Battery Status */}
+            <div className="panel p-4 flex flex-col justify-between min-h-[110px]">
+              <div className="flex items-center gap-2 text-primary/80 mb-2">
+                <Zap className="size-4" />
+                <span className="text-[10px] font-bold uppercase tracking-wider">Battery</span>
+              </div>
+              <p className="text-[11px] font-medium leading-relaxed">
+                {batteryStatus.text}
+              </p>
+            </div>
+
+            {/* Upcoming Maintenance */}
+            <div className="panel p-4 col-span-2 flex flex-col justify-between min-h-[110px]">
+              <div className="flex items-center gap-2 text-primary/80 mb-2">
+                <Clock className="size-4" />
+                <span className="text-[10px] font-bold uppercase tracking-wider">Upcoming Maintenance</span>
+              </div>
+              {upcomingMaintenance ? (
+                <div className="flex justify-between items-end">
+                  <div className="space-y-1">
+                    <p className="text-[12px] font-bold text-primary">{upcomingMaintenance.item}</p>
+                    <p className="text-[11px] font-medium">
+                      In {upcomingMaintenance.computed.remainingKm}KM
+                      {upcomingMaintenance.computed.estimatedDate && ` (Est ${format(new Date(upcomingMaintenance.computed.estimatedDate), "dd-MMM-yy")})`}
+                    </p>
+                  </div>
+                  <div className={`text-[10px] px-2 py-0.5 rounded-full uppercase font-bold ${
+                    upcomingMaintenance.computed.status === 'overdue' ? 'bg-destructive/20 text-destructive' :
+                    upcomingMaintenance.computed.status === 'due-soon' ? 'bg-amber-500/20 text-amber-500' :
+                    'bg-primary/20 text-primary'
+                  }`}>
+                    {upcomingMaintenance.computed.status}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-[11px] text-muted-foreground italic">No upcoming tasks</p>
+              )}
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Service Booking */}
-        <div className="panel p-4 flex flex-col min-h-[160px]">
-          <h3 className="label-caps mb-3 flex items-center gap-2">
-            <Calendar className="size-3 text-primary" />
-            Service Booking
-          </h3>
-          <div className="flex-1 flex flex-col items-center justify-center gap-2">
-            <div className="flex items-center gap-2 text-primary">
-              <Calendar className="size-8" />
-              <Wrench className="size-8 opacity-50" />
-            </div>
-            {bike && (
+        {/* Action Buttons */}
+        <div className="grid grid-cols-1 gap-3 pt-2">
+          {bike && (
+            <>
               <LogMaintenanceDialog 
                 bikeId={bike.id}
                 currentOdometer={bike.current_odometer}
                 trigger={
-                  <Button variant="secondary" size="sm" className="w-full text-[10px] h-8 font-bold uppercase tracking-wider">
-                    Schedule Now
+                  <Button variant="outline" className="w-full h-14 flex items-center justify-between px-6 border-primary/20 hover:border-primary/40 bg-primary/5">
+                    <div className="flex items-center gap-3 text-primary">
+                      <Wrench className="size-5" />
+                      <span className="text-sm font-bold uppercase tracking-widest">Maintenance</span>
+                    </div>
+                    <span className="text-[10px] opacity-50 font-bold uppercase">Log Task</span>
                   </Button>
                 }
               />
-            )}
-          </div>
-        </div>
-
-        {/* Maintenance Guides */}
-        <div className="panel p-4 flex flex-col min-h-[160px]">
-          <h3 className="label-caps mb-3 flex items-center gap-2">
-            <BookOpen className="size-3 text-primary" />
-            Maintenance Guides
-          </h3>
-          <div className="flex-1 flex flex-col items-center justify-center gap-2">
-            <div className="flex items-center gap-3 text-muted-foreground/40">
-              <BookOpen className="size-8" />
-              <CircleDot className="size-8" />
-            </div>
-            <Button variant="secondary" size="sm" className="w-full text-[10px] h-8 font-bold uppercase tracking-wider" disabled>
-              Explore Guides
-            </Button>
-          </div>
-        </div>
-
-        {/* Service History */}
-        <div className="panel p-4 flex flex-col min-h-[160px]">
-          <h3 className="label-caps mb-3 flex items-center gap-2 border-b border-border pb-2">
-            <History className="size-3 text-primary" />
-            Service History
-          </h3>
-          <div className="flex-1 mt-2 space-y-3 overflow-hidden">
-            {history?.maintenance && history.maintenance.length > 0 ? (
-              history.maintenance.slice(0, 2).map((item: any, i) => (
-                <div key={item.id} className="relative pl-4 border-l border-border">
-                  <div className="absolute left-[-4.5px] top-1 size-2 rounded-full bg-primary" />
-                  <p className="text-[10px] font-bold leading-none truncate">{item.notes || item.categories?.[0] || 'Service'}</p>
-                  <p className="text-[9px] text-muted-foreground mt-1">{new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
-                </div>
-              ))
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full opacity-20">
-                <History className="size-6 mb-1" />
-                <p className="text-[9px]">No history</p>
-              </div>
-            )}
-          </div>
+              <LogFuelDialog 
+                bikeId={bike.id}
+                currentOdometer={bike.current_odometer}
+                trigger={
+                  <Button variant="outline" className="w-full h-14 flex items-center justify-between px-6 border-amber-500/20 hover:border-amber-500/40 bg-amber-500/5">
+                    <div className="flex items-center gap-3 text-amber-500">
+                      <Fuel className="size-5" />
+                      <span className="text-sm font-bold uppercase tracking-widest">Fuel Fill</span>
+                    </div>
+                    <span className="text-[10px] opacity-50 font-bold uppercase">Add Entry</span>
+                  </Button>
+                }
+              />
+            </>
+          )}
         </div>
       </div>
+    </AppShell>
+  );
+}
     </AppShell>
   );
 }
