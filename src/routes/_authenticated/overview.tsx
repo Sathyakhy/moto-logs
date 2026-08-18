@@ -486,7 +486,7 @@ function Overview() {
             <div className="space-y-2 sm:space-y-4 w-full">
               <div className="flex items-center gap-2 px-1 mb-1">
                 <Wrench className="size-3 sm:size-4 text-primary" />
-                <span className="text-[9px] sm:text-xs font-black uppercase tracking-wider text-muted-foreground">Maintenance</span>
+                <span className="text-[18px] sm:text-xs font-black uppercase tracking-wider text-muted-foreground">Maintenance</span>
               </div>
               {history?.maintenance && history.maintenance.length > 0 ? (
                 history.maintenance.slice(0, 3).map((item: any) => (
