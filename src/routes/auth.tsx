@@ -111,8 +111,8 @@ function AuthPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <div className="flex-1 px-4 py-12 pt-[env(safe-area-inset-top)]">
+    <div className="fixed inset-0 flex flex-col bg-background overflow-hidden">
+      <div className="flex-1 overflow-y-auto px-4 py-12 pt-[env(safe-area-inset-top)] -webkit-overflow-scrolling-touch">
         <div className="mx-auto w-full max-w-md">
         <Link to="/" className="mb-6 flex items-center justify-center gap-2">
           <Wrench className="size-5 text-primary" aria-hidden />
