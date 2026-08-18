@@ -230,11 +230,9 @@ function Overview() {
     ...defaultSchedule.map(d => d.item)
   ]);
 
-  const upcomingMaintenance = Array.from(allPossibleItems)
-    .filter(item => {
-      const lower = item.toLowerCase();
-      return !lower.includes("engine oil") && !lower.includes("gear oil") && !lower.includes("battery");
-    })
+  const maintenanceOrder = ["Engine Oil", "Gear Oil", "CVT Cleaning", "Drive Belt", "Rollers"];
+  
+  const upcomingMaintenance = maintenanceOrder
     .map(item => {
       // Reuse getStatusInfo logic but return the full computed object
       const info = getStatusInfo([item]);
@@ -265,7 +263,7 @@ function Overview() {
       };
     })
     .filter((x): x is { item: string; computed: any } => x !== null)
-    .sort((a, b) => a.computed.remainingKm - b.computed.remainingKm).slice(0, 3);
+    .sort((a, b) => a.computed.remainingKm - b.computed.remainingKm).slice(0, 5);
 
   return (
     <AppShell title="Vehicle Care" subtitle={bike ? `${bike.model || ''} ${bike.year || ''}`.trim() : "Welcome to your garage"}>
