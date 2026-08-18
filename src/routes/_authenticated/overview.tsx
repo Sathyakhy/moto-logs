@@ -467,7 +467,7 @@ function Overview() {
           <div className="flex items-center justify-between">
             <h3 className="label-caps flex items-center gap-2">
               <History className="size-3.5 sm:size-5 text-primary" />
-              <span className="text-[10px] sm:text-sm">History</span>
+              <span className="text-[20px] sm:text-sm">History</span>
             </h3>
             {bike && (
               <Link 
