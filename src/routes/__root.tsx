@@ -84,7 +84,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-touch-fullscreen", content: "yes" },
       { name: "apple-mobile-web-app-orientations", content: "portrait" },
-      { name: "display", content: "standalone" },
       { name: "apple-mobile-web-app-title", content: "MotoLog" },
       { name: "theme-color", content: "#0F172A", media: "(prefers-color-scheme: dark)" },
       { name: "theme-color", content: "#f8f9fa", media: "(prefers-color-scheme: light)" },
