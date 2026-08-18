@@ -208,14 +208,16 @@ function Overview() {
               <History className="size-3 text-primary" />
               Recent History
             </h3>
-            <Link 
-              to="/bikes/$bikeId" 
-              params={{ bikeId: bike.id }} 
-              search={{ tab: 'history' }}
-              className="text-[10px] font-bold uppercase tracking-widest text-primary hover:underline"
-            >
-              View All
-            </Link>
+            {bike && (
+              <Link 
+                to="/bikes/$bikeId" 
+                params={{ bikeId: bike.id }} 
+                search={{ tab: 'history' }}
+                className="text-[10px] font-bold uppercase tracking-widest text-primary hover:underline"
+              >
+                View All
+              </Link>
+            )}
           </div>
           
           <div className="space-y-2">
