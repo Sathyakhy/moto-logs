@@ -66,6 +66,8 @@ function Overview() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bikes"] });
       queryClient.invalidateQueries({ queryKey: ["service-schedules", bike?.id] });
+      queryClient.invalidateQueries({ queryKey: ["fuel-logs-usage", bike?.id] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard-history"] });
       toast.success("Odometer updated");
       setIsUpdatingOdo(false);
     },
@@ -85,7 +87,7 @@ function Overview() {
     updateOdometerMutation.mutate(val);
   };
 
-  const { data: schedules } = useQuery({
+  const { data: schedules, isLoading: isSchedulesLoading } = useQuery({
     queryKey: ["service-schedules", bike?.id],
     enabled: !!bike?.id,
     queryFn: async () => {
@@ -94,6 +96,10 @@ function Overview() {
         .from("service_schedules")
         .select("*")
         .eq("bike_id", bike.id);
+      
+      // If no schedules exist yet for this bike, we should return the defaults
+      // to allow the UI to show potential status even before user customizes.
+      // However, schedules table is where we track last_service_odometer/date.
       return data || [];
     }
   });
@@ -124,13 +130,22 @@ function Overview() {
     // If no specific schedule found, we display a message
     if (!s) return { text: "No schedule set", status: "good" as const };
     
-    const computed = computeSchedule(s as any, bike.current_odometer || 0, dailyUsage);
+    // Ensure we are using correct types for computeSchedule
+    const scheduleRow = {
+      id: s.id,
+      item: s.item,
+      interval_km: Number(s.interval_km),
+      interval_days: s.interval_days ? Number(s.interval_days) : null,
+      last_service_odometer: Number(s.last_service_odometer || 0),
+      last_service_date: s.last_service_date || null
+    };
+
+    const computed = computeSchedule(scheduleRow as any, bike.current_odometer || 0, dailyUsage);
     
     const dateText = computed.estimatedDate 
       ? `(Est ${format(new Date(computed.estimatedDate), "dd-MMM-yy")})`
       : "";
     
-    // The user specifically wants: "Need change in 500KM (Est 30-Sep-26)"
     return {
       text: computed.status === "overdue" 
         ? `Overdue by ${Math.abs(computed.remainingKm)}KM ${dateText}`
@@ -148,7 +163,14 @@ function Overview() {
     ?.filter(s => !s.item.toLowerCase().includes("oil") && !s.item.toLowerCase().includes("battery"))
     .map(s => ({
       ...s,
-      computed: computeSchedule(s as any, bike?.current_odometer || 0, dailyUsage)
+      computed: computeSchedule({
+        id: s.id,
+        item: s.item,
+        interval_km: Number(s.interval_km),
+        interval_days: s.interval_days ? Number(s.interval_days) : null,
+        last_service_odometer: Number(s.last_service_odometer || 0),
+        last_service_date: s.last_service_date || null
+      } as any, bike?.current_odometer || 0, dailyUsage)
     }))
     .sort((a, b) => a.computed.remainingKm - b.computed.remainingKm)[0];
 
@@ -310,7 +332,6 @@ function Overview() {
                       <Wrench className="size-4" />
                       <span className="text-[10px] font-bold uppercase tracking-widest">Maintenance</span>
                     </div>
-                    <span className="text-[8px] opacity-50 font-bold uppercase">Log Task</span>
                   </Button>
                 }
               />
@@ -323,7 +344,6 @@ function Overview() {
                       <Fuel className="size-4" />
                       <span className="text-[10px] font-bold uppercase tracking-widest">Fuel Fill</span>
                     </div>
-                    <span className="text-[8px] opacity-50 font-bold uppercase">Add Entry</span>
                   </Button>
                 }
               />
@@ -336,7 +356,7 @@ function Overview() {
           <div className="flex items-center justify-between px-1">
             <h3 className="label-caps flex items-center gap-2">
               <History className="size-3 text-primary" />
-              Recent History
+              History
             </h3>
             {bike && (
               <Link 
