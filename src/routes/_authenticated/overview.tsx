@@ -496,10 +496,10 @@ function Overview() {
                         <Wrench className="size-3.5 sm:size-5" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[10px] sm:text-sm font-black leading-tight group-hover:text-primary transition-colors truncate uppercase">
+                        <p className="text-[20px] sm:text-sm font-black leading-tight group-hover:text-primary transition-colors truncate uppercase">
                           {item.notes?.split('\n')[0] || item.categories?.[0] || "Maintenance"}
                         </p>
-                        <p className="text-[8px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
+                        <p className="text-[16px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
                           {format(new Date(item.date), "dd MMM")} • {km(item.odometer)}
                         </p>
                       </div>
