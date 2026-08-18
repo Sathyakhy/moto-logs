@@ -90,8 +90,8 @@ export function AppShell({
       </main>
 
       {/* Bottom navigation for mobile */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/80 bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
-        <div className="flex items-center justify-around px-2 py-3 mb-[env(safe-area-inset-bottom,0px)]">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/80 bg-background/95 backdrop-blur md:hidden">
+        <div className="flex items-center justify-around px-2 py-3 pb-[calc(env(safe-area-inset-bottom)+8px)]">
           {NAV.map(({ to, label, icon: Icon }) => (
             <Link
               key={to}
