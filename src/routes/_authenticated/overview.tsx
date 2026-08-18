@@ -424,7 +424,7 @@ function Overview() {
         </section>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-6 pt-2">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 lg:gap-8 pt-2">
           {bike && (
             <>
               <LogMaintenanceDialog 
