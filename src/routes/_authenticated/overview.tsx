@@ -273,7 +273,7 @@ function Overview() {
                 {!isUpdatingOdo ? (
                   <button 
                     onClick={() => setIsUpdatingOdo(true)}
-                    className="text-[10px] font-bold uppercase text-primary hover:underline"
+                    className="text-[10px] font-black uppercase text-primary hover:underline"
                   >
                     Update
                   </button>
