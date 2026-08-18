@@ -108,9 +108,6 @@ function Overview() {
           )}
         </div>
         
-        <div className="flex flex-col items-center">
-          {/* Spacing removed */}
-        </div>
       </div>
 
       <div className="space-y-4">
