@@ -468,7 +468,7 @@ function Overview() {
                         <p className="text-[10px] font-black leading-tight group-hover:text-primary transition-colors truncate">
                           {item.notes?.split('\n')[0] || item.categories?.[0] || "Maintenance"}
                         </p>
-                        <p className="text-[8px] text-muted-foreground mt-0.5">
+                        <p className="text-[8px] font-bold text-muted-foreground mt-0.5">
                           {format(new Date(item.date), "dd MMM")} • {km(item.odometer)}
                         </p>
                       </div>
