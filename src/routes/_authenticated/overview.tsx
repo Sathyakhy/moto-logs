@@ -200,6 +200,7 @@ function Overview() {
   };
 
   const oilStatus = getStatusInfo(["Engine Oil"]);
+  const gearOilStatus = getStatusInfo(["Gear Oil"]);
   const batteryStatus = getStatusInfo(["Battery"]);
   
   // Upcoming maintenance (excluding oil and battery)
@@ -212,7 +213,10 @@ function Overview() {
   ]);
 
   const upcomingMaintenance = Array.from(allPossibleItems)
-    .filter(item => !item.toLowerCase().includes("oil") && !item.toLowerCase().includes("battery"))
+    .filter(item => {
+      const lower = item.toLowerCase();
+      return !lower.includes("engine oil") && !lower.includes("gear oil") && !lower.includes("battery");
+    })
     .map(item => {
       // Reuse getStatusInfo logic but return the full computed object
       const info = getStatusInfo([item]);
@@ -260,27 +264,27 @@ function Overview() {
         
       </div>
 
-      <div className="space-y-4 px-4">
+      <div className="space-y-4 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
         {/* Odometer Tracker Section */}
         {bike && (
           <section>
-            <div className="panel p-4 border-l-4 border-l-primary flex flex-col gap-3">
+            <div className="panel p-3 sm:p-5 border-l-4 border-l-primary flex flex-col gap-2 sm:gap-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-primary/80">
-                  <Gauge className="size-4" />
-                  <span className="text-[10px] font-black uppercase tracking-wider">Current Mileage</span>
+                  <Gauge className="size-3.5 sm:size-5" />
+                  <span className="text-[9px] sm:text-xs font-black uppercase tracking-wider">Current Mileage</span>
                 </div>
                 {!isUpdatingOdo ? (
                   <button 
                     onClick={() => setIsUpdatingOdo(true)}
-                    className="text-[10px] font-black uppercase text-primary hover:underline"
+                    className="text-[9px] sm:text-xs font-black uppercase text-primary hover:underline"
                   >
                     Update
                   </button>
                 ) : (
                   <button 
                     onClick={() => setIsUpdatingOdo(false)}
-                    className="text-[10px] font-black uppercase text-muted-foreground hover:underline"
+                    className="text-[9px] sm:text-xs font-black uppercase text-muted-foreground hover:underline"
                   >
                     Cancel
                   </button>
@@ -289,10 +293,10 @@ function Overview() {
               
               {!isUpdatingOdo ? (
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold tracking-tighter text-primary" style={{ fontFamily: 'var(--font-digital)' }}>
+                  <span className="text-3xl sm:text-5xl font-bold tracking-tighter text-primary leading-none" style={{ fontFamily: 'Digital-7' }}>
                     {bike.current_odometer?.toLocaleString()}
                   </span>
-                  <span className="text-xs font-black text-muted-foreground uppercase tracking-widest">KM</span>
+                  <span className="text-[10px] sm:text-sm font-black text-muted-foreground uppercase tracking-widest">KM</span>
                 </div>
               ) : (
                 <form onSubmit={handleOdoSubmit} className="flex gap-2">
@@ -301,18 +305,18 @@ function Overview() {
                       type="number"
                       value={odometerValue}
                       onChange={(e) => setOdometerValue(e.target.value)}
-                      className="h-10 text-xl font-mono font-black pr-10"
+                      className="h-9 sm:h-12 text-lg sm:text-2xl font-mono font-black pr-10"
                       autoFocus
                     />
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-muted-foreground">KM</div>
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] sm:text-xs font-black text-muted-foreground">KM</div>
                   </div>
                   <Button 
                     type="submit" 
                     size="icon" 
-                    className="h-10 w-10 shrink-0 shadow-lg shadow-primary/20"
+                    className="h-9 w-9 sm:h-12 sm:w-12 shrink-0 shadow-lg shadow-primary/20"
                     disabled={updateOdometerMutation.isPending}
                   >
-                    <Check className="size-4" />
+                    <Check className="size-4 sm:size-6" />
                   </Button>
                 </form>
               )}
@@ -322,67 +326,87 @@ function Overview() {
 
         {/* Vehicle Status Section */}
         <section className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            {/* Oil Status */}
-            <div className={`panel p-4 flex flex-col justify-between min-h-[110px] border-l-4 ${
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6">
+            {/* Engine Oil Status */}
+            <div className={`panel p-3 sm:p-5 flex flex-col justify-between min-h-[100px] sm:min-h-[140px] border-l-4 ${
               oilStatus.status === 'overdue' ? 'border-l-destructive' :
               oilStatus.status === 'due-soon' ? 'border-l-amber-500' :
               'border-l-primary'
             }`}>
-              <div className="flex items-center gap-2 text-primary/80 mb-2">
-                <Droplets className="size-4" />
-                <span className="text-[10px] font-black uppercase tracking-wider">OIL STATUS</span>
+              <div className="flex items-center gap-2 text-primary/80 mb-1 sm:mb-3">
+                <Droplets className="size-3.5 sm:size-5" />
+                <span className="text-[9px] sm:text-xs font-black uppercase tracking-wider">ENGINE OIL</span>
               </div>
               <div className="flex flex-col">
-                <p className="text-[10px] font-black leading-tight">
+                <p className="text-[10px] sm:text-sm font-black leading-tight">
                   {oilStatus.kmDaysText}
                 </p>
-                <p className="text-[9px] font-bold text-muted-foreground mt-0.5">
+                <p className="text-[8px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
                   {oilStatus.dateText}
                 </p>
               </div>
             </div>
 
+            {/* Gear Oil Status */}
+            <div className={`panel p-3 sm:p-5 flex flex-col justify-between min-h-[100px] sm:min-h-[140px] border-l-4 ${
+              gearOilStatus.status === 'overdue' ? 'border-l-destructive' :
+              gearOilStatus.status === 'due-soon' ? 'border-l-amber-500' :
+              'border-l-primary'
+            }`}>
+              <div className="flex items-center gap-2 text-primary/80 mb-1 sm:mb-3">
+                <Droplets className="size-3.5 sm:size-5" />
+                <span className="text-[9px] sm:text-xs font-black uppercase tracking-wider">GEAR OIL</span>
+              </div>
+              <div className="flex flex-col">
+                <p className="text-[10px] sm:text-sm font-black leading-tight">
+                  {gearOilStatus.kmDaysText}
+                </p>
+                <p className="text-[8px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
+                  {gearOilStatus.dateText}
+                </p>
+              </div>
+            </div>
+
             {/* Battery Status */}
-            <div className={`panel p-4 flex flex-col justify-between min-h-[110px] border-l-4 ${
+            <div className={`panel p-3 sm:p-5 flex flex-col justify-between min-h-[100px] sm:min-h-[140px] border-l-4 ${
               batteryStatus.status === 'overdue' ? 'border-l-destructive' :
               batteryStatus.status === 'due-soon' ? 'border-l-amber-500' :
               'border-l-primary'
             }`}>
-              <div className="flex items-center gap-2 text-primary/80 mb-2">
-                <Zap className="size-4" />
-                <span className="text-[10px] font-black uppercase tracking-wider">BATTERY</span>
+              <div className="flex items-center gap-2 text-primary/80 mb-1 sm:mb-3">
+                <Zap className="size-3.5 sm:size-5" />
+                <span className="text-[9px] sm:text-xs font-black uppercase tracking-wider">BATTERY</span>
               </div>
               <div className="flex flex-col">
-                <p className="text-[10px] font-black leading-tight">
+                <p className="text-[10px] sm:text-sm font-black leading-tight">
                   {batteryStatus.kmDaysText}
                 </p>
-                <p className="text-[9px] font-bold text-muted-foreground mt-0.5">
+                <p className="text-[8px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
                   {batteryStatus.dateText}
                 </p>
               </div>
             </div>
 
             {/* Upcoming Maintenance */}
-            <div className="panel p-4 col-span-2 flex flex-col justify-between min-h-[110px] border-l-4 border-l-primary">
-              <div className="flex items-center gap-2 text-primary/80 mb-3">
-                <Clock className="size-4" />
-                <span className="text-[10px] font-black uppercase tracking-wider">UPCOMING MAINTENANCE</span>
+            <div className="panel p-3 sm:p-5 col-span-2 sm:col-span-3 flex flex-col justify-between min-h-[100px] sm:min-h-[140px] border-l-4 border-l-primary">
+              <div className="flex items-center gap-2 text-primary/80 mb-2 sm:mb-4">
+                <Clock className="size-3.5 sm:size-5" />
+                <span className="text-[9px] sm:text-xs font-black uppercase tracking-wider">UPCOMING MAINTENANCE</span>
               </div>
               {upcomingMaintenance && (upcomingMaintenance as any[]).length > 0 ? (
-                <div className="space-y-3">
+                <div className="space-y-2.5 sm:space-y-4">
                   {(upcomingMaintenance as any[]).map((task, idx) => (
-                    <div key={idx} className="flex justify-between items-center gap-2 pb-1.5 last:pb-0 border-b last:border-0 border-white/5">
-                      <div className="space-y-0.5">
-                        <p className="text-[10px] font-black text-primary leading-tight uppercase">{task.item}</p>
-                        <p className="text-[9px] font-bold leading-tight text-muted-foreground">
+                    <div key={idx} className="flex justify-between items-center gap-2 pb-1.5 sm:pb-3 last:pb-0 border-b last:border-0 border-white/5">
+                      <div className="space-y-0.5 sm:space-y-1">
+                        <p className="text-[10px] sm:text-sm font-black text-primary leading-tight uppercase">{task.item}</p>
+                        <p className="text-[8px] sm:text-[11px] font-bold leading-tight text-muted-foreground">
                           {task.computed.status === "overdue" 
                             ? `Overdue by ${Math.abs(task.computed.remainingKm)}KM`
                             : `In ${task.computed.remainingKm}KM`}
                           {task.computed.estimatedDate && ` — Est ${format(new Date(task.computed.estimatedDate), "dd-MMM-yy")}`}
                         </p>
                       </div>
-                      <div className={`text-[7px] px-2 py-0.5 rounded-full uppercase font-black shrink-0 ${
+                      <div className={`text-[7px] sm:text-[10px] px-1.5 sm:px-2.5 py-0.5 rounded-full uppercase font-black shrink-0 ${
                         task.computed.status === 'overdue' ? 'bg-destructive/20 text-destructive' :
                         task.computed.status === 'due-soon' ? 'bg-amber-500/20 text-amber-500' :
                         'bg-primary/20 text-primary'
@@ -393,24 +417,24 @@ function Overview() {
                   ))}
                 </div>
               ) : (
-                <p className="text-[10px] text-muted-foreground italic">No upcoming tasks</p>
+                <p className="text-[9px] sm:text-xs text-muted-foreground italic">No upcoming tasks</p>
               )}
             </div>
           </div>
         </section>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-4 pt-2">
+        <div className="grid grid-cols-2 gap-3 sm:gap-6 pt-2">
           {bike && (
             <>
               <LogMaintenanceDialog 
                 bikeId={bike.id}
                 currentOdometer={bike.current_odometer}
                 trigger={
-                  <Button variant="outline" className="w-full h-14 flex flex-col items-center justify-center border-primary/20 hover:border-primary/40 bg-primary/5 gap-1">
+                  <Button variant="outline" className="w-full h-16 sm:h-28 flex flex-col items-center justify-center border-primary/20 hover:border-primary/40 bg-primary/5 gap-1 sm:gap-3 transition-all">
                     <div className="flex items-center gap-2 text-primary">
-                      <Wrench className="size-4" />
-                      <span className="text-[9px] font-black uppercase tracking-widest">Maintenance</span>
+                      <Wrench className="size-4 sm:size-7" />
+                      <span className="text-[9px] sm:text-sm font-black uppercase tracking-widest">Maintenance</span>
                     </div>
                   </Button>
                 }
@@ -419,10 +443,10 @@ function Overview() {
                 bikeId={bike.id}
                 currentOdometer={bike.current_odometer}
                 trigger={
-                  <Button variant="outline" className="w-full h-14 flex flex-col items-center justify-center border-amber-500/20 hover:border-amber-500/40 bg-amber-500/5 gap-1">
+                  <Button variant="outline" className="w-full h-16 sm:h-28 flex flex-col items-center justify-center border-amber-500/20 hover:border-amber-500/40 bg-amber-500/5 gap-1 sm:gap-3 transition-all">
                     <div className="flex items-center gap-2 text-amber-500">
-                      <Fuel className="size-4" />
-                      <span className="text-[9px] font-black uppercase tracking-widest">Fuel Fill</span>
+                      <Fuel className="size-4 sm:size-7" />
+                      <span className="text-[9px] sm:text-sm font-black uppercase tracking-widest">Fuel Fill</span>
                     </div>
                   </Button>
                 }
@@ -432,49 +456,49 @@ function Overview() {
         </div>
 
         {/* Recent History */}
-        <section className="space-y-4 pt-4">
+        <section className="space-y-4 pt-4 sm:pt-8">
           <div className="flex items-center justify-between">
             <h3 className="label-caps flex items-center gap-2">
-              <History className="size-3 text-primary" />
-              History
+              <History className="size-3.5 sm:size-5 text-primary" />
+              <span className="text-[10px] sm:text-sm">History</span>
             </h3>
             {bike && (
               <Link 
                 to="/bikes/$bikeId" 
                 params={{ bikeId: bike.id }} 
                 search={{ tab: 'history' }}
-                className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline"
+                className="text-[9px] sm:text-xs font-black uppercase tracking-widest text-primary hover:underline"
               >
                 View All
               </Link>
             )}
           </div>
           
-          <div className="flex flex-col md:grid md:grid-cols-2 gap-x-3 gap-y-6 items-start">
+          <div className="flex flex-col sm:grid sm:grid-cols-2 gap-x-4 gap-y-6 items-start">
             {/* Maintenance History */}
-            <div className="space-y-2">
+            <div className="space-y-2 sm:space-y-4 w-full">
               <div className="flex items-center gap-2 px-1 mb-1">
-                <Wrench className="size-3 text-primary" />
-                <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground">Maintenance</span>
+                <Wrench className="size-3 sm:size-4 text-primary" />
+                <span className="text-[9px] sm:text-xs font-black uppercase tracking-wider text-muted-foreground">Maintenance</span>
               </div>
               {history?.maintenance && history.maintenance.length > 0 ? (
                 history.maintenance.slice(0, 3).map((item: any) => (
-                  <div key={item.id} className="panel p-3 flex items-center justify-between hover:bg-secondary/20 transition-colors group">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="size-7 rounded bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                        <Wrench className="size-3" />
+                  <div key={item.id} className="panel p-3 sm:p-5 flex items-center justify-between hover:bg-secondary/20 transition-colors group">
+                    <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
+                      <div className="size-7 sm:size-10 rounded bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                        <Wrench className="size-3.5 sm:size-5" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[10px] font-black leading-tight group-hover:text-primary transition-colors truncate">
+                        <p className="text-[10px] sm:text-sm font-black leading-tight group-hover:text-primary transition-colors truncate uppercase">
                           {item.notes?.split('\n')[0] || item.categories?.[0] || "Maintenance"}
                         </p>
-                        <p className="text-[8px] font-bold text-muted-foreground mt-0.5">
+                        <p className="text-[8px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
                           {format(new Date(item.date), "dd MMM")} • {km(item.odometer)}
                         </p>
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-[10px] font-black text-primary">
+                      <p className="text-[10px] sm:text-sm font-black text-primary">
                         ${Number(item.total_cost).toFixed(2)}
                       </p>
                     </div>
@@ -482,35 +506,35 @@ function Overview() {
                 ))
               ) : (
                 <div className="panel p-4 text-center border-dashed">
-                  <p className="text-[9px] text-muted-foreground italic">No logs</p>
+                  <p className="text-[9px] sm:text-xs text-muted-foreground italic">No logs</p>
                 </div>
               )}
             </div>
 
             {/* Fuel History */}
-            <div className="space-y-2">
+            <div className="space-y-2 sm:space-y-4 w-full">
               <div className="flex items-center gap-2 px-1 mb-1">
-                <Fuel className="size-3 text-amber-500" />
-                <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground">Fuel</span>
+                <Fuel className="size-3 sm:size-4 text-amber-500" />
+                <span className="text-[9px] sm:text-xs font-black uppercase tracking-wider text-muted-foreground">Fuel</span>
               </div>
               {history?.fuel && history.fuel.length > 0 ? (
                 history.fuel.slice(0, 3).map((item: any) => (
-                  <div key={item.id} className="panel p-3 flex items-center justify-between hover:bg-secondary/20 transition-colors group">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="size-7 rounded bg-amber-500/10 flex items-center justify-center text-amber-500 shrink-0">
-                        <Fuel className="size-3" />
+                  <div key={item.id} className="panel p-3 sm:p-5 flex items-center justify-between hover:bg-secondary/20 transition-colors group">
+                    <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
+                      <div className="size-7 sm:size-10 rounded bg-amber-500/10 flex items-center justify-center text-amber-500 shrink-0">
+                        <Fuel className="size-3.5 sm:size-5" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[10px] font-black leading-tight group-hover:text-amber-500 transition-colors truncate">
+                        <p className="text-[10px] sm:text-sm font-black leading-tight group-hover:text-amber-500 transition-colors truncate uppercase">
                           {item.gas_station || "Fuel Fill"}
                         </p>
-                        <p className="text-[8px] font-bold text-muted-foreground mt-0.5">
+                        <p className="text-[8px] sm:text-[11px] font-bold text-muted-foreground mt-0.5 sm:mt-1">
                           {format(new Date(item.date), "dd MMM")} • {km(item.odometer)}
                         </p>
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-[10px] font-black text-amber-500">
+                      <p className="text-[10px] sm:text-sm font-black text-amber-500">
                         ${Number(item.amount).toFixed(2)}
                       </p>
                     </div>
@@ -518,7 +542,7 @@ function Overview() {
                 ))
               ) : (
                 <div className="panel p-4 text-center border-dashed">
-                  <p className="text-[9px] text-muted-foreground italic">No logs</p>
+                  <p className="text-[9px] sm:text-xs text-muted-foreground italic">No logs</p>
                 </div>
               )}
             </div>
