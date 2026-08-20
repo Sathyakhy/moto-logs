@@ -271,7 +271,7 @@ function Overview() {
         {/* Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.
                                         
                                             
-                                            Move 360 perspective higher */}
+                                            tell me how did you make it seamless for iphone app */}
       </div>
 
       <div className="flex flex-col items-center mt-6 mb-6 overflow-visible">
