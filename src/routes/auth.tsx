@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { AuthLoading } from "@/components/AuthLoading";
 
 export const Route = createFileRoute("/auth")({
@@ -111,16 +110,27 @@ function AuthPage() {
 
   async function google() {
     setBusy(true);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/bikes`,
+        },
+      });
+      if (error) {
+        setBusy(false);
+        toast.error(error.message || "Google sign-in failed. Please try again.");
+        return;
+      }
+      if (data?.url) {
+        window.location.href = data.url;
+        return;
+      }
+      void navigate({ to: "/bikes" });
+    } catch (e: any) {
       setBusy(false);
-      toast.error("Google sign-in failed. Please try again.");
-      return;
+      toast.error(e?.message || "Google sign-in failed. Please try again.");
     }
-    if (result.redirected) return;
-    void navigate({ to: "/bikes" });
   }
 
   if (checkingSession) {
