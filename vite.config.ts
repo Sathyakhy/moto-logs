@@ -12,4 +12,20 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    build: {
+      rollupOptions: {
+        onwarn(warning, defaultHandler) {
+          if (
+            warning.code === "MODULE_LEVEL_DIRECTIVE" ||
+            (typeof warning.message === "string" &&
+              warning.message.includes('module level directive "use client"'))
+          ) {
+            return;
+          }
+          defaultHandler(warning);
+        },
+      },
+    },
+  },
 });

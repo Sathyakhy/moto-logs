@@ -12,7 +12,7 @@ async function updateScheduleFromMaintenance(
   userId: string,
   categories: string[],
   odometer: number,
-  date: string
+  date: string,
 ) {
   // 1. Fetch current bike schedules
   const { data: schedules } = await supabase
@@ -30,8 +30,8 @@ async function updateScheduleFromMaintenance(
   const defaultSchedule = (profile?.default_maintenance_schedule as any[]) || [];
 
   for (const category of categories) {
-    const existing = schedules?.find(s => s.item === category);
-    
+    const existing = schedules?.find((s) => s.item === category);
+
     if (existing) {
       // Update existing schedule
       await supabase
@@ -43,20 +43,18 @@ async function updateScheduleFromMaintenance(
         .eq("id", existing.id);
     } else {
       // Find default interval for this category
-      const def = defaultSchedule.find(d => d.item === category);
+      const def = defaultSchedule.find((d) => d.item === category);
       if (def) {
         // Create new schedule entry automatically
-        await supabase
-          .from("service_schedules")
-          .insert({
-            bike_id: bikeId,
-            user_id: userId,
-            item: category,
-            interval_km: Number(def.interval_km || 0),
-            interval_days: def.interval_days ? Number(def.interval_days) : null,
-            last_service_odometer: odometer,
-            last_service_date: date,
-          });
+        await supabase.from("service_schedules").insert({
+          bike_id: bikeId,
+          user_id: userId,
+          item: category,
+          interval_km: Number(def.interval_km || 0),
+          interval_days: def.interval_days ? Number(def.interval_days) : null,
+          last_service_odometer: odometer,
+          last_service_date: date,
+        });
       }
     }
   }
@@ -74,13 +72,18 @@ export function useCreateMaintenanceRecord() {
       if (error) throw error;
 
       // Update schedule
-      if (record.categories && record.categories.length > 0 && record.user_id && record.service_date) {
+      if (
+        record.categories &&
+        record.categories.length > 0 &&
+        record.user_id &&
+        record.service_date
+      ) {
         await updateScheduleFromMaintenance(
           record.bike_id,
           record.user_id,
           record.categories,
           Number(record.odometer),
-          record.service_date
+          record.service_date,
         );
       }
 
@@ -115,7 +118,7 @@ export function useUpdateMaintenanceRecord() {
           data.user_id,
           data.categories,
           Number(data.odometer),
-          data.service_date
+          data.service_date,
         );
       }
 
@@ -135,10 +138,7 @@ export function useDeleteMaintenanceRecord() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, bike_id }: { id: string; bike_id: string }) => {
-      const { error } = await supabase
-        .from("maintenance_records")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabase.from("maintenance_records").delete().eq("id", id);
       if (error) throw error;
       return { id, bike_id };
     },
@@ -177,10 +177,7 @@ export function useDeleteFuelLog() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, bike_id }: { id: string; bike_id: string }) => {
-      const { error } = await supabase
-        .from("fuel_logs")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabase.from("fuel_logs").delete().eq("id", id);
       if (error) throw error;
       return { id, bike_id };
     },

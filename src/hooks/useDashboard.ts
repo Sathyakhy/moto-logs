@@ -13,9 +13,19 @@ export function useStats(userId: string | undefined, filter: TimeFilter = "all")
     queryFn: async () => {
       if (!userId) return null;
 
-      let maintenanceQuery = supabase.from("maintenance_records").select("total_cost, currency, service_date").eq("user_id", userId);
-      let fuelQuery = supabase.from("fuel_logs").select("amount, currency, fill_date, liters, odometer, bike_id").eq("user_id", userId).order("fill_date", { ascending: true });
-      let expensesQuery = supabase.from("expenses").select("amount, currency, expense_date").eq("user_id", userId);
+      let maintenanceQuery = supabase
+        .from("maintenance_records")
+        .select("total_cost, currency, service_date")
+        .eq("user_id", userId);
+      let fuelQuery = supabase
+        .from("fuel_logs")
+        .select("amount, currency, fill_date, liters, odometer, bike_id")
+        .eq("user_id", userId)
+        .order("fill_date", { ascending: true });
+      let expensesQuery = supabase
+        .from("expenses")
+        .select("amount, currency, expense_date")
+        .eq("user_id", userId);
 
       if (filter !== "all") {
         const now = new Date();
@@ -25,7 +35,7 @@ export function useStats(userId: string | undefined, filter: TimeFilter = "all")
         else startDate = startOfYear(now);
 
         const startDateISO = startDate.toISOString();
-        
+
         maintenanceQuery = maintenanceQuery.gte("service_date", startDateISO);
         fuelQuery = fuelQuery.gte("fill_date", startDateISO);
         expensesQuery = expensesQuery.gte("expense_date", startDateISO);
@@ -73,10 +83,7 @@ export function useUpcomingMaintenance(userId: string | undefined) {
       if (!userId) return [];
 
       // Fetch bikes
-      const { data: bikes } = await supabase
-        .from("bikes")
-        .select("*")
-        .eq("user_id", userId);
+      const { data: bikes } = await supabase.from("bikes").select("*").eq("user_id", userId);
 
       if (!bikes || bikes.length === 0) return [];
 
@@ -91,34 +98,44 @@ export function useUpcomingMaintenance(userId: string | undefined) {
       const { data: schedules } = await supabase
         .from("service_schedules")
         .select("*")
-        .in("bike_id", bikes.map(b => b.id));
+        .in(
+          "bike_id",
+          bikes.map((b) => b.id),
+        );
 
-      const upcomingItems: (ScheduleComputed & { bikeName: string; bikeId: string; item: string })[] = [];
+      const upcomingItems: (ScheduleComputed & {
+        bikeName: string;
+        bikeId: string;
+        item: string;
+      })[] = [];
 
-      bikes.forEach(bike => {
-        const bikeFuel = fuelLogs?.filter(l => l.bike_id === bike.id) || [];
+      bikes.forEach((bike) => {
+        const bikeFuel = fuelLogs?.filter((l) => l.bike_id === bike.id) || [];
         const dailyUsage = calculateDailyUsage(bikeFuel);
-        const bikeSchedules = schedules?.filter(s => s.bike_id === bike.id) || [];
+        const bikeSchedules = schedules?.filter((s) => s.bike_id === bike.id) || [];
 
-        bikeSchedules.forEach(schedule => {
+        bikeSchedules.forEach((schedule) => {
           const computed = computeSchedule(schedule as any, bike.current_odometer || 0, dailyUsage);
           // Only show items that are not yet overdue but coming up, or already overdue
           upcomingItems.push({
             ...computed,
             bikeName: bike.name,
             bikeId: bike.id,
-            item: schedule.item
+            item: schedule.item,
           });
         });
       });
 
       // Sort by estimated date
-      return upcomingItems.sort((a, b) => {
-        if (!a.estimatedDate) return 1;
-        if (!b.estimatedDate) return -1;
-        return new Date(a.estimatedDate).getTime() - new Date(b.estimatedDate).getTime();
-      }).filter(item => item.status !== 'good').slice(0, 5);
-    }
+      return upcomingItems
+        .sort((a, b) => {
+          if (!a.estimatedDate) return 1;
+          if (!b.estimatedDate) return -1;
+          return new Date(a.estimatedDate).getTime() - new Date(b.estimatedDate).getTime();
+        })
+        .filter((item) => item.status !== "good")
+        .slice(0, 5);
+    },
   });
 }
 
@@ -156,9 +173,13 @@ export function useDashboardHistory(userId: string | undefined, filter: TimeFilt
       const [maint, fuel] = await Promise.all([maintenanceQuery, fuelQuery]);
 
       return {
-        maintenance: (maint.data || []).map(m => ({ ...m, type: 'maintenance' as const, date: m.service_date })),
-        fuel: (fuel.data || []).map(f => ({ ...f, type: 'fuel' as const, date: f.fill_date }))
+        maintenance: (maint.data || []).map((m) => ({
+          ...m,
+          type: "maintenance" as const,
+          date: m.service_date,
+        })),
+        fuel: (fuel.data || []).map((f) => ({ ...f, type: "fuel" as const, date: f.fill_date })),
       };
-    }
+    },
   });
 }

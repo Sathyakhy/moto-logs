@@ -36,21 +36,19 @@ export interface DefaultScheduleItem {
   interval_days?: number;
 }
 
-export const DEFAULT_SCHEDULE_ITEMS: DefaultScheduleItem[] =
-  [
-    { item: "Engine Oil", interval_km: 2000, interval_days: 180 },
-    { item: "Gear Oil", interval_km: 6000, interval_days: 365 },
-    { item: "CVT Cleaning", interval_km: 6000, interval_days: 180 },
-    { item: "Drive Belt", interval_km: 20000, interval_days: 730 },
-    { item: "Rollers", interval_km: 12000, interval_days: 365 },
-    { item: "Coolant", interval_km: 12000, interval_days: 365 },
-    { item: "Brake Fluid", interval_km: 12000, interval_days: 365 },
-    { item: "Brake Pads", interval_km: 10000 },
-    { item: "Air Filter", interval_km: 6000 },
-    { item: "Battery", interval_km: 0, interval_days: 730 },
-    { item: "Spark Plug", interval_km: 8000 },
-    
-  ];
+export const DEFAULT_SCHEDULE_ITEMS: DefaultScheduleItem[] = [
+  { item: "Engine Oil", interval_km: 2000, interval_days: 180 },
+  { item: "Gear Oil", interval_km: 6000, interval_days: 365 },
+  { item: "CVT Cleaning", interval_km: 6000, interval_days: 180 },
+  { item: "Drive Belt", interval_km: 20000, interval_days: 730 },
+  { item: "Rollers", interval_km: 12000, interval_days: 365 },
+  { item: "Coolant", interval_km: 12000, interval_days: 365 },
+  { item: "Brake Fluid", interval_km: 12000, interval_days: 365 },
+  { item: "Brake Pads", interval_km: 10000 },
+  { item: "Air Filter", interval_km: 6000 },
+  { item: "Battery", interval_km: 0, interval_days: 730 },
+  { item: "Spark Plug", interval_km: 8000 },
+];
 
 export type ScheduleStatus = "good" | "due-soon" | "overdue";
 
@@ -88,11 +86,11 @@ export function computeSchedule(
   row: ScheduleRow,
   currentOdometer: number,
   dailyUsage?: number | null,
-  purchaseDate?: string | null
+  purchaseDate?: string | null,
 ): ScheduleComputed {
   const lastOdo = Number(row.last_service_odometer || 0);
   const interval = Number(row.interval_km || 0);
-  
+
   // Usage since last service
   const usageSinceLast = currentOdometer - lastOdo;
   let remainingKm = interval - usageSinceLast;
@@ -103,16 +101,18 @@ export function computeSchedule(
 
   // Handle case where interval_km is 0 (Time-based only)
   if (interval === 0 && row.interval_days) {
-    const startDate = row.last_service_date 
-      ? new Date(row.last_service_date) 
-      : (purchaseDate ? new Date(purchaseDate) : null);
-    
+    const startDate = row.last_service_date
+      ? new Date(row.last_service_date)
+      : purchaseDate
+        ? new Date(purchaseDate)
+        : null;
+
     if (startDate) {
       const due = addDays(startDate, row.interval_days);
       dueOnDate = due.toISOString().slice(0, 10);
       remainingDays = daysBetween(new Date(), due);
       // For time-only, we treat remainingKm as infinite or just don't use it for overdue checks
-      remainingKm = 999999; 
+      remainingKm = 999999;
     }
   } else if (row.interval_days && row.last_service_date) {
     const lastDate = new Date(row.last_service_date);
@@ -126,7 +126,7 @@ export function computeSchedule(
   if (interval > 0 && dailyUsage && dailyUsage > 0) {
     const daysToKm = Math.ceil(remainingKm / dailyUsage);
     const estimated = addDays(new Date(), daysToKm);
-    
+
     if (dueOnDate) {
       const timeDue = new Date(dueOnDate);
       if (estimated < timeDue) {
@@ -145,15 +145,15 @@ export function computeSchedule(
 
   const progress = Math.max(0, Math.min(100, (usageSinceLast / interval) * 100));
 
-  return { 
-    dueAtKm, 
-    remainingKm, 
-    dueOnDate, 
-    remainingDays, 
+  return {
+    dueAtKm,
+    remainingKm,
+    dueOnDate,
+    remainingDays,
     estimatedDate,
     dailyUsage: dailyUsage ?? null,
-    status, 
-    progress 
+    status,
+    progress,
   };
 }
 
@@ -162,7 +162,7 @@ export function calculateDailyUsage(fuelLogs: { fill_date: string; odometer: num
 
   // Sort logs by date ascending
   const sortedLogs = [...fuelLogs]
-    .filter(l => l.odometer !== null)
+    .filter((l) => l.odometer !== null)
     .sort((a, b) => new Date(a.fill_date).getTime() - new Date(b.fill_date).getTime());
 
   if (sortedLogs.length < 2) return null;

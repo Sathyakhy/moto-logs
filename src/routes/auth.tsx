@@ -69,6 +69,23 @@ function AuthPage() {
     void navigate({ to: "/bikes" });
   }
 
+  async function resetPassword() {
+    if (!email || !email.includes("@")) {
+      toast.error("Please enter your email address to receive a password reset link");
+      return;
+    }
+    setBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${window.location.origin}/auth`,
+    });
+    setBusy(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Password reset link sent! Check your email inbox.");
+  }
+
   async function signUp() {
     const parsed = credentials.safeParse({ email, password });
     if (!parsed.success) {
@@ -114,64 +131,67 @@ function AuthPage() {
     <div className="fixed inset-0 flex flex-col bg-background overflow-hidden">
       <div className="flex-1 overflow-y-auto px-4 py-12 pt-[env(safe-area-inset-top)] -webkit-overflow-scrolling-touch">
         <div className="mx-auto w-full max-w-md">
-        <Link to="/" className="mb-6 flex items-center justify-center gap-2">
-          <Wrench className="size-5 text-primary" aria-hidden />
-          <span className="text-display text-3xl">MotoLog</span>
-        </Link>
+          <Link to="/" className="mb-6 flex items-center justify-center gap-2">
+            <Wrench className="size-5 text-primary" aria-hidden />
+            <span className="text-display text-3xl">MotoLog</span>
+          </Link>
 
-        <div className="panel p-6">
-          <Tabs defaultValue="signin">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Sign in</TabsTrigger>
-              <TabsTrigger value="signup">Create account</TabsTrigger>
-            </TabsList>
+          <div className="panel p-6">
+            <Tabs defaultValue="signin">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="signin">Sign in</TabsTrigger>
+                <TabsTrigger value="signup">Create account</TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="signin" className="mt-5 space-y-4">
-              <Field id="email" label="Email" value={email} onChange={setEmail} type="email" />
-              <Field
-                id="password"
-                label="Password"
-                value={password}
-                onChange={setPassword}
-                type="password"
-              />
-              <Button className="w-full" disabled={busy} onClick={signIn}>
-                Sign in
-              </Button>
-            </TabsContent>
+              <TabsContent value="signin" className="mt-5 space-y-4">
+                <Field id="email" label="Email" value={email} onChange={setEmail} type="email" />
+                <Field
+                  id="password"
+                  label="Password"
+                  value={password}
+                  onChange={setPassword}
+                  type="password"
+                />
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={resetPassword}
+                    className="text-xs text-primary hover:underline font-medium"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+                <Button className="w-full font-bold" disabled={busy} onClick={signIn}>
+                  Sign in
+                </Button>
+              </TabsContent>
 
-            <TabsContent value="signup" className="mt-5 space-y-4">
-              <Field id="name" label="Your name" value={name} onChange={setName} />
-              <Field
-                id="email-up"
-                label="Email"
-                value={email}
-                onChange={setEmail}
-                type="email"
-              />
-              <Field
-                id="password-up"
-                label="Password"
-                value={password}
-                onChange={setPassword}
-                type="password"
-              />
-              <Button className="w-full" disabled={busy} onClick={signUp}>
-                Create account
-              </Button>
-            </TabsContent>
-          </Tabs>
+              <TabsContent value="signup" className="mt-5 space-y-4">
+                <Field id="name" label="Your name" value={name} onChange={setName} />
+                <Field id="email-up" label="Email" value={email} onChange={setEmail} type="email" />
+                <Field
+                  id="password-up"
+                  label="Password"
+                  value={password}
+                  onChange={setPassword}
+                  type="password"
+                />
+                <Button className="w-full" disabled={busy} onClick={signUp}>
+                  Create account
+                </Button>
+              </TabsContent>
+            </Tabs>
 
-          <div className="my-5 flex items-center gap-3">
-            <span className="h-px flex-1 bg-border" />
-            <span className="label-caps">or</span>
-            <span className="h-px flex-1 bg-border" />
+            <div className="my-5 flex items-center gap-3">
+              <span className="h-px flex-1 bg-border" />
+              <span className="label-caps">or</span>
+              <span className="h-px flex-1 bg-border" />
+            </div>
+
+            <Button variant="secondary" className="w-full" disabled={busy} onClick={google}>
+              Continue with Google
+            </Button>
           </div>
-
-          <Button variant="secondary" className="w-full" disabled={busy} onClick={google}>
-            Continue with Google
-          </Button>
-        </div>
         </div>
       </div>
     </div>

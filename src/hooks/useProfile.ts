@@ -23,7 +23,9 @@ export function useProfile() {
       if (!auth.user) return null;
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, display_name, display_currency, khr_per_usd, default_maintenance_schedule, app_name, app_logo_path")
+        .select(
+          "id, display_name, display_currency, khr_per_usd, default_maintenance_schedule, app_name, app_logo_path",
+        )
         .eq("id", auth.user.id)
         .maybeSingle();
       if (error) throw error;
@@ -31,7 +33,9 @@ export function useProfile() {
         const inserted = await supabase
           .from("profiles")
           .insert({ id: auth.user.id, display_name: auth.user.email?.split("@")[0] ?? null })
-          .select("id, display_name, display_currency, khr_per_usd, default_maintenance_schedule, app_name, app_logo_path")
+          .select(
+            "id, display_name, display_currency, khr_per_usd, default_maintenance_schedule, app_name, app_logo_path",
+          )
           .single();
         if (inserted.error) throw inserted.error;
         return normalize(inserted.data);

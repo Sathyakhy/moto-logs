@@ -25,33 +25,32 @@ export function useBikes() {
       if (error) throw error;
       if (!bikes) return [];
 
-      const bikeIds = bikes.map(b => b.id);
-      
+      const bikeIds = bikes.map((b) => b.id);
+
       const [schedulesRes, recordsRes] = await Promise.all([
-        supabase
-          .from("service_schedules")
-          .select("*")
-          .in("bike_id", bikeIds),
+        supabase.from("service_schedules").select("*").in("bike_id", bikeIds),
         supabase
           .from("maintenance_records")
           .select("bike_id, service_date")
           .in("bike_id", bikeIds)
-          .order("service_date", { ascending: false })
+          .order("service_date", { ascending: false }),
       ]);
 
       const schedules = schedulesRes.data || [];
       const records = recordsRes.data || [];
 
-      return bikes.map(bike => {
-        const bikeSchedules = schedules.filter(s => s.bike_id === bike.id);
-        const computed = bikeSchedules.map(s => computeSchedule(s as any, bike.current_odometer || 0));
-        
-        let status: ScheduleStatus = "good";
-        if (computed.some(c => c.status === "overdue")) status = "overdue";
-        else if (computed.some(c => c.status === "due-soon")) status = "due-soon";
+      return bikes.map((bike) => {
+        const bikeSchedules = schedules.filter((s) => s.bike_id === bike.id);
+        const computed = bikeSchedules.map((s) =>
+          computeSchedule(s as any, bike.current_odometer || 0),
+        );
 
-        const dueItemsCount = computed.filter(c => c.status !== "good").length;
-        const lastServiceDate = records.find(r => r.bike_id === bike.id)?.service_date;
+        let status: ScheduleStatus = "good";
+        if (computed.some((c) => c.status === "overdue")) status = "overdue";
+        else if (computed.some((c) => c.status === "due-soon")) status = "due-soon";
+
+        const dueItemsCount = computed.filter((c) => c.status !== "good").length;
+        const lastServiceDate = records.find((r) => r.bike_id === bike.id)?.service_date;
 
         return { ...bike, status, dueItemsCount, lastServiceDate };
       });
@@ -63,30 +62,32 @@ export function useBike(bikeId: string) {
   return useQuery({
     queryKey: ["bike", bikeId],
     queryFn: async (): Promise<BikeWithStatus | null> => {
-      const { data: bike, error } = await supabase.from("bikes").select("*").eq("id", bikeId).maybeSingle();
+      const { data: bike, error } = await supabase
+        .from("bikes")
+        .select("*")
+        .eq("id", bikeId)
+        .maybeSingle();
       if (error) throw error;
       if (!bike) return null;
 
       const [{ data: schedules }, { data: records }] = await Promise.all([
-        supabase
-          .from("service_schedules")
-          .select("*")
-          .eq("bike_id", bike.id),
+        supabase.from("service_schedules").select("*").eq("bike_id", bike.id),
         supabase
           .from("maintenance_records")
           .select("service_date")
           .eq("bike_id", bike.id)
           .order("service_date", { ascending: false })
-          .limit(1)
+          .limit(1),
       ]);
 
-      const computed = schedules?.map(s => computeSchedule(s as any, bike.current_odometer || 0)) || [];
-      
-      let status: ScheduleStatus = "good";
-      if (computed.some(c => c.status === "overdue")) status = "overdue";
-      else if (computed.some(c => c.status === "due-soon")) status = "due-soon";
+      const computed =
+        schedules?.map((s) => computeSchedule(s as any, bike.current_odometer || 0)) || [];
 
-      const dueItemsCount = computed.filter(c => c.status !== "good").length;
+      let status: ScheduleStatus = "good";
+      if (computed.some((c) => c.status === "overdue")) status = "overdue";
+      else if (computed.some((c) => c.status === "due-soon")) status = "due-soon";
+
+      const dueItemsCount = computed.filter((c) => c.status !== "good").length;
       const lastServiceDate = records?.[0]?.service_date;
 
       return { ...bike, status, dueItemsCount, lastServiceDate };

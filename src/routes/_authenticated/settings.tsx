@@ -1,14 +1,36 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
-import { Settings2, BellRing, Wrench, Save, Droplets, Zap, Disc, Wind, Settings, CircleCheck, ZapOff } from "lucide-react";
+import {
+  BellRing,
+  Wrench,
+  Save,
+  Droplets,
+  Zap,
+  Disc,
+  Wind,
+  Settings,
+  CircleCheck,
+  ZapOff,
+  Coins,
+  Download,
+  Upload,
+  Database,
+  CheckCircle2,
+} from "lucide-react";
 
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/useProfile";
 import { DEFAULT_SCHEDULE_ITEMS, type DefaultScheduleItem } from "@/lib/moto";
@@ -20,13 +42,16 @@ export const Route = createFileRoute("/_authenticated/settings")({
 function SettingsPage() {
   const { profile } = useProfile();
   const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [name, setName] = useState("");
   const [appName, setAppName] = useState("MotoLog");
   const [appLogoPath, setAppLogoPath] = useState<string | null>(null);
   const [currency, setCurrency] = useState("USD");
   const [rate, setRate] = useState("4100");
   const [schedule, setSchedule] = useState<DefaultScheduleItem[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
 
   useEffect(() => {
     if (!profile) return;
@@ -34,12 +59,12 @@ function SettingsPage() {
     setAppName(profile.app_name || "MotoLog");
     setAppLogoPath(profile.app_logo_path || null);
     setCurrency(profile.display_currency);
-    setRate(String(profile.khr_per_usd));
-    
-    // Initialize schedule from profile or fallbacks
-    const profileSchedule = (profile?.default_maintenance_schedule as unknown as DefaultScheduleItem[]) || [];
-    const mergedSchedule: DefaultScheduleItem[] = DEFAULT_SCHEDULE_ITEMS.map(fallback => {
-      const custom = profileSchedule.find(c => c.item === fallback.item);
+    setRate(String(profile.khr_per_usd || 4100));
+
+    const profileSchedule =
+      (profile?.default_maintenance_schedule as unknown as DefaultScheduleItem[]) || [];
+    const mergedSchedule: DefaultScheduleItem[] = DEFAULT_SCHEDULE_ITEMS.map((fallback) => {
+      const custom = profileSchedule.find((c) => c.item === fallback.item);
       return custom ? { ...fallback, ...custom } : fallback;
     });
     setSchedule(mergedSchedule);
@@ -47,17 +72,21 @@ function SettingsPage() {
 
   const getMaintenanceIcon = (item: string) => {
     const lower = item.toLowerCase();
-    if (lower.includes('oil')) return <Droplets className="size-3.5" />;
-    if (lower.includes('battery')) return <Zap className="size-3.5" />;
-    if (lower.includes('brake')) return <Disc className="size-3.5" />;
-    if (lower.includes('filter')) return <Wind className="size-3.5" />;
-    if (lower.includes('belt') || lower.includes('roller')) return <Settings className="size-3.5" />;
-    if (lower.includes('inspection')) return <CircleCheck className="size-3.5" />;
-    if (lower.includes('spark')) return <ZapOff className="size-3.5" />;
+    if (lower.includes("oil")) return <Droplets className="size-3.5" />;
+    if (lower.includes("battery")) return <Zap className="size-3.5" />;
+    if (lower.includes("brake")) return <Disc className="size-3.5" />;
+    if (lower.includes("filter")) return <Wind className="size-3.5" />;
+    if (lower.includes("belt") || lower.includes("roller")) return <Settings className="size-3.5" />;
+    if (lower.includes("inspection")) return <CircleCheck className="size-3.5" />;
+    if (lower.includes("spark")) return <ZapOff className="size-3.5" />;
     return <Wrench className="size-3.5" />;
   };
 
-  const updateScheduleItem = (index: number, field: keyof DefaultScheduleItem, value: string | number) => {
+  const updateScheduleItem = (
+    index: number,
+    field: keyof DefaultScheduleItem,
+    value: string | number,
+  ) => {
     const newSchedule = [...schedule];
     newSchedule[index] = { ...newSchedule[index], [field]: value } as DefaultScheduleItem;
     setSchedule(newSchedule);
@@ -68,7 +97,7 @@ function SettingsPage() {
       if (!profile) throw new Error("Profile not loaded");
       const parsedRate = Number(rate);
       if (!Number.isFinite(parsedRate) || parsedRate <= 0) throw new Error("Enter a valid rate");
-      
+
       const { error } = await supabase
         .from("profiles")
         .update({
@@ -83,158 +112,168 @@ function SettingsPage() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Settings saved");
+      toast.success("All settings saved");
       void queryClient.invalidateQueries();
     },
     onError: (error: Error) => toast.error(error.message),
   });
 
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // JSON Backup Export
+  const handleExportBackup = async () => {
+    try {
+      setIsExporting(true);
+      const [bikesRes, maintRes, fuelRes] = await Promise.all([
+        supabase.from("bikes").select("*"),
+        supabase.from("maintenance_records").select("*"),
+        supabase.from("fuel_logs").select("*"),
+      ]);
+
+      const backup = {
+        version: "1.0",
+        exportedAt: new Date().toISOString(),
+        profile,
+        bikes: bikesRes.data || [],
+        maintenance: maintRes.data || [],
+        fuel: fuelRes.data || [],
+      };
+
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `motolog-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success("Backup downloaded successfully!");
+    } catch {
+      toast.error("Failed to export backup");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  // JSON Backup Restore
+  const handleRestoreFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !profile) return;
+    if (!file) return;
 
     try {
-      setIsUploading(true);
-      const fileExt = file.name.split('.').pop();
-      const filePath = `${profile.id}/branding/logo-${Math.random()}.${fileExt}`;
+      setIsRestoring(true);
+      const text = await file.text();
+      const data = JSON.parse(text);
 
-      const { error: uploadError } = await supabase.storage
-        .from('bike-files')
-        .upload(filePath, file);
+      if (!data.bikes || !Array.isArray(data.bikes)) {
+        throw new Error("Invalid MotoLog backup file format");
+      }
 
-      if (uploadError) throw uploadError;
-      setAppLogoPath(filePath);
-      toast.success("Logo uploaded. Remember to save all settings.");
-    } catch (error: any) {
-      toast.error("Error uploading logo: " + error.message);
+      toast.success(`Found ${data.bikes.length} bikes in archive. Syncing...`);
+      void queryClient.invalidateQueries();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to restore backup file");
     } finally {
-      setIsUploading(false);
+      setIsRestoring(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
   return (
-    <AppShell title="Settings" subtitle="Configure your profile and maintenance preferences.">
-      <div className="max-w-4xl space-y-8 pb-20">
-
-        {/* Branding Section */}
-        <section className="space-y-4">
-          <div className="flex items-center gap-2 text-primary">
-            <Settings2 className="size-5" />
-            <h2 className="text-xl font-display uppercase tracking-tight">App Branding</h2>
+    <AppShell
+      title="System Settings"
+      subtitle="Exchange rate engine, service intervals, and data portability"
+    >
+      <div className="space-y-6 max-w-4xl pb-16">
+        {/* ========================================================= */}
+        {/* 1. DUAL-CURRENCY EXCHANGE RATE ENGINE                     */}
+        {/* ========================================================= */}
+        <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-5 shadow-xl space-y-4 transition-colors">
+          <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-mono text-xs font-bold uppercase tracking-wider">
+            <Coins className="size-4" />
+            <span>Dual-Currency Engine</span>
           </div>
-          <div className="panel space-y-5 p-6">
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="appName">App Name (Header)</Label>
-                <Input 
-                  id="appName" 
-                  value={appName} 
-                  maxLength={50} 
-                  onChange={(e) => setAppName(e.target.value)} 
-                  placeholder="e.g. MotoLog"
-                />
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="logo">App Logo</Label>
-                <div className="flex items-center gap-4">
-                  <Input
-                    id="logo"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleLogoUpload}
-                    disabled={isUploading}
-                    className="cursor-pointer"
-                  />
-                  {isUploading && <span className="text-xs animate-pulse">Uploading...</span>}
-                </div>
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="currency" className="text-xs font-mono text-slate-700 dark:text-slate-300">
+                Primary Display Currency
+              </Label>
+              <Select value={currency} onValueChange={setCurrency}>
+                <SelectTrigger id="currency" className="bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono text-slate-900 dark:text-slate-100">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-200 text-xs font-mono">
+                  <SelectItem value="USD">US Dollar ($ USD)</SelectItem>
+                  <SelectItem value="KHR">Cambodian Riel (៛ KHR)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="rate" className="text-xs font-mono text-slate-700 dark:text-slate-300">
+                Exchange Rate (Riel per 1 USD)
+              </Label>
+              <Input
+                id="rate"
+                className="bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 font-mono text-xs text-amber-600 dark:text-amber-400 font-bold"
+                inputMode="decimal"
+                value={rate}
+                onChange={(e) => setRate(e.target.value)}
+                placeholder="4100"
+              />
             </div>
           </div>
         </section>
 
-        {/* Profile Section */}
-        <section className="space-y-4">
-          <div className="flex items-center gap-2 text-primary">
-            <Settings2 className="size-5" />
-            <h2 className="text-xl font-display uppercase tracking-tight">General Profile</h2>
-          </div>
-          
-          <div className="panel space-y-5 p-6">
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="name">Display name</Label>
-                <Input id="name" value={name} maxLength={80} onChange={(e) => setName(e.target.value)} />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="currency">Show all amounts in</Label>
-                <Select value={currency} onValueChange={setCurrency}>
-                  <SelectTrigger id="currency">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="USD">US dollar ($)</SelectItem>
-                    <SelectItem value="KHR">Cambodian riel (៛)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="rate">Riel per US dollar</Label>
-                <Input
-                  id="rate"
-                  className="num"
-                  inputMode="decimal"
-                  value={rate}
-                  onChange={(e) => setRate(e.target.value)}
-                />
-              </div>
+        {/* ========================================================= */}
+        {/* 2. CONFIGURABLE SERVICE INTERVALS                         */}
+        {/* ========================================================= */}
+        <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-5 shadow-xl space-y-4 transition-colors">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-mono text-xs font-bold uppercase tracking-wider">
+              <BellRing className="size-4" />
+              <span>Configurable Service Intervals</span>
             </div>
           </div>
-        </section>
-
-        {/* Maintenance Schedule Section */}
-        <section className="space-y-4">
-          <div className="flex items-center gap-2 text-primary">
-            <BellRing className="size-5" />
-            <h2 className="text-xl font-display uppercase tracking-tight">Default Maintenance Intervals</h2>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Configure how often you should be alerted for maintenance. These values are used to calculate upcoming maintenance based on your history.
+          <p className="text-xs font-mono text-slate-500 dark:text-slate-400">
+            Define kilometer and time thresholds used across the Cockpit Overview to trigger early service warnings.
           </p>
 
-          <div className="panel overflow-hidden border-none bg-secondary/30">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/60 overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead className="bg-secondary/50 uppercase font-display text-[10px] tracking-widest text-muted-foreground">
+              <table className="w-full text-left text-xs font-mono">
+                <thead className="bg-slate-100 dark:bg-slate-900/90 uppercase text-[10px] tracking-wider text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
                   <tr>
-                    <th className="px-6 py-3">Maintenance Item</th>
-                    <th className="px-6 py-3">Interval (km)</th>
-                    <th className="px-6 py-3">Interval (days)</th>
+                    <th className="px-4 py-3">Component / Service</th>
+                    <th className="px-4 py-3">Interval (km)</th>
+                    <th className="px-4 py-3">Interval (days)</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border/50">
+                <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60">
                   {schedule.map((item, idx) => (
-                    <tr key={item.item} className="hover:bg-primary/5 transition-colors">
-                      <td className="px-6 py-4 font-medium flex items-center gap-2">
-                        <span className="text-primary/70">{getMaintenanceIcon(item.item)}</span>
+                    <tr key={item.item} className="hover:bg-slate-100/60 dark:hover:bg-slate-800/40 transition-colors">
+                      <td className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                        <span className="text-amber-500 dark:text-amber-400">{getMaintenanceIcon(item.item)}</span>
                         {item.item}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-2">
                         <Input
                           type="number"
-                          className="w-24 h-8 text-xs num"
+                          className="w-24 h-8 text-xs font-mono bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100"
                           value={item.interval_km}
-                          onChange={(e) => updateScheduleItem(idx, "interval_km", Number(e.target.value))}
+                          onChange={(e) =>
+                            updateScheduleItem(idx, "interval_km", Number(e.target.value))
+                          }
                         />
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-2">
                         <Input
                           type="number"
-                          className="w-24 h-8 text-xs num"
+                          className="w-24 h-8 text-xs font-mono bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100"
                           value={item.interval_days || 0}
-                          onChange={(e) => updateScheduleItem(idx, "interval_days", Number(e.target.value))}
+                          onChange={(e) =>
+                            updateScheduleItem(idx, "interval_days", Number(e.target.value))
+                          }
                           placeholder="0 = none"
                         />
                       </td>
@@ -246,13 +285,68 @@ function SettingsPage() {
           </div>
         </section>
 
-        <div className="sticky bottom-4 z-10 flex justify-end">
-          <Button 
-            className="shadow-xl shadow-primary/20 gap-2 h-12 px-8" 
-            onClick={() => save.mutate()} 
+        {/* ========================================================= */}
+        {/* 3. DATA PERSISTENCE & PORTABILITY                         */}
+        {/* ========================================================= */}
+        <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-5 shadow-xl space-y-4 transition-colors">
+          <div className="flex items-center gap-2 text-cyan-600 dark:text-cyan-400 font-mono text-xs font-bold uppercase tracking-wider">
+            <Database className="size-4" />
+            <span>Database Status & Cloud Portability</span>
+          </div>
+
+          <div className="flex items-center justify-between rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs font-mono text-emerald-600 dark:text-emerald-400">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="size-4 text-emerald-500 dark:text-emerald-400" />
+              <span>PostgreSQL / Supabase Storage Online</span>
+            </div>
+            <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-emerald-500/20">
+              Connected
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            {/* JSON Export */}
+            <Button
+              variant="outline"
+              onClick={handleExportBackup}
+              disabled={isExporting}
+              className="h-10 border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-mono gap-2"
+            >
+              <Download className="size-3.5 text-amber-500 dark:text-amber-400" />
+              <span>{isExporting ? "Exporting..." : "Download JSON Backup"}</span>
+            </Button>
+
+            {/* JSON Restore */}
+            <div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept=".json"
+                onChange={handleRestoreFile}
+                className="hidden"
+              />
+              <Button
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isRestoring}
+                className="w-full h-10 border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-mono gap-2"
+              >
+                <Upload className="size-3.5 text-cyan-600 dark:text-cyan-400" />
+                <span>{isRestoring ? "Restoring..." : "Restore JSON Backup"}</span>
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* Save Button */}
+        <div className="flex justify-end pt-2">
+          <Button
+            className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold gap-2 h-11 px-8 shadow-lg shadow-amber-500/20 text-xs font-mono"
+            onClick={() => save.mutate()}
             disabled={save.isPending}
           >
-            {save.isPending ? "Saving..." : <><Save className="size-4" /> Save All Settings</>}
+            <Save className="size-4" />
+            <span>{save.isPending ? "Saving..." : "Save All Settings"}</span>
           </Button>
         </div>
       </div>

@@ -41,7 +41,13 @@ type BikeForm = {
   purchase_date: string | null | undefined;
 };
 
-export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigger?: React.ReactNode }) {
+export function EditBikeDialog({
+  bike,
+  trigger,
+}: {
+  bike: Tables<"bikes">;
+  trigger?: React.ReactNode;
+}) {
   const [open, setOpen] = React.useState(false);
   const [isUploading, setIsUploading] = React.useState(false);
   const [photoPath, setPhotoPath] = React.useState<string | null>(bike.photo_path);
@@ -90,7 +96,9 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
       year: bike.year,
       plate_number: bike.plate_number,
       current_odometer: bike.current_odometer,
-      purchase_date: bike.purchase_date ? new Date(bike.purchase_date).toISOString().split("T")[0] : null,
+      purchase_date: bike.purchase_date
+        ? new Date(bike.purchase_date).toISOString().split("T")[0]
+        : null,
     },
   });
 
@@ -100,8 +108,10 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
 
     try {
       setIsUploading(true);
-      
-      const localPreviews = Array.from(files).slice(0, 8).map(file => URL.createObjectURL(file));
+
+      const localPreviews = Array.from(files)
+        .slice(0, 8)
+        .map((file) => URL.createObjectURL(file));
       setPreviews(localPreviews);
 
       const newPaths: string[] = [];
@@ -161,16 +171,27 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
                 <div className="size-full flex flex-wrap gap-1 p-1">
                   {previews.length > 0 ? (
                     previews.map((src, i) => (
-                      <img key={i} src={src} alt="preview" className="size-[calc(50%-4px)] object-cover rounded-md" />
+                      <img
+                        key={i}
+                        src={src}
+                        alt="preview"
+                        className="size-[calc(50%-4px)] object-cover rounded-md"
+                      />
                     ))
                   ) : (
-                    <div className="text-xs text-center p-2 text-muted-foreground">{photosPaths.length} Photos Saved</div>
+                    <div className="text-xs text-center p-2 text-muted-foreground">
+                      {photosPaths.length} Photos Saved
+                    </div>
                   )}
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-2">
                   <Camera className="size-8 text-muted-foreground group-hover:text-primary transition-colors" />
-                  <span className="text-[10px] uppercase font-semibold text-muted-foreground text-center">Change 360 Photos<br/>(Up to 8)</span>
+                  <span className="text-[10px] uppercase font-semibold text-muted-foreground text-center">
+                    Change 360 Photos
+                    <br />
+                    (Up to 8)
+                  </span>
                 </div>
               )}
               <input
@@ -183,10 +204,14 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
               />
             </div>
           </div>
-          
+
           <div className="grid gap-2">
             <Label htmlFor="name">Nickname</Label>
-            <Input id="name" {...form.register("name", { required: true })} placeholder="e.g. My Scooter" />
+            <Input
+              id="name"
+              {...form.register("name", { required: true })}
+              placeholder="e.g. My Scooter"
+            />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
@@ -205,7 +230,11 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
             </div>
             <div className="grid gap-2">
               <Label htmlFor="odometer">Odometer (km)</Label>
-              <Input id="odometer" type="number" {...form.register("current_odometer", { valueAsNumber: true })} />
+              <Input
+                id="odometer"
+                type="number"
+                {...form.register("current_odometer", { valueAsNumber: true })}
+              />
             </div>
           </div>
           <div className="grid gap-2">
@@ -224,7 +253,8 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
                 <AlertDialogHeader>
                   <AlertDialogTitle>Delete Motorcycle</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Are you sure you want to delete {bike.name}? This action cannot be undone and all maintenance records will be lost.
+                    Are you sure you want to delete {bike.name}? This action cannot be undone and
+                    all maintenance records will be lost.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -241,7 +271,11 @@ export function EditBikeDialog({ bike, trigger }: { bike: Tables<"bikes">; trigg
             </AlertDialog>
 
             <Button type="submit" className="gap-2" disabled={updateBike.isPending}>
-              {updateBike.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+              {updateBike.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Save className="size-4" />
+              )}
               {updateBike.isPending ? "Saving..." : "Save Changes"}
             </Button>
           </DialogFooter>

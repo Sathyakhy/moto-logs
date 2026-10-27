@@ -2,7 +2,7 @@
 @source "../src";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 /*
  * MotoLog design system — dark "garage at night" theme.
@@ -14,7 +14,8 @@
   --font-display: "Bebas Neue", "Barlow Condensed", sans-serif;
   --font-sans: "Barlow", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
-  --font-digital: "Digital-7", "JetBrains Mono", monospace;
+  --font-digital: "Share Tech Mono", "Orbitron", monospace;
+  --font-speedo: "Orbitron", "Chakra Petch", sans-serif;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -67,6 +68,7 @@
 }
 
 :root {
+  color-scheme: light;
   --radius: 0.5rem;
   --background: oklch(0.98 0.005 260);
   --foreground: oklch(0.17 0.012 260);
@@ -108,42 +110,42 @@
 
 .dark {
   color-scheme: dark;
-  --background: oklch(0.17 0.012 260);
-  --foreground: oklch(0.95 0.005 260);
-  --card: oklch(0.215 0.014 260);
-  --card-foreground: oklch(0.95 0.005 260);
-  --popover: oklch(0.215 0.014 260);
-  --popover-foreground: oklch(0.95 0.005 260);
-  --primary: oklch(0.78 0.16 68);
-  --primary-foreground: oklch(0.19 0.02 60);
-  --secondary: oklch(0.27 0.016 260);
+  --background: oklch(0.08 0.02 260); /* Deep Slate-950 / #020617 */
+  --foreground: oklch(0.97 0.005 260); /* Slate-100 / #f8fafc */
+  --card: oklch(0.14 0.025 260); /* Slate-900 / #0f172a */
+  --card-foreground: oklch(0.97 0.005 260);
+  --popover: oklch(0.14 0.025 260);
+  --popover-foreground: oklch(0.97 0.005 260);
+  --primary: oklch(0.79 0.17 68); /* Amber-500 / #f59e0b */
+  --primary-foreground: oklch(0.12 0.03 60);
+  --secondary: oklch(0.20 0.03 260);
   --secondary-foreground: oklch(0.94 0.005 260);
-  --muted: oklch(0.25 0.014 260);
-  --muted-foreground: oklch(0.68 0.014 260);
-  --accent: oklch(0.62 0.13 215);
-  --accent-foreground: oklch(0.97 0.01 215);
-  --destructive: oklch(0.6 0.21 25);
+  --muted: oklch(0.18 0.02 260);
+  --muted-foreground: oklch(0.65 0.015 260); /* Slate-400 / #94a3b8 */
+  --accent: oklch(0.72 0.14 215); /* Cyan-500 / #06b6d4 */
+  --accent-foreground: oklch(0.98 0.01 215);
+  --destructive: oklch(0.63 0.23 25); /* Red-500 / #ef4444 */
   --destructive-foreground: oklch(0.98 0.01 25);
-  --success: oklch(0.68 0.15 150);
-  --success-foreground: oklch(0.18 0.03 150);
-  --warning: oklch(0.8 0.15 85);
-  --warning-foreground: oklch(0.2 0.03 85);
-  --border: oklch(0.31 0.014 260);
-  --input: oklch(0.31 0.014 260);
-  --ring: oklch(0.78 0.16 68);
-  --chart-1: oklch(0.78 0.16 68);
-  --chart-2: oklch(0.62 0.13 215);
-  --chart-3: oklch(0.68 0.15 150);
-  --chart-4: oklch(0.6 0.21 25);
-  --chart-5: oklch(0.72 0.11 300);
-  --sidebar: oklch(0.19 0.013 260);
-  --sidebar-foreground: oklch(0.93 0.005 260);
-  --sidebar-primary: oklch(0.78 0.16 68);
-  --sidebar-primary-foreground: oklch(0.19 0.02 60);
-  --sidebar-accent: oklch(0.26 0.016 260);
-  --sidebar-accent-foreground: oklch(0.95 0.005 260);
-  --sidebar-border: oklch(0.29 0.014 260);
-  --sidebar-ring: oklch(0.78 0.16 68);
+  --success: oklch(0.72 0.17 155); /* Emerald-500 / #10b981 */
+  --success-foreground: oklch(0.12 0.03 155);
+  --warning: oklch(0.75 0.18 55); /* Orange-500 / #f97316 */
+  --warning-foreground: oklch(0.15 0.03 55);
+  --border: oklch(0.22 0.02 260); /* Slate-800 / hairline */
+  --input: oklch(0.22 0.02 260);
+  --ring: oklch(0.79 0.17 68);
+  --chart-1: oklch(0.79 0.17 68);
+  --chart-2: oklch(0.72 0.14 215);
+  --chart-3: oklch(0.72 0.17 155);
+  --chart-4: oklch(0.63 0.23 25);
+  --chart-5: oklch(0.75 0.18 55);
+  --sidebar: oklch(0.10 0.02 260);
+  --sidebar-foreground: oklch(0.94 0.005 260);
+  --sidebar-primary: oklch(0.79 0.17 68);
+  --sidebar-primary-foreground: oklch(0.12 0.03 60);
+  --sidebar-accent: oklch(0.18 0.02 260);
+  --sidebar-accent-foreground: oklch(0.96 0.005 260);
+  --sidebar-border: oklch(0.20 0.02 260);
+  --sidebar-ring: oklch(0.79 0.17 68);
 }
 
 @layer base {
@@ -156,12 +158,12 @@
     border-color: var(--color-border);
   }
 
-  html, body {
+  html,
+  body {
     height: 100%;
     width: 100%;
     overflow: hidden;
     position: relative;
-    color-scheme: dark;
     -webkit-tap-highlight-color: transparent;
     touch-action: pan-x pan-y;
     user-select: auto;
@@ -198,13 +200,15 @@
   }
 }
 
-@font-face {
-  font-family: 'Digital-7';
-  src: url('/__l5e/assets-v1/6f714ba4-09a7-40b5-87b1-8c2e1e27aba4/Digital-7.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
+@utility font-digital {
+  font-family: 'Share Tech Mono', 'Orbitron', monospace;
+  letter-spacing: 0.08em;
 }
+
+@utility font-speedo {
+  font-family: 'Orbitron', 'Chakra Petch', sans-serif;
+}
+
 
 #lovable-badge,
 .lovable-badge,
@@ -261,12 +265,28 @@ a[href*="lovable.app"] {
 }
 
 @layer utilities {
+  .glow-lcd {
+    text-shadow:
+      0 0 10px rgba(245, 158, 11, 0.75),
+      0 0 25px rgba(245, 158, 11, 0.45);
+  }
+  .glow-neon-cyan {
+    box-shadow: 0 0 14px -2px rgba(6, 182, 212, 0.5);
+  }
+  .glow-neon-emerald {
+    box-shadow: 0 0 14px -2px rgba(16, 185, 129, 0.5);
+  }
+  .glow-hud-border {
+    box-shadow: 0 0 20px -5px rgba(245, 158, 11, 0.2);
+  }
   .active-press {
-    transition: transform 0.1s ease, opacity 0.1s ease;
+    transition:
+      transform 0.1s ease,
+      opacity 0.1s ease;
   }
   .active-press:active {
-    transform: scale(0.97);
-    opacity: 0.8;
+    transform: scale(0.96);
+    opacity: 0.85;
   }
 }
 
@@ -278,16 +298,16 @@ a[href*="lovable.app"] {
 @utility bike-bg-premium-lg {
   position: relative;
   z-index: 0;
-  
+
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 140%;
     height: 140%;
-    background: 
+    background:
       radial-gradient(circle at 50% 50%, var(--color-primary) / 35%, transparent 60%),
       radial-gradient(circle at 50% 60%, var(--color-primary) / 15%, transparent 80%);
     filter: blur(20px);
@@ -297,7 +317,8 @@ a[href*="lovable.app"] {
 }
 
 /* Allow input selection */
-input, textarea {
+input,
+textarea {
   user-select: text !important;
   -webkit-user-select: text !important;
 }

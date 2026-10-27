@@ -78,7 +78,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" },
+      {
+        name: "viewport",
+        content:
+          "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no",
+      },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-touch-fullscreen", content: "yes" },
@@ -94,9 +98,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "theme-color", content: "#0F172A", media: "(prefers-color-scheme: dark)" },
+      { name: "theme-color", content: "#090d16", media: "(prefers-color-scheme: dark)" },
       { name: "theme-color", content: "#f8f9fa", media: "(prefers-color-scheme: light)" },
-      
     ],
     links: [
       { rel: "manifest", href: "/manifest.json" },
@@ -105,10 +108,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&family=Barlow:wght@400;500;600;700&family=Bebas+Neue&display=swap",
       },
       { rel: "icon", href: "/favicon.png", type: "image/png" },
-      { rel: "apple-touch-icon", href: "/__l5e/assets-v1/317d6196-ec60-4206-a800-0bc607a101dc/app-icon.png" },
+      {
+        rel: "apple-touch-icon",
+        href: "/__l5e/assets-v1/317d6196-ec60-4206-a800-0bc607a101dc/app-icon.png",
+      },
     ],
   }),
   shellComponent: RootShell,
@@ -119,12 +125,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   useEffect(() => {
-    // Sync with system preference on first load if no manual class set
-    if (!document.documentElement.classList.contains("dark") && 
-        window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    // Sync theme with localStorage or system preference
+    const savedTheme = localStorage.getItem("motolog_theme");
+    if (savedTheme === "light") {
+      document.documentElement.classList.remove("dark");
+    } else if (savedTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      // Default to dark cockpit theme
       document.documentElement.classList.add("dark");
     }
-
 
     // Register Service Worker
     if ("serviceWorker" in navigator) {

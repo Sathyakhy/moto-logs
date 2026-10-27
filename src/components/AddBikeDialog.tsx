@@ -34,7 +34,7 @@ export function AddBikeDialog() {
   const [previews, setPreviews] = React.useState<string[]>([]);
   const { profile } = useProfile();
   const createBike = useCreateBike();
-  
+
   const form = useForm<BikeForm>({
     defaultValues: {
       name: "",
@@ -52,9 +52,11 @@ export function AddBikeDialog() {
 
     try {
       setIsUploading(true);
-      
+
       // Create local previews for instant feedback
-      const localPreviews = Array.from(files).slice(0, 8).map(file => URL.createObjectURL(file));
+      const localPreviews = Array.from(files)
+        .slice(0, 8)
+        .map((file) => URL.createObjectURL(file));
       setPreviews(localPreviews);
 
       const newPaths: string[] = [];
@@ -117,13 +119,22 @@ export function AddBikeDialog() {
               ) : photosPaths.length > 0 ? (
                 <div className="size-full flex flex-wrap gap-1 p-1">
                   {previews.map((src, i) => (
-                    <img key={i} src={src} alt="preview" className="size-[calc(50%-4px)] object-cover rounded-md" />
+                    <img
+                      key={i}
+                      src={src}
+                      alt="preview"
+                      className="size-[calc(50%-4px)] object-cover rounded-md"
+                    />
                   ))}
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-2">
                   <Camera className="size-8 text-muted-foreground group-hover:text-primary transition-colors" />
-                  <span className="text-[10px] uppercase font-semibold text-muted-foreground text-center">Add 360 Photos<br/>(Up to 8)</span>
+                  <span className="text-[10px] uppercase font-semibold text-muted-foreground text-center">
+                    Add 360 Photos
+                    <br />
+                    (Up to 8)
+                  </span>
                 </div>
               )}
               <input
@@ -136,10 +147,14 @@ export function AddBikeDialog() {
               />
             </div>
           </div>
-          
+
           <div className="grid gap-2">
             <Label htmlFor="name">Nickname</Label>
-            <Input id="name" {...form.register("name", { required: true })} placeholder="e.g. My Scooter" />
+            <Input
+              id="name"
+              {...form.register("name", { required: true })}
+              placeholder="e.g. My Scooter"
+            />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
@@ -158,7 +173,11 @@ export function AddBikeDialog() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="odometer">Odometer (km)</Label>
-              <Input id="odometer" type="number" {...form.register("current_odometer", { valueAsNumber: true })} />
+              <Input
+                id="odometer"
+                type="number"
+                {...form.register("current_odometer", { valueAsNumber: true })}
+              />
             </div>
           </div>
           <div className="grid gap-2">

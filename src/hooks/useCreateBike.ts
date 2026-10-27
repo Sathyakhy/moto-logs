@@ -23,25 +23,26 @@ export function useCreateBike() {
         .eq("id", bike.user_id)
         .single();
 
-      const customDefaults = (profile?.default_maintenance_schedule as unknown as DefaultScheduleItem[]) || [];
-      
+      const customDefaults =
+        (profile?.default_maintenance_schedule as unknown as DefaultScheduleItem[]) || [];
+
       // Merge custom defaults with fallback hardcoded defaults
       // We use the custom one if it exists for a specific item name
-      const scheduleToUse = DEFAULT_SCHEDULE_ITEMS.map(fallback => {
-        const custom = customDefaults.find(c => c.item === fallback.item);
+      const scheduleToUse = DEFAULT_SCHEDULE_ITEMS.map((fallback) => {
+        const custom = customDefaults.find((c) => c.item === fallback.item);
         return custom || fallback;
       });
 
       // Also add any custom items that aren't in the default list
-      customDefaults.forEach(custom => {
-        if (!DEFAULT_SCHEDULE_ITEMS.find(d => d.item === custom.item)) {
+      customDefaults.forEach((custom) => {
+        if (!DEFAULT_SCHEDULE_ITEMS.find((d) => d.item === custom.item)) {
           scheduleToUse.push(custom);
         }
       });
 
       // 3. Initialize service schedules for the new bike
       if (scheduleToUse.length > 0) {
-        const schedules = scheduleToUse.map(item => ({
+        const schedules = scheduleToUse.map((item) => ({
           bike_id: newBike.id,
           user_id: bike.user_id,
           item: item.item,
@@ -51,13 +52,11 @@ export function useCreateBike() {
           last_service_date: bike.purchase_date || new Date().toISOString().split("T")[0] || null,
         }));
 
-        const { error: scheduleError } = await supabase
-          .from("service_schedules")
-          .insert(schedules);
-        
+        const { error: scheduleError } = await supabase.from("service_schedules").insert(schedules);
+
         if (scheduleError) {
           console.error("Failed to initialize schedules:", scheduleError);
-          // We don't throw here to avoid failing the whole bike creation 
+          // We don't throw here to avoid failing the whole bike creation
           // if just the schedules fail, but ideally they should work.
         }
       }

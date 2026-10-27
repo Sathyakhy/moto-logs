@@ -1,24 +1,32 @@
 {
+  "id": "/",
   "name": "MotoLog",
   "short_name": "MotoLog",
-  "description": "Motorcycle Maintenance & Cost Tracker",
+  "description": "Precision Motorcycle Maintenance, Fuel & Running Cost Logbook",
   "start_url": "/",
-  "display": "standalone",
-  "background_color": "#0F172A",
-  "theme_color": "#0F172A",
-  "orientation": "portrait",
   "scope": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "/favicon.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/__l5e/assets-v1/317d6196-ec60-4206-a800-0bc607a101dc/app-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/__l5e/assets-v1/317d6196-ec60-4206-a800-0bc607a101dc/app-icon.png",
       "sizes": "1024x1024",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     }
   ]
 }

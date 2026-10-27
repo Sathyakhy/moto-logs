@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CalendarIcon, Fuel, Plus, Trash2 } from "lucide-react";
+import { CalendarIcon, Fuel, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
@@ -22,11 +22,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import {
   AlertDialog,
@@ -39,14 +35,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { FUEL_TYPES } from "@/lib/moto";
 import { supabase } from "@/integrations/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useProfile } from "@/hooks/useProfile";
-import { useUpdateFuelLog, useDeleteFuelLog } from "@/hooks/useUpdateLogs";
+import { useDeleteFuelLog } from "@/hooks/useUpdateLogs";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Tables } from "@/integrations/supabase/types";
+
+const FUEL_GRADES = ["Regular 92", "Super 95", "Euro 5 Diesel"];
 
 const formSchema = z.object({
   bike_id: z.string().uuid(),
@@ -56,45 +53,71 @@ const formSchema = z.object({
   total_amount: z.coerce.number().min(0.01, "Total amount must be positive"),
   fuel_type: z.string().optional(),
   gas_station: z.string().optional(),
+  is_full_tank: z.boolean().default(true),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-export function LogFuelDialog({ 
-  bikeId, 
-  currentOdometer, 
+export function LogFuelDialog({
+  bikeId,
+  currentOdometer,
   trigger,
-  editLog
-}: { 
-  bikeId: string, 
-  currentOdometer?: number,
-  trigger?: React.ReactNode,
-  editLog?: Tables<"fuel_logs">
+  editLog,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
+}: {
+  bikeId: string;
+  currentOdometer?: number;
+  trigger?: React.ReactNode;
+  editLog?: Tables<"fuel_logs">;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = (val: boolean) => {
+    if (isControlled) {
+      controlledOnOpenChange?.(val);
+    } else {
+      setInternalOpen(val);
+    }
+  };
   const queryClient = useQueryClient();
   const { profile } = useProfile();
-  const updateMutation = useUpdateFuelLog();
   const deleteMutation = useDeleteFuelLog();
 
   const isEditing = !!editLog;
+  const khrRate = profile?.khr_per_usd || 4100;
+
+  // Auto-fill odometer: current odometer + 1 km to prevent lower mileage errors
+  const defaultOdo = editLog
+    ? editLog.odometer
+    : currentOdometer !== undefined
+      ? currentOdometer + 1
+      : 0;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       bike_id: bikeId,
       fill_date: editLog ? new Date(editLog.fill_date) : new Date(),
-      odometer: editLog?.odometer || currentOdometer || 0,
+      odometer: defaultOdo,
       liters: Number(editLog?.liters || 0),
       total_amount: Number(editLog?.amount || 0),
-      fuel_type: editLog?.fuel_type || FUEL_TYPES[0],
+      fuel_type: editLog?.fuel_type || FUEL_GRADES[1],
       gas_station: editLog?.gas_station || "",
+      is_full_tank: true,
     },
   });
 
   const liters = form.watch("liters");
   const totalAmount = form.watch("total_amount");
+  const selectedGrade = form.watch("fuel_type");
+  const isFullTank = form.watch("is_full_tank");
+
   const pricePerLiter = liters > 0 ? (totalAmount / liters).toFixed(3) : "0.000";
+  const totalKHR = Math.round(totalAmount * khrRate);
 
   const mutation = useMutation({
     mutationFn: async (values: FormValues) => {
@@ -141,48 +164,57 @@ export function LogFuelDialog({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["fuel-logs", bikeId] });
       queryClient.invalidateQueries({ queryKey: ["bikes"] });
-      toast.success(isEditing ? "Fuel log updated" : "Fuel log added");
+      queryClient.invalidateQueries({ queryKey: ["fuel-logs-usage", bikeId] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard-history"] });
+      toast.success(isEditing ? "Fuel log updated" : "Fuel log recorded successfully");
       setOpen(false);
-      if (!isEditing) form.reset();
+      form.reset();
     },
-    onError: (error: any) => {
-      toast.error(error.message || "Failed to save fuel log");
-    }
+    onError: (err: any) => {
+      toast.error(err.message || "Failed to log fuel");
+    },
   });
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button variant="outline" size="icon" className="size-8">
+      {trigger ? (
+        <DialogTrigger asChild>{trigger}</DialogTrigger>
+      ) : !isControlled ? (
+        <DialogTrigger asChild>
+          <Button className="h-10 gap-2 font-mono text-xs font-bold bg-amber-500 text-slate-950 hover:bg-amber-400">
             <Fuel className="size-4" />
+            <span>Add Fuel</span>
           </Button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="flex flex-row items-center justify-between pr-8">
-          <DialogTitle>{isEditing ? "Edit Fuel Log" : "Log Fuel"}</DialogTitle>
+        </DialogTrigger>
+      ) : null}
+      <DialogContent className="max-w-md bg-slate-900 border-slate-800 text-slate-100 p-6 rounded-2xl shadow-2xl">
+        <DialogHeader className="flex flex-row items-center justify-between pb-3 border-b border-slate-800">
+          <DialogTitle className="flex items-center gap-2 font-mono text-base font-bold text-slate-100">
+            <Fuel className="size-5 text-amber-500" />
+            {isEditing ? "Edit Fuel Log" : "Add Fuel Fill-Up"}
+          </DialogTitle>
           {isEditing && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-destructive">
+                <Button variant="ghost" size="icon" className="size-8 text-destructive hover:bg-destructive/10">
                   <Trash2 className="size-4" />
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent>
+              <AlertDialogContent className="bg-slate-900 border-slate-800 text-slate-100">
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Delete fuel log?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This will permanently remove this record from your history.
+                  <AlertDialogTitle>Delete fuel entry?</AlertDialogTitle>
+                  <AlertDialogDescription className="text-slate-400">
+                    This fuel log entry will be permanently removed.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction 
-                    className="bg-destructive text-destructive-foreground"
-                    onClick={async () => {
-                      await deleteMutation.mutateAsync({ id: editLog.id, bike_id: bikeId });
-                      toast.success("Record deleted");
+                  <AlertDialogCancel className="bg-slate-800 border-slate-700 text-slate-200">
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive text-destructive-foreground font-bold"
+                    onClick={() => {
+                      deleteMutation.mutate(editLog.id);
                       setOpen(false);
                     }}
                   >
@@ -195,41 +227,57 @@ export function LogFuelDialog({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit((v) => mutation.mutate(v))} className="space-y-4 pt-4">
-            <div className="grid grid-cols-2 gap-4">
+          <form onSubmit={form.handleSubmit((d) => mutation.mutate(d))} className="space-y-4 pt-2">
+            {/* Fuel Grade Quick Chips */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-mono text-slate-300">Fuel Grade</label>
+              <div className="flex gap-2">
+                {FUEL_GRADES.map((grade) => (
+                  <button
+                    key={grade}
+                    type="button"
+                    onClick={() => form.setValue("fuel_type", grade)}
+                    className={`flex-1 rounded-xl py-2 px-2 text-xs font-mono font-semibold transition-all border ${
+                      selectedGrade === grade
+                        ? "border-amber-500 bg-amber-500/20 text-amber-400 shadow-xs"
+                        : "border-slate-800 bg-slate-950 text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    {grade}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Date & Auto-filled Odometer */}
+            <div className="grid grid-cols-2 gap-3">
               <FormField
                 control={form.control}
                 name="fill_date"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Date</FormLabel>
+                    <FormLabel className="text-xs font-mono text-slate-300">Date</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant={"outline"}
+                            variant="outline"
                             className={cn(
-                              "pl-3 text-left font-normal h-10",
-                              !field.value && "text-muted-foreground"
+                              "h-10 text-xs font-mono bg-slate-950 border-slate-800 text-slate-200 justify-start px-3",
+                              !field.value && "text-muted-foreground",
                             )}
                           >
-                            {field.value ? (
-                              format(field.value, "MMM d, yyyy")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            <CalendarIcon className="mr-2 size-3.5 opacity-50" />
+                            {field.value ? format(field.value, "MMM d, yyyy") : "Pick date"}
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
+                      <PopoverContent className="w-auto p-0 bg-slate-900 border-slate-800" align="start">
                         <Calendar
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
+                          disabled={(date) => date > new Date()}
                           initialFocus
                         />
                       </PopoverContent>
@@ -244,9 +292,15 @@ export function LogFuelDialog({
                 name="odometer"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Odometer (km)</FormLabel>
+                    <FormLabel className="text-xs font-mono text-slate-300">
+                      Odometer (km)
+                    </FormLabel>
                     <FormControl>
-                      <Input type="number" className="h-10" {...field} />
+                      <Input
+                        type="number"
+                        className="h-10 bg-slate-950 border-slate-800 font-mono text-xs font-bold text-amber-400"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -254,15 +308,22 @@ export function LogFuelDialog({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* Volume & Cost Calculator */}
+            <div className="grid grid-cols-2 gap-3">
               <FormField
                 control={form.control}
                 name="liters"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Liters</FormLabel>
+                    <FormLabel className="text-xs font-mono text-slate-300">Volume (Liters)</FormLabel>
                     <FormControl>
-                      <Input type="number" step="0.01" className="h-10" {...field} />
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="0.00"
+                        className="h-10 bg-slate-950 border-slate-800 font-mono text-xs font-bold text-slate-100"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -274,9 +335,15 @@ export function LogFuelDialog({
                 name="total_amount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Total Price ($)</FormLabel>
+                    <FormLabel className="text-xs font-mono text-slate-300">Total Price ($ USD)</FormLabel>
                     <FormControl>
-                      <Input type="number" step="0.01" className="h-10" {...field} />
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="0.00"
+                        className="h-10 bg-slate-950 border-slate-800 font-mono text-xs font-bold text-amber-400"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -284,29 +351,58 @@ export function LogFuelDialog({
               />
             </div>
 
-            <div className="rounded-lg bg-secondary/30 p-3 flex justify-between items-center text-sm">
-              <span className="text-muted-foreground">Price per Liter:</span>
-              <span className="font-mono font-bold text-primary">${pricePerLiter}</span>
+            {/* Real-Time Price & Dual-Currency Telemetry */}
+            <div className="rounded-xl border border-slate-800 bg-slate-950/80 p-3 flex justify-between items-center text-xs font-mono">
+              <div>
+                <span className="text-slate-400">Unit Price:</span>{" "}
+                <span className="font-bold text-cyan-400">${pricePerLiter}/L</span>
+              </div>
+              <div>
+                <span className="text-slate-400">Riel (KHR):</span>{" "}
+                <span className="font-bold text-amber-400">៛{totalKHR.toLocaleString()}</span>
+              </div>
             </div>
 
-            <FormField
-              control={form.control}
-              name="gas_station"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Gas Station</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. PTT, Total, Caltex" className="h-10" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Gas Station & Full Tank Toggle */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+              <FormField
+                control={form.control}
+                name="gas_station"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-mono text-slate-300">Gas Station</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="TotalEnergies, Caltex, PTT"
+                        className="h-9 bg-slate-950 border-slate-800 text-xs font-mono text-slate-200"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <Button type="submit" className="w-full h-12 text-base font-bold shadow-lg shadow-primary/20" disabled={mutation.isPending}>
-              {mutation.isPending 
-                ? (isEditing ? "Updating..." : "Logging...") 
-                : (isEditing ? "Update Fuel Log" : "Log Fuel Fill")}
+              <div className="flex items-center gap-2 pt-5">
+                <input
+                  type="checkbox"
+                  id="full_tank"
+                  checked={isFullTank}
+                  onChange={(e) => form.setValue("is_full_tank", e.target.checked)}
+                  className="size-4 accent-amber-500 rounded bg-slate-950 border-slate-800"
+                />
+                <label htmlFor="full_tank" className="text-xs font-mono text-slate-300 cursor-pointer">
+                  Full Tank (calculates km/L)
+                </label>
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full h-11 text-xs font-mono font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-lg shadow-amber-500/20"
+              disabled={mutation.isPending}
+            >
+              {mutation.isPending ? "Recording..." : isEditing ? "Update Fuel Log" : "⛽ Save Fuel Entry"}
             </Button>
           </form>
         </Form>

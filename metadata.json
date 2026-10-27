@@ -1,0 +1,6 @@
+{
+  "name": "MotoLog",
+  "description": "Motorcycle maintenance and cost tracker to log services, fuel economy, service schedule reminders, and real cost of ownership.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
