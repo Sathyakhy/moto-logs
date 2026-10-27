@@ -13,6 +13,19 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
+    // Fallback public backend config so published builds work even when .env is not committed.
+    define: {
+      "import.meta.env.VITE_SUPABASE_URL": JSON.stringify(
+        process.env["VITE_SUPABASE_URL"] || "https://jveednbesrcynowepvwh.supabase.co",
+      ),
+      "import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY": JSON.stringify(
+        process.env["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
+          "sb_publishable_nzDnxsS5bQ04TGG-5E1mhQ_32zXe7dW",
+      ),
+      "import.meta.env.VITE_SUPABASE_PROJECT_ID": JSON.stringify(
+        process.env["VITE_SUPABASE_PROJECT_ID"] || "jveednbesrcynowepvwh",
+      ),
+    },
     build: {
       rollupOptions: {
         onwarn(warning, defaultHandler) {

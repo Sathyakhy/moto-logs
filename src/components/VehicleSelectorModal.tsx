@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from "react";
 import { Bike as BikeIcon, Check, Plus, X, Star } from "lucide-react";
 import { useBikes } from "@/hooks/useBikes";

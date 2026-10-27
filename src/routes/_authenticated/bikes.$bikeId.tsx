@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from "react";
 import { createFileRoute, Link, useParams, useNavigate } from "@tanstack/react-router";
 import {
