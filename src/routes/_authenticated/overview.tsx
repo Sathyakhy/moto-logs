@@ -29,7 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { computeSchedule, calculateDailyUsage, km } from "@/lib/moto";
+import { computeSchedule, calculateDailyUsage, calculateDailyMileage, computeFuelTelemetry, km } from "@/lib/moto";
 import { money, Currency } from "@/lib/money";
 import { View360 } from "@/components/View360";
 import { BatteryModal, getBatteryHealth } from "@/components/BatteryModal";
@@ -166,22 +166,22 @@ function CockpitOverview() {
     },
   });
 
-  const dailyUsage = calculateDailyUsage(fuelLogs || []);
-
-  // Compute fuel economy (km/L) and cost/km
-  const fuelMetrics = useMemo(() => {
-    if (!fuelLogs || fuelLogs.length < 2) return { kmPerLiter: 36.5, costPerKm: 0.028 };
-    const latest = fuelLogs[0];
-    const prev = fuelLogs[1];
-    if (latest && prev && latest.odometer && prev.odometer && latest.liters && latest.amount) {
-      const diffKm = latest.odometer - prev.odometer;
-      if (diffKm > 0 && Number(latest.liters) > 0) {
-        const kmPerLiter = diffKm / Number(latest.liters);
-        const costPerKm = Number(latest.amount) / diffKm;
-        return { kmPerLiter, costPerKm };
+  const dailyUsage = useMemo(() => {
+    const checkpoints: { date: string; odometer: number | null | undefined }[] = [];
+    (fuelLogs || []).forEach((f) => {
+      if (f.odometer) checkpoints.push({ date: f.fill_date, odometer: f.odometer });
+    });
+    (history?.maintenance || []).forEach((m: any) => {
+      if (m.bike_id === bike?.id && m.odometer) {
+        checkpoints.push({ date: m.date, odometer: m.odometer });
       }
-    }
-    return { kmPerLiter: 36.5, costPerKm: 0.028 };
+    });
+    return calculateDailyMileage(checkpoints, bike?.purchase_date, bike?.initial_odometer);
+  }, [fuelLogs, history?.maintenance, bike?.id, bike?.purchase_date, bike?.initial_odometer]);
+
+  // Compute genuine fuel telemetry without hardcoded fake fallbacks
+  const fuelTelemetry = useMemo(() => {
+    return computeFuelTelemetry(fuelLogs || []);
   }, [fuelLogs]);
 
   // Last refuel detail text
@@ -280,28 +280,21 @@ function CockpitOverview() {
   // Compute estimated due date for engine oil
   const estDueDateText = useMemo(() => {
     if (engineOil.dateText) return engineOil.dateText;
-    const effectivePace = dailyUsage > 0 ? dailyUsage : 21.1;
-    const daysLeft = Math.max(0, Math.round(engineOil.remainingKm / effectivePace));
-    const target = new Date(Date.now() + daysLeft * 86_400_000);
-    return format(target, "dd-MMM-yy");
+    if (dailyUsage && dailyUsage > 0 && engineOil.remainingKm > 0) {
+      const daysLeft = Math.max(0, Math.round(engineOil.remainingKm / dailyUsage));
+      const target = new Date(Date.now() + daysLeft * 86_400_000);
+      return format(target, "dd-MMM-yy");
+    }
+    return "Pending pace";
   }, [engineOil.dateText, engineOil.remainingKm, dailyUsage]);
 
-  // Calculate per-fill fuel economy map for timeline
+  // Calculate per-fill fuel economy map for timeline using validated telemetry
   const fuelEconomyMap = useMemo(() => {
     const map = new Map<string, string>();
     if (!history?.fuel || history.fuel.length < 2) return map;
-    const sorted = [...history.fuel].sort((a: any, b: any) => (b.odometer || 0) - (a.odometer || 0));
-
-    sorted.forEach((f: any, idx: number) => {
-      const nextLog = sorted[idx + 1];
-      if (nextLog && f.odometer && nextLog.odometer && f.liters) {
-        const dist = f.odometer - nextLog.odometer;
-        const liters = Number(f.liters);
-        if (dist > 0 && liters > 0) {
-          const val = dist / liters;
-          map.set(f.id, `${val % 1 === 0 ? val.toFixed(0) : val.toFixed(val >= 20 ? 1 : 2)} KM/L`);
-        }
-      }
+    const telemetry = computeFuelTelemetry(history.fuel);
+    telemetry.perFillEconomyMap.forEach((val, id) => {
+      map.set(id, val.formatted);
     });
     return map;
   }, [history?.fuel]);
@@ -445,12 +438,12 @@ function CockpitOverview() {
                   <div className="mt-3.5 flex flex-wrap items-center justify-center gap-x-2.5 sm:gap-x-3 gap-y-1 text-xs font-mono">
                     <span className="flex items-center gap-1 text-amber-400 font-semibold">
                       <TrendingUp className="size-3.5" />
-                      <span>AVG {(dailyUsage > 0 ? dailyUsage : 21.1).toFixed(1)} KM/DAY</span>
+                      <span>AVG {dailyUsage !== null ? dailyUsage.toFixed(1) : "--"} KM/DAY</span>
                     </span>
                     <span className="text-slate-600">•</span>
                     <span className="flex items-center gap-1 text-emerald-400 font-semibold">
                       <Fuel className="size-3.5" />
-                      <span>{fuelMetrics.kmPerLiter ? fuelMetrics.kmPerLiter.toFixed(1) : "36.5"} KM/L</span>
+                      <span>{fuelTelemetry.latestKmPerLiter !== null ? fuelTelemetry.latestKmPerLiter.toFixed(1) : "--"} KM/L</span>
                     </span>
                     <span className="text-slate-600">•</span>
                     <span className="text-slate-400 font-normal">
@@ -654,15 +647,17 @@ function CockpitOverview() {
                 <Fuel className="size-4" />
                 <span>Fuel Economy</span>
               </div>
-              <span className="text-[10px] text-slate-500 dark:text-slate-400">Average</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                {fuelTelemetry.averageKmPerLiter !== null ? "Average" : "No telemetry"}
+              </span>
             </div>
 
             <div className="my-3">
               <p className="text-xl font-mono font-black text-slate-900 dark:text-slate-100">
-                {fuelMetrics.kmPerLiter ? fuelMetrics.kmPerLiter.toFixed(1) : "--"} <span className="text-xs font-normal text-slate-500 dark:text-slate-400">km/L</span>
+                {fuelTelemetry.averageKmPerLiter !== null ? fuelTelemetry.averageKmPerLiter.toFixed(1) : "--"} <span className="text-xs font-normal text-slate-500 dark:text-slate-400">km/L</span>
               </p>
               <p className="text-[11px] font-mono text-slate-500 dark:text-slate-400 mt-0.5">
-                Cost: ${fuelMetrics.costPerKm.toFixed(3)}/km
+                {fuelTelemetry.averageCostPerKm !== null ? `Cost: $${fuelTelemetry.averageCostPerKm.toFixed(3)}/km` : "Need 2+ fuel logs"}
               </p>
             </div>
 

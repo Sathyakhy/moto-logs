@@ -26,7 +26,7 @@ import {
   useUpcomingMaintenance,
 } from "@/hooks/useDashboard";
 import { money, formatMoney } from "@/lib/money";
-import { km } from "@/lib/moto";
+import { km, computeFuelTelemetry } from "@/lib/moto";
 import {
   Select,
   SelectContent,
@@ -68,11 +68,11 @@ function AnalyticsDashboard() {
   const totalFleetDistance = bikes?.reduce((sum, b) => sum + (b.current_odometer || 0), 0) || 0;
 
   // Running cost per km
-  const runningCostPerKm = totalFleetDistance > 0 && totalSpent > 0 ? totalSpent / totalFleetDistance : 0.028;
+  const runningCostPerKm = totalFleetDistance > 0 && totalSpent > 0 ? totalSpent / totalFleetDistance : null;
 
   // Average fuel economy across fleet
   const fuelConsumption = (() => {
-    if (!stats?.fuel || stats.fuel.length < 2) return 43.2;
+    if (!stats?.fuel || stats.fuel.length < 2) return null;
 
     const logsByBike: Record<string, any[]> = {};
     stats.fuel.forEach((log: any) => {
@@ -86,24 +86,14 @@ function AnalyticsDashboard() {
     let validLiters = 0;
 
     Object.values(logsByBike).forEach((bikeLogs) => {
-      if (bikeLogs.length < 2) return;
-      const sorted = [...bikeLogs].sort(
-        (a, b) => new Date(b.fill_date).getTime() - new Date(a.fill_date).getTime(),
-      );
-      for (let i = 0; i < sorted.length - 1; i++) {
-        const curr = sorted[i];
-        const prev = sorted[i + 1];
-        if (curr.odometer && prev.odometer && curr.liters) {
-          const diff = curr.odometer - prev.odometer;
-          if (diff > 0 && curr.liters > 0) {
-            validDiffKm += diff;
-            validLiters += Number(curr.liters);
-          }
-        }
+      const telemetry = computeFuelTelemetry(bikeLogs);
+      if (telemetry.totalTrackedDistanceKm > 0 && telemetry.totalTrackedLiters > 0) {
+        validDiffKm += telemetry.totalTrackedDistanceKm;
+        validLiters += telemetry.totalTrackedLiters;
       }
     });
 
-    return validLiters > 0 ? validDiffKm / validLiters : 43.2;
+    return validLiters > 0 ? validDiffKm / validLiters : null;
   })();
 
   // Urgent maintenance alerts
@@ -271,12 +261,12 @@ function AnalyticsDashboard() {
         <section className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <Stat
             label="Avg Consumption"
-            value={`${fuelConsumption.toFixed(1)} km/L`}
+            value={fuelConsumption !== null ? `${fuelConsumption.toFixed(1)} km/L` : "-- km/L"}
             hint="Telemetry average"
           />
           <Stat
             label="Running Cost"
-            value={`${money(runningCostPerKm, "USD", display, rate)}/km`}
+            value={runningCostPerKm !== null ? `${money(runningCostPerKm, "USD", display, rate)}/km` : "--/km"}
             hint="Total cost per km ridden"
           />
           <Stat

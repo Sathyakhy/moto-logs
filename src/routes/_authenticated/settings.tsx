@@ -18,6 +18,7 @@ import {
   Upload,
   Database,
   CheckCircle2,
+  RotateCw,
 } from "lucide-react";
 
 import { AppShell } from "@/components/AppShell";

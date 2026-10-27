@@ -17,12 +17,16 @@ export const lovable = {
           opts?.redirect_uri ||
           (typeof window !== "undefined" ? `${window.location.origin}/bikes` : undefined);
 
+        const oauthOptions: {
+          redirectTo?: string;
+          queryParams?: Record<string, string>;
+        } = {};
+        if (redirectUrl) oauthOptions.redirectTo = redirectUrl;
+        if (opts?.extraParams) oauthOptions.queryParams = opts.extraParams;
+
         const { data, error } = await supabase.auth.signInWithOAuth({
-          provider: targetProvider,
-          options: {
-            redirectTo: redirectUrl,
-            queryParams: opts?.extraParams,
-          },
+          provider: (targetProvider === "microsoft" ? "azure" : targetProvider) as any,
+          options: oauthOptions,
         });
 
         if (error) {
