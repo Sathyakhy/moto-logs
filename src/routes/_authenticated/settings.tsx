@@ -304,7 +304,7 @@ function SettingsPage() {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
             {/* JSON Export */}
             <Button
               variant="outline"
@@ -335,6 +335,35 @@ function SettingsPage() {
                 <span>{isRestoring ? "Restoring..." : "Restore JSON Backup"}</span>
               </Button>
             </div>
+
+            {/* Clear PWA Cache & Reload */}
+            <Button
+              variant="outline"
+              onClick={async () => {
+                try {
+                  if ("caches" in window) {
+                    const keys = await caches.keys();
+                    await Promise.all(keys.map((k) => caches.delete(k)));
+                  }
+                  if ("serviceWorker" in navigator) {
+                    const regs = await navigator.serviceWorker.getRegistrations();
+                    for (const r of regs) {
+                      await r.unregister();
+                    }
+                  }
+                  toast.success("Cache cleared. Reloading latest version...");
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 400);
+                } catch {
+                  window.location.reload();
+                }
+              }}
+              className="h-10 border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-mono gap-2"
+            >
+              <RotateCw className="size-3.5 text-emerald-500" />
+              <span>Force PWA Refresh</span>
+            </Button>
           </div>
         </section>
 

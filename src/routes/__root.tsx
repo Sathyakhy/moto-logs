@@ -137,13 +137,24 @@ function RootShell({ children }: { children: ReactNode }) {
       document.documentElement.classList.add("dark");
     }
 
-    // Register Service Worker
+    // Register Service Worker with automatic update check and instant reload on new version
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker
-          .register("/sw.js")
-          .then((reg) => console.log("Service Worker registered!", reg))
-          .catch((err) => console.log("Registration failed: ", err));
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then((reg) => {
+          reg.update();
+          if (reg.waiting) {
+            reg.waiting.postMessage({ type: "SKIP_WAITING" });
+          }
+        })
+        .catch((err) => console.log("SW registration error: ", err));
+
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (!refreshing) {
+          refreshing = true;
+          window.location.reload();
+        }
       });
     }
   }, []);

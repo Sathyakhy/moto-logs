@@ -99,15 +99,15 @@ export function AppShell({ title, subtitle, actions, children }: AppShellProps) 
     : "Select Bike";
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 overflow-hidden overscroll-none select-none transition-colors duration-200">
+    <div className="flex flex-col min-h-screen h-[100dvh] w-full bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 overflow-hidden transition-colors duration-200">
       <OfflineBanner />
 
-      {/* Sticky Top Header (Glassmorphic HUD with iPhone Dynamic Island Clearance) */}
+      {/* Sticky Top Header (Glassmorphic HUD with guaranteed iPhone Dynamic Island Clearance) */}
       <header
         style={{
-          paddingTop: "max(12px, env(safe-area-inset-top, 12px))",
-          paddingLeft: "max(8px, env(safe-area-inset-left, 8px))",
-          paddingRight: "max(8px, env(safe-area-inset-right, 8px))",
+          paddingTop: "calc(14px + env(safe-area-inset-top, 0px))",
+          paddingLeft: "calc(8px + env(safe-area-inset-left, 0px))",
+          paddingRight: "calc(8px + env(safe-area-inset-right, 0px))",
         }}
         className="sticky top-0 z-30 border-b border-slate-200/90 dark:border-slate-800/80 bg-white/95 dark:bg-slate-950/90 backdrop-blur-xl transition-colors duration-200 shrink-0"
       >
@@ -192,11 +192,11 @@ export function AppShell({ title, subtitle, actions, children }: AppShellProps) 
       {/* Main Content View with balanced bottom clearance for bottom nav */}
       <main
         style={{
-          paddingBottom: "calc(5.5rem + max(20px, env(safe-area-inset-bottom, 20px)))",
-          paddingLeft: "max(12px, env(safe-area-inset-left, 12px))",
-          paddingRight: "max(12px, env(safe-area-inset-right, 12px))",
+          paddingBottom: "calc(6rem + env(safe-area-inset-bottom, 24px))",
+          paddingLeft: "calc(12px + env(safe-area-inset-left, 0px))",
+          paddingRight: "calc(12px + env(safe-area-inset-right, 0px))",
         }}
-        className="flex-1 overflow-y-auto overflow-x-hidden pt-4 -webkit-overflow-scrolling-touch"
+        className="flex-1 overflow-y-auto overflow-x-hidden pt-4 overscroll-y-contain -webkit-overflow-scrolling-touch"
       >
         <div className="mx-auto max-w-6xl">
           {title && (
@@ -220,9 +220,9 @@ export function AppShell({ title, subtitle, actions, children }: AppShellProps) 
       {/* Floating Bottom Navigation Dock (Ergonomic Thumb Reach + iOS Home Bar Inset) */}
       <nav
         style={{
-          paddingBottom: "max(12px, env(safe-area-inset-bottom, 12px))",
-          paddingLeft: "max(8px, env(safe-area-inset-left, 8px))",
-          paddingRight: "max(8px, env(safe-area-inset-right, 8px))",
+          paddingBottom: "calc(10px + env(safe-area-inset-bottom, 0px))",
+          paddingLeft: "calc(8px + env(safe-area-inset-left, 0px))",
+          paddingRight: "calc(8px + env(safe-area-inset-right, 0px))",
         }}
         className="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200/90 dark:border-slate-800/80 bg-white/95 dark:bg-slate-950/90 backdrop-blur-xl shadow-2xl transition-colors duration-200"
       >
