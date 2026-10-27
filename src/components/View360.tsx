@@ -7,9 +7,10 @@ interface View360Props {
   paths?: string[] | null;
   fallbackPath?: string | null;
   className?: string;
+  compact?: boolean;
 }
 
-export function View360({ paths, fallbackPath, className }: View360Props) {
+export function View360({ paths, fallbackPath, className, compact }: View360Props) {
   const [urls, setUrls] = React.useState<string[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [currentIndex, setCurrentIndex] = React.useState(0);
@@ -111,10 +112,10 @@ export function View360({ paths, fallbackPath, className }: View360Props) {
   const currentAngle = totalCount > 1 ? Math.round((currentIndex / totalCount) * 360) : 0;
 
   const getAngleLabel = (angle: number) => {
-    if (angle >= 315 || angle < 45) return "0° FRONT VIEW";
-    if (angle >= 45 && angle < 135) return "90° RIGHT SIDE";
-    if (angle >= 135 && angle < 225) return "180° REAR VIEW";
-    return "270° LEFT SIDE";
+    if (angle >= 315 || angle < 45) return "0° FRONT";
+    if (angle >= 45 && angle < 135) return "90° SIDE";
+    if (angle >= 135 && angle < 225) return "180° REAR";
+    return "270° SIDE";
   };
 
   const jumpToAngle = (targetDeg: number) => {
@@ -126,17 +127,17 @@ export function View360({ paths, fallbackPath, className }: View360Props) {
   if (!loading && activePhotoList.length === 0) {
     return (
       <div className={`flex flex-col items-center justify-center p-8 text-center text-muted-foreground ${className}`}>
-        <BikeIcon className="size-20 opacity-20 stroke-1 mb-2" />
-        <p className="text-xs font-mono">NO VEHICLE PHOTO</p>
+        <BikeIcon className="size-16 opacity-20 stroke-1 mb-2 text-slate-400" />
+        <p className="text-xs font-mono text-slate-500">NO VEHICLE PHOTO</p>
       </div>
     );
   }
 
   return (
     <div className={`relative flex flex-col items-center justify-center w-full select-none ${className}`}>
-      {/* 360 Turntable Frame */}
+      {/* 360 Turntable Frame - Comfortable 16:10 aspect ratio ensuring full bike height */}
       <div
-        className={`relative w-full aspect-video sm:aspect-21/9 max-h-[320px] flex items-center justify-center overflow-hidden rounded-2xl border border-slate-800/80 bg-gradient-to-b from-slate-900/60 to-slate-950/80 backdrop-blur-xl ${
+        className={`relative w-full aspect-[16/10] sm:aspect-[16/10] min-h-[190px] max-h-[300px] flex items-center justify-center overflow-hidden rounded-xl border border-slate-800/80 bg-gradient-to-b from-slate-900/90 to-slate-950/95 backdrop-blur-xl ${
           totalCount > 1 ? "cursor-grab active:cursor-grabbing touch-none" : ""
         }`}
         onMouseDown={(e) => handleStart(e.clientX)}
@@ -147,47 +148,51 @@ export function View360({ paths, fallbackPath, className }: View360Props) {
         onTouchMove={(e) => e.touches[0] && handleMove(e.touches[0].clientX)}
         onTouchEnd={handleEnd}
       >
-        {/* HUD Angle Overlay Badge */}
-        <div className="absolute top-3 left-3 z-10 flex items-center gap-2 rounded-full border border-amber-500/30 bg-slate-950/80 px-2.5 py-1 text-[10px] font-mono font-bold text-amber-400 backdrop-blur-md shadow-sm">
-          <Compass className="size-3 text-amber-500 animate-pulse" />
-          <span>{getAngleLabel(currentAngle)}</span>
-          <span className="text-muted-foreground/60 font-sans">|</span>
-          <span className="text-slate-300">{currentAngle}°</span>
-        </div>
-
-        {/* Drag Hint Overlay */}
+        {/* HUD Angle Overlay Badge - Only rendered when 360 multi-angles are available */}
         {totalCount > 1 && (
-          <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 rounded-full border border-slate-800 bg-slate-950/80 px-2.5 py-1 text-[9px] font-mono uppercase tracking-wider text-muted-foreground backdrop-blur-md">
-            <RotateCw className="size-2.5 text-cyan-400" />
-            <span>Drag to Rotate 360°</span>
+          <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-slate-950/85 px-2.5 py-1 text-[10px] font-mono font-bold text-amber-400 backdrop-blur-md shadow-xs pointer-events-none">
+            <Compass className="size-3 text-amber-500" />
+            <span>{getAngleLabel(currentAngle)}</span>
+            <span className="text-slate-500 font-sans">|</span>
+            <span className="text-slate-200">{currentAngle}°</span>
           </div>
         )}
 
-        {/* Vehicle Image Viewport */}
-        {activePhotoList.map((url, i) => (
-          <img
-            key={url}
-            src={url}
-            alt={`Motorcycle view ${i}`}
-            style={{ display: i === currentIndex ? "block" : "none" }}
-            className="max-h-[260px] w-auto max-w-[92%] object-contain pointer-events-none drop-shadow-[0_20px_35px_rgba(0,0,0,0.8)] transition-all duration-75"
-            draggable={false}
-          />
-        ))}
+        {/* Drag Hint Overlay */}
+        {totalCount > 1 && (
+          <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1.5 rounded-full border border-slate-800 bg-slate-950/85 px-2.5 py-1 text-[9px] font-mono uppercase tracking-wider text-slate-400 backdrop-blur-md pointer-events-none">
+            <RotateCw className="size-2.5 text-cyan-400" />
+            <span>Drag 360°</span>
+          </div>
+        )}
 
-        {/* Turntable Grid Line Base */}
-        <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-slate-950 to-transparent pointer-events-none" />
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-48 h-0.5 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent pointer-events-none" />
+        {/* Vehicle Image Viewport - Full object-contain with padding to preserve tires and wheels */}
+        <div className="size-full flex items-center justify-center p-3 pt-6 pb-4">
+          {activePhotoList.map((url, i) => (
+            <img
+              key={url}
+              src={url}
+              alt={`Motorcycle view ${i}`}
+              style={{ display: i === currentIndex ? "block" : "none" }}
+              className="max-h-full max-w-full w-auto h-auto object-contain pointer-events-none drop-shadow-[0_15px_30px_rgba(0,0,0,0.8)] transition-all duration-75 select-none"
+              draggable={false}
+            />
+          ))}
+        </div>
+
+        {/* Subtle Turntable Floor Indicator */}
+        <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-slate-950/50 to-transparent pointer-events-none" />
+        <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-36 h-0.5 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent pointer-events-none" />
       </div>
 
-      {/* Preset Angle Buttons */}
+      {/* Preset Angle Buttons - Cleanly positioned below turntable frame */}
       {totalCount > 1 && (
-        <div className="mt-3 flex items-center justify-center gap-1.5 sm:gap-2">
+        <div className="mt-2.5 flex items-center justify-center gap-1 sm:gap-1.5 w-full">
           {[
             { label: "0° Front", deg: 0 },
             { label: "90° Side", deg: 90 },
             { label: "180° Rear", deg: 180 },
-            { label: "270° Other", deg: 270 },
+            { label: "270° Side", deg: 270 },
           ].map((btn) => {
             const isNear = Math.abs(currentAngle - btn.deg) < 45 || (btn.deg === 0 && currentAngle >= 315);
             return (
@@ -195,10 +200,10 @@ export function View360({ paths, fallbackPath, className }: View360Props) {
                 key={btn.deg}
                 type="button"
                 onClick={() => jumpToAngle(btn.deg)}
-                className={`rounded-lg px-2.5 py-1 text-[10px] font-mono font-semibold transition-all ${
+                className={`rounded-md px-2 py-0.5 text-[9px] font-mono font-semibold transition-all ${
                   isNear
-                    ? "border border-amber-500/50 bg-amber-500/15 text-amber-400 shadow-sm"
-                    : "border border-slate-800 bg-slate-900/60 text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+                    ? "border border-amber-500/60 bg-amber-500/20 text-amber-300 shadow-xs"
+                    : "border border-slate-800 bg-slate-900/70 text-slate-400 hover:text-slate-200 hover:bg-slate-800"
                 }`}
               >
                 {btn.label}

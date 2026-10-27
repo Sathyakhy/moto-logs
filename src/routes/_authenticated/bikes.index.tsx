@@ -93,48 +93,55 @@ function Bikes() {
               <div
                 key={bike.id}
                 className={cn(
-                  "rounded-2xl border bg-slate-900/90 backdrop-blur-xl overflow-hidden shadow-xl transition-all duration-200 flex flex-col justify-between group",
+                  "rounded-2xl border bg-white dark:bg-slate-900/90 backdrop-blur-xl overflow-hidden shadow-xl transition-all duration-200 flex flex-col justify-between group",
                   bike.is_default
                     ? "border-amber-500/50 shadow-amber-500/5 ring-1 ring-amber-500/20"
-                    : "border-slate-800/80 hover:border-slate-700"
+                    : "border-slate-200 dark:border-slate-800/80 hover:border-slate-300 dark:hover:border-slate-700"
                 )}
               >
                 <div>
-                  {/* Visual Bike Display Frame */}
-                  <div className="relative aspect-video w-full bg-slate-950/80 border-b border-slate-800/60 overflow-hidden">
-                    {hasMultiplePhotos ? (
-                      <View360
-                        paths={bike.photos_paths}
-                        fallbackPath={bike.photo_path}
-                        className="size-full"
-                      />
-                    ) : (
-                      <BikeImage path={bike.photo_path} />
-                    )}
-
-                    {/* Status & Badge Overlays */}
-                    <div className="absolute top-2.5 left-2.5 flex items-center gap-2 pointer-events-none">
-                      {bike.is_default && (
-                        <div className="flex items-center gap-1.5 rounded-lg bg-amber-500/20 border border-amber-500/40 px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase text-amber-400 backdrop-blur-md shadow-sm">
-                          <Star className="size-3 fill-amber-400 text-amber-400" />
+                  {/* Card Header Meta Strip with Dedicated Badges (NO OVERLAPPING!) */}
+                  <div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-100 dark:bg-slate-950/80 border-b border-slate-200 dark:border-slate-800/60">
+                    <div className="flex items-center gap-2">
+                      {bike.is_default ? (
+                        <div className="flex items-center gap-1.5 rounded-full bg-amber-500/15 border border-amber-500/40 px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase text-amber-500 dark:text-amber-400 backdrop-blur-md shadow-xs">
+                          <Star className="size-3 fill-amber-500 dark:fill-amber-400 text-amber-500 dark:text-amber-400" />
                           <span>Primary Cockpit</span>
                         </div>
+                      ) : (
+                        <span className="text-[10px] font-mono uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider">
+                          Fleet Unit
+                        </span>
                       )}
                     </div>
 
-                    <div className="absolute bottom-2.5 right-2.5 pointer-events-none">
+                    <div>
                       {isDue ? (
-                        <div className="flex items-center gap-1.5 rounded-lg bg-red-500/20 border border-red-500/40 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-red-400 backdrop-blur-md">
+                        <div className="flex items-center gap-1.5 rounded-full bg-red-500/15 border border-red-500/40 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-red-500 dark:text-red-400 backdrop-blur-md">
                           <AlertTriangle className="size-3" />
                           <span>Attention Due</span>
                         </div>
                       ) : (
-                        <div className="flex items-center gap-1.5 rounded-lg bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400 backdrop-blur-md">
+                        <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/40 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 backdrop-blur-md">
                           <ShieldCheck className="size-3" />
                           <span>All Systems OK</span>
                         </div>
                       )}
                     </div>
+                  </div>
+
+                  {/* Visual Bike Display Frame (Generous, unclipped viewer) */}
+                  <div className="p-3 bg-slate-50/50 dark:bg-slate-950/40 border-b border-slate-200 dark:border-slate-800/60">
+                    {hasMultiplePhotos ? (
+                      <View360
+                        paths={bike.photos_paths}
+                        fallbackPath={bike.photo_path}
+                        className="w-full"
+                        compact
+                      />
+                    ) : (
+                      <BikeImage path={bike.photo_path} />
+                    )}
                   </div>
 
                   {/* Bike Card Body */}
@@ -146,10 +153,10 @@ function Bikes() {
                         search={{ tab: undefined }}
                         className="flex-1 min-w-0"
                       >
-                        <h3 className="text-lg font-bold text-slate-100 group-hover:text-amber-400 transition-colors truncate">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 group-hover:text-amber-500 dark:group-hover:text-amber-400 transition-colors truncate">
                           {bike.name}
                         </h3>
-                        <p className="text-xs text-slate-400 font-medium truncate mt-0.5">
+                        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">
                           {bike.year} {bike.make} {bike.model}
                           {bike.plate_number ? ` · ${bike.plate_number}` : ""}
                         </p>
@@ -161,13 +168,13 @@ function Bikes() {
                           variant="ghost"
                           size="icon"
                           className={cn(
-                            "size-8 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800/60",
-                            bike.is_default && "text-amber-400 hover:text-amber-300"
+                            "size-8 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200 dark:hover:bg-slate-800/60",
+                            bike.is_default && "text-amber-500 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300"
                           )}
                           title={bike.is_default ? "Primary Bike" : "Set as Primary"}
                           onClick={() => handleSetDefault(bike)}
                         >
-                          <Star className={cn("size-4", bike.is_default && "fill-amber-400")} />
+                          <Star className={cn("size-4", bike.is_default && "fill-amber-500 dark:fill-amber-400")} />
                         </Button>
 
                         <EditBikeDialog
@@ -176,7 +183,7 @@ function Bikes() {
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="size-8 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800/60"
+                              className="size-8 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200 dark:hover:bg-slate-800/60"
                               title="Edit Motorcycle Specs"
                             >
                               <Settings className="size-4" />
@@ -187,14 +194,14 @@ function Bikes() {
                     </div>
 
                     {/* LCD Odometer Strip */}
-                    <div className="mt-4 rounded-xl border border-slate-800/90 bg-slate-950/80 p-3 flex items-center justify-between">
+                    <div className="mt-4 rounded-xl border border-slate-200 dark:border-slate-800/90 bg-slate-100 dark:bg-slate-950/80 p-3 flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Gauge className="size-4 text-amber-500" />
                         <div>
                           <p className="text-[10px] uppercase font-bold tracking-widest text-slate-500">
                             Current Odometer
                           </p>
-                          <p className="font-mono text-base font-bold text-amber-400 tracking-wider">
+                          <p className="font-mono text-base font-bold text-amber-500 dark:text-amber-400 tracking-wider">
                             {km(bike.current_odometer)}
                           </p>
                         </div>
@@ -204,7 +211,7 @@ function Bikes() {
                         to="/bikes/$bikeId"
                         params={{ bikeId: bike.id }}
                         search={{ tab: undefined }}
-                        className="flex items-center gap-1 text-[11px] font-semibold text-slate-400 hover:text-amber-400 transition-colors"
+                        className="flex items-center gap-1 text-[11px] font-semibold text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 transition-colors"
                       >
                         <span>Telemetry</span>
                         <ChevronRight className="size-3.5" />
@@ -213,11 +220,11 @@ function Bikes() {
 
                     {/* Telemetry Details */}
                     <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-                      <div className="rounded-lg bg-slate-800/40 border border-slate-800/60 p-2.5">
-                        <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+                      <div className="rounded-lg bg-slate-100 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800/60 p-2.5">
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">
                           Last Service
                         </p>
-                        <div className="mt-1 flex items-center gap-1.5 text-slate-200">
+                        <div className="mt-1 flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
                           <Calendar className="size-3 text-slate-400" />
                           <span className="truncate text-[11px] font-medium">
                             {bike.lastServiceDate
@@ -227,11 +234,11 @@ function Bikes() {
                         </div>
                       </div>
 
-                      <div className="rounded-lg bg-slate-800/40 border border-slate-800/60 p-2.5">
-                        <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+                      <div className="rounded-lg bg-slate-100 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800/60 p-2.5">
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">
                           Status Check
                         </p>
-                        <div className="mt-1 flex items-center gap-1.5 text-slate-200">
+                        <div className="mt-1 flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
                           <Wrench className="size-3 text-slate-400" />
                           <span className="truncate text-[11px] font-medium">
                             {isDue
@@ -245,7 +252,7 @@ function Bikes() {
                 </div>
 
                 {/* Bottom Action Footer */}
-                <div className="border-t border-slate-800/80 bg-slate-950/40 px-4 py-3 flex items-center justify-between gap-2">
+                <div className="border-t border-slate-200 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-950/40 px-4 py-3 flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1.5">
                     <LogMaintenanceDialog
                       bikeId={bike.id}
@@ -254,9 +261,9 @@ function Bikes() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="h-8 rounded-lg border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-200 text-xs font-semibold gap-1.5"
+                          className="h-8 rounded-lg border-slate-200 dark:border-slate-800 bg-white hover:bg-slate-100 dark:bg-slate-900/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold gap-1.5"
                         >
-                          <Wrench className="size-3.5 text-amber-400" />
+                          <Wrench className="size-3.5 text-amber-500 dark:text-amber-400" />
                           <span>Service</span>
                         </Button>
                       }
@@ -269,7 +276,7 @@ function Bikes() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="h-8 rounded-lg border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-200 text-xs font-semibold gap-1.5"
+                          className="h-8 rounded-lg border-slate-200 dark:border-slate-800 bg-white hover:bg-slate-100 dark:bg-slate-900/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold gap-1.5"
                         >
                           <Fuel className="size-3.5 text-amber-500" />
                           <span>Fuel</span>
@@ -281,7 +288,7 @@ function Bikes() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 text-xs gap-1"
+                    className="h-8 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200 dark:hover:bg-slate-800/60 text-xs gap-1"
                     asChild
                   >
                     <Link
@@ -308,19 +315,19 @@ function BikeImage({ path }: { path: string | null | undefined }) {
 
   if (!url) {
     return (
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-700 bg-slate-950">
-        <BikeIcon className="size-16 stroke-1 text-slate-800" />
-        <span className="text-[11px] font-mono text-slate-600 mt-2">Vehicle Photo Pending</span>
+      <div className="w-full aspect-[16/10] flex flex-col items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800/80 bg-slate-100 dark:bg-slate-950 text-slate-400 dark:text-slate-600">
+        <BikeIcon className="size-16 stroke-1 opacity-30 mb-2" />
+        <span className="text-[11px] font-mono">Vehicle Photo Pending</span>
       </div>
     );
   }
 
   return (
-    <div className="relative size-full flex items-center justify-center bg-slate-950/80 p-2">
+    <div className="relative w-full aspect-[16/10] flex items-center justify-center overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800/80 bg-gradient-to-b from-slate-100 to-slate-200 dark:from-slate-900/90 dark:to-slate-950/95 p-3">
       <img
         src={url}
         alt="Motorcycle"
-        className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105"
+        className="max-h-full max-w-full w-auto h-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-[0_15px_30px_rgba(0,0,0,0.3)] dark:drop-shadow-[0_15px_30px_rgba(0,0,0,0.8)]"
       />
     </div>
   );
