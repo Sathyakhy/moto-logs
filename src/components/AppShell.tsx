@@ -91,42 +91,56 @@ export function AppShell({ title, subtitle, actions, children }: AppShellProps) 
 
   const batteryHealth = getBatteryHealth(batteryVoltage);
 
+  // Subtext for active bike with safe fallback to never show 'undefined'
+  const bikeSubtext = activeBike
+    ? [activeBike.year, activeBike.make, activeBike.model].filter(Boolean).join(" ") ||
+      activeBike.model ||
+      "Motorcycle"
+    : "Select Bike";
+
   return (
     <div className="fixed inset-0 flex flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 overflow-hidden overscroll-none select-none transition-colors duration-200">
       <OfflineBanner />
 
-      {/* Sticky Top Header (Glassmorphic HUD) */}
-      <header className="sticky top-0 z-30 border-b border-slate-200/90 dark:border-slate-800/80 bg-white/90 dark:bg-slate-950/85 backdrop-blur-xl pt-[env(safe-area-inset-top,0px)] transition-colors duration-200">
+      {/* Sticky Top Header (Glassmorphic HUD with iPhone Dynamic Island Clearance) */}
+      <header
+        style={{
+          paddingTop: "max(12px, env(safe-area-inset-top, 12px))",
+          paddingLeft: "max(8px, env(safe-area-inset-left, 8px))",
+          paddingRight: "max(8px, env(safe-area-inset-right, 8px))",
+        }}
+        className="sticky top-0 z-30 border-b border-slate-200/90 dark:border-slate-800/80 bg-white/95 dark:bg-slate-950/90 backdrop-blur-xl transition-colors duration-200 shrink-0"
+      >
         <div className="mx-auto max-w-6xl">
-          <div className="flex h-14 items-center justify-between px-3 sm:px-6 gap-2">
+          <div className="flex h-14 items-center justify-between px-2 sm:px-6 gap-1.5 sm:gap-2">
             {/* Left: Vehicle Selector Button */}
             <button
               type="button"
               onClick={() => setVehicleModalOpen(true)}
-              className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/80 px-2.5 py-1.5 transition-all hover:border-amber-500/40 hover:bg-slate-100 dark:hover:bg-slate-800/80 active:scale-98 min-w-0 shadow-xs"
+              className="flex items-center gap-1.5 sm:gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/80 px-2 sm:px-2.5 py-1.5 transition-all hover:border-amber-500/40 hover:bg-slate-100 dark:hover:bg-slate-800/80 active:scale-98 min-w-0 shadow-xs"
               title="Switch Vehicle"
             >
               <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-amber-500/20 text-amber-500 dark:text-amber-400 font-bold">
                 <Bike className="size-4" />
               </div>
-              <div className="text-left min-w-0 pr-1">
+              <div className="text-left min-w-0 max-w-[95px] xs:max-w-[130px] sm:max-w-[180px] pr-0.5">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 truncate leading-none">
                   {activeBike?.name || activeBike?.model || "My Garage"}
                 </p>
                 <p className="text-[11px] font-mono font-medium text-slate-700 dark:text-slate-300 truncate leading-tight mt-0.5">
-                  {activeBike ? `${activeBike.make} ${activeBike.model}` : "Select Bike"}
+                  {bikeSubtext}
                 </p>
               </div>
               <ChevronDown className="size-3.5 text-slate-400 dark:text-slate-500 shrink-0" />
             </button>
 
             {/* Center Status: Battery Voltage & Cloud Sync */}
-            <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               {/* Battery Voltage Chip */}
               <button
                 type="button"
                 onClick={() => setBatteryModalOpen(true)}
-                className={`flex items-center gap-1.5 rounded-full border ${batteryHealth.borderColor} bg-white/90 dark:bg-slate-900/80 px-2.5 py-1 text-[11px] font-mono font-semibold transition-all hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 shadow-xs`}
+                className={`flex items-center gap-1 sm:gap-1.5 rounded-full border ${batteryHealth.borderColor} bg-white/90 dark:bg-slate-900/80 px-2 sm:px-2.5 py-1 text-[11px] font-mono font-semibold transition-all hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 shadow-xs`}
                 title="Tap to test or calibrate battery voltage"
               >
                 <Zap className={`size-3 ${batteryHealth.textColor}`} />
@@ -147,12 +161,12 @@ export function AppShell({ title, subtitle, actions, children }: AppShellProps) 
             </div>
 
             {/* Right Controls: Currency Toggle & Sign Out */}
-            <div className="flex items-center gap-1 sm:gap-2">
+            <div className="flex items-center gap-1 sm:gap-1.5">
               {/* 1-Tap Dual Currency Switcher */}
               <button
                 type="button"
                 onClick={toggleCurrency}
-                className="flex items-center gap-1 rounded-xl border border-amber-500/40 bg-amber-500/10 px-2.5 py-1 text-xs font-mono font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 active:scale-95 transition-all shadow-xs"
+                className="flex items-center gap-1 rounded-xl border border-amber-500/40 bg-amber-500/10 px-2 sm:px-2.5 py-1 text-xs font-mono font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 active:scale-95 transition-all shadow-xs"
                 title="Toggle currency between USD ($) and Khmer Riel (៛)"
               >
                 <span>{profile?.display_currency === "KHR" ? "៛ KHR" : "$ USD"}</span>
@@ -176,7 +190,14 @@ export function AppShell({ title, subtitle, actions, children }: AppShellProps) 
       </header>
 
       {/* Main Content View with balanced bottom clearance for bottom nav */}
-      <main className="flex-1 overflow-y-auto overflow-x-hidden px-3 sm:px-6 pt-4 pb-20 sm:pb-24 -webkit-overflow-scrolling-touch">
+      <main
+        style={{
+          paddingBottom: "calc(5.5rem + max(20px, env(safe-area-inset-bottom, 20px)))",
+          paddingLeft: "max(12px, env(safe-area-inset-left, 12px))",
+          paddingRight: "max(12px, env(safe-area-inset-right, 12px))",
+        }}
+        className="flex-1 overflow-y-auto overflow-x-hidden pt-4 -webkit-overflow-scrolling-touch"
+      >
         <div className="mx-auto max-w-6xl">
           {title && (
             <div className="mb-4 sm:mb-6 flex flex-wrap items-end justify-between gap-3">
@@ -196,9 +217,16 @@ export function AppShell({ title, subtitle, actions, children }: AppShellProps) 
         </div>
       </main>
 
-      {/* Floating Bottom Navigation Dock (Ergonomic Thumb Reach) */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200/90 dark:border-slate-800/80 bg-white/95 dark:bg-slate-950/90 backdrop-blur-xl pb-[env(safe-area-inset-bottom,0px)] shadow-2xl transition-colors duration-200">
-        <div className="grid grid-cols-5 items-center h-16 max-w-md mx-auto px-2">
+      {/* Floating Bottom Navigation Dock (Ergonomic Thumb Reach + iOS Home Bar Inset) */}
+      <nav
+        style={{
+          paddingBottom: "max(12px, env(safe-area-inset-bottom, 12px))",
+          paddingLeft: "max(8px, env(safe-area-inset-left, 8px))",
+          paddingRight: "max(8px, env(safe-area-inset-right, 8px))",
+        }}
+        className="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200/90 dark:border-slate-800/80 bg-white/95 dark:bg-slate-950/90 backdrop-blur-xl shadow-2xl transition-colors duration-200"
+      >
+        <div className="grid grid-cols-5 items-center h-14 max-w-md mx-auto px-2">
           {/* Tab 1: Cockpit Overview */}
           <Link
             to="/overview"
@@ -212,7 +240,7 @@ export function AppShell({ title, subtitle, actions, children }: AppShellProps) 
                   }`}
                 />
                 <span
-                  className={`mt-1 text-[10px] font-mono tracking-tight ${
+                  className={`mt-0.5 text-[10px] font-mono tracking-tight ${
                     isActive ? "text-amber-500 dark:text-amber-400 font-bold" : "text-slate-500 dark:text-slate-400"
                   }`}
                 >
@@ -313,7 +341,12 @@ export function AppShell({ title, subtitle, actions, children }: AppShellProps) 
       {/* Speed-Dial Sub-Menu Overlay */}
       {speedDialOpen && (
         <div
-          className="fixed inset-0 z-50 flex flex-col justify-end items-center bg-black/75 p-4 pb-24 backdrop-blur-sm animate-in fade-in"
+          style={{
+            paddingBottom: "calc(5rem + max(20px, env(safe-area-inset-bottom, 20px)))",
+            paddingLeft: "max(16px, env(safe-area-inset-left, 16px))",
+            paddingRight: "max(16px, env(safe-area-inset-right, 16px))",
+          }}
+          className="fixed inset-0 z-50 flex flex-col justify-end items-center bg-black/75 p-4 backdrop-blur-sm animate-in fade-in"
           onClick={() => setSpeedDialOpen(false)}
         >
           <div

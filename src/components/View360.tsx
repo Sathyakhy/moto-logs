@@ -187,7 +187,7 @@ export function View360({ paths, fallbackPath, className, compact }: View360Prop
 
       {/* Preset Angle Buttons - Cleanly positioned below turntable frame */}
       {totalCount > 1 && (
-        <div className="mt-2.5 flex items-center justify-center gap-1 sm:gap-1.5 w-full">
+        <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1 sm:gap-1.5 w-full">
           {[
             { label: "0° Front", deg: 0 },
             { label: "90° Side", deg: 90 },
